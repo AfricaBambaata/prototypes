@@ -23,7 +23,18 @@ Interactive 3D technical drawings, served with GitHub Pages. Start at `index.htm
 | `viewer/<version>/` | Released builds of the shared viewer (source in the private `3dViewer` repository). Do not edit here |
 | `tools/register.mjs` | Register tool, see below |
 
-## Managing drawings
+## Managing drawings (in the browser)
+
+1. Open https://github.com/AfricaBambaata/prototypes/actions/workflows/register.yml
+2. Click **Run workflow** (right).
+3. Choose the action (**Nieuwe revisie**, **Archiveren**, **Terugzetten uit archief** or **Alleen controleren**), type the drawing number without revision letter (e.g. `MHB-0102`) and, for a new revision, what changed.
+4. Click the green **Run workflow**. After about a minute the run shows a green tick and the site is updated.
+
+Only people with write access to this repository see the **Run workflow** button.
+
+## Managing drawings (command line)
+
+The same tool, run on a computer with Node.js:
 
 ```bash
 node tools/register.mjs revise MHB-0102 --note "Langere klemstaaf"

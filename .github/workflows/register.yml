@@ -1,0 +1,87 @@
+# Manage the drawing register from the browser: Actions → "Tekeningen beheren" → Run workflow.
+# Runs tools/register.mjs on GitHub, commits the result and republishes the site.
+# Only people with write access to this repository can run it.
+name: Tekeningen beheren
+
+on:
+  workflow_dispatch:
+    inputs:
+      actie:
+        description: Wat wil je doen?
+        type: choice
+        required: true
+        options:
+          - Nieuwe revisie
+          - Archiveren
+          - Terugzetten uit archief
+          - Alleen controleren
+      tekening:
+        description: Tekeningnummer zonder revisieletter, bv. MHB-0102 (leeg laten bij "Alleen controleren")
+        type: string
+        required: false
+      wijziging:
+        description: Wat is er veranderd? (alleen bij een nieuwe revisie)
+        type: string
+        required: false
+
+permissions:
+  contents: write
+  pages: write
+
+concurrency:
+  group: register
+  cancel-in-progress: false
+
+jobs:
+  register:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Register bijwerken
+        env:
+          ACTIE: ${{ inputs.actie }}
+          TEKENING: ${{ inputs.tekening }}
+          WIJZIGING: ${{ inputs.wijziging }}
+        run: |
+          set -euo pipefail
+          TEKENING="$(echo "$TEKENING" | tr '[:lower:]' '[:upper:]' | tr -d '[:space:]')"
+          if [ "$ACTIE" != "Alleen controleren" ] && ! [[ "$TEKENING" =~ ^[A-Z]{2,5}-[0-9]{3,5}$ ]]; then
+            echo "::error::Vul een tekeningnummer in zonder revisieletter, bijvoorbeeld MHB-0102."
+            exit 1
+          fi
+          case "$ACTIE" in
+            "Nieuwe revisie")          node tools/register.mjs revise "$TEKENING" --note "${WIJZIGING:-Nieuwe revisie}" ;;
+            "Archiveren")              node tools/register.mjs archive "$TEKENING" ;;
+            "Terugzetten uit archief") node tools/register.mjs restore "$TEKENING" ;;
+            "Alleen controleren")      ;;
+          esac
+          node tools/register.mjs check
+          echo "TEKENING=$TEKENING" >> "$GITHUB_ENV"
+
+      - name: Opslaan en publiceren
+        env:
+          ACTIE: ${{ inputs.actie }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          if git diff --quiet && [ -z "$(git ls-files --others --exclude-standard)" ]; then
+            echo "Niets veranderd."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "$ACTIE: $TEKENING (gestart door $GITHUB_ACTOR)"
+          git push
+          # Pushes made by a workflow don't always start a Pages build, so ask for one.
+          gh api -X POST "repos/$GITHUB_REPOSITORY/pages/builds" >/dev/null || echo "::warning::Pages-build niet gestart; de site werkt bij met de volgende wijziging."
+          {
+            echo "### $ACTIE: $TEKENING"
+            echo ""
+            git show --stat --format="%s" HEAD | sed 's/^/    /'
+          } >> "$GITHUB_STEP_SUMMARY"
