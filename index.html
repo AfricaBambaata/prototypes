@@ -204,7 +204,7 @@ dialog::backdrop{background:rgba(0,0,0,.25)}
     <ol>
       <li><a id="token-link" href="#" target="_blank" rel="noopener">Maak een sleutel aan op GitHub</a></li>
       <li>Repository access: <em>Only select repositories</em> → <strong>prototypes</strong></li>
-      <li>Permissions: <strong>Actions</strong> op <em>Read and write</em>, <strong>Contents</strong> op <em>Read-only</em></li>
+      <li>Permissions: <strong>Actions</strong> en <strong>Contents</strong> allebei op <em>Read and write</em></li>
       <li><strong>Generate token</strong>, kopieer en plak hieronder</li>
     </ol>
     <input type="password" class="field" id="token" autocomplete="off" spellcheck="false" placeholder="github_pat_…" aria-label="Sleutel">
@@ -382,14 +382,15 @@ dialog::backdrop{background:rgba(0,0,0,.25)}
     const note = $('act-note').value.trim();
     if (pending.kind === 'revise' && !note) return;
     $('act-dlg').close();
-    startJob(pending.kind, pending.d.number, note);
+    if (pending.kind === 'revise') startJob('revise', pending.d.number, note);
+    else setStatus(pending.d.number, pending.kind === 'archive' ? 'archived' : 'current');
     pending = null;
   });
 
   // ---------- Sign in ----------
   $('token-link').href = 'https://github.com/settings/personal-access-tokens/new?' + new URLSearchParams({
     name: 'Tekeningenregister', description: 'Beheer van het tekeningenregister (' + location.host + ')',
-    target_name: OWNER, expires_in: '90', actions: 'write', contents: 'read'
+    target_name: OWNER, expires_in: '90', actions: 'write', contents: 'write'
   });
   async function signIn(t){
     token = t;
@@ -467,7 +468,7 @@ dialog::backdrop{background:rgba(0,0,0,.25)}
       t.set('run', title, 'Bezig…');
       let run = null;
       for (let i = 0; i < 100; i++) {
-        await sleep(i < 5 ? 2000 : 4000);
+        await sleep(i < 15 ? 2000 : 4000);
         const q = await gh(`/repos/${OWNER}/${REPO}/actions/workflows/${WORKFLOW}/runs?event=workflow_dispatch&per_page=10`);
         if (!q.ok) continue;
         const runs = (await q.json()).workflow_runs || [];
@@ -488,6 +489,48 @@ dialog::backdrop{background:rgba(0,0,0,.25)}
       t.set('bad', title, err.message === 'Failed to fetch' ? 'GitHub is niet bereikbaar.' : err.message);
     } finally {
       if (number) { busy.delete(number); render(); }
+    }
+  }
+
+  // ---------- Archive and restore: one line in drawings.json, saved straight to the repository ----------
+  // No job or machine needed, so it takes a second or two. (A new revision copies files and runs the
+  // full check, so that still goes through the "Tekeningen beheren" job.)
+  const b64decode = b64 => new TextDecoder().decode(Uint8Array.from(atob(b64.replace(/\s/g, '')), c => c.charCodeAt(0)));
+  const b64encode = str => { let bin = ''; new TextEncoder().encode(str).forEach(b => { bin += String.fromCharCode(b); }); return btoa(bin); };
+  async function setStatus(number, status){
+    const t = toast();
+    const what = status === 'archived' ? 'Archiveren' : 'Terugzetten';
+    const title = `${number} · ${what}`;
+    t.set('run', title, 'Wordt opgeslagen…');
+    busy.add(number); render();
+    try {
+      for (let attempt = 0; attempt < 3; attempt++) {
+        const g = await gh(`/repos/${OWNER}/${REPO}/contents/drawings.json?ref=main&t=${Date.now()}`);
+        if (!g.ok) throw new Error(g.status === 403 || g.status === 404 ? 'Geen toegang tot het register.' : 'Register ophalen mislukt (' + g.status + ').');
+        const file = await g.json();
+        const reg = JSON.parse(b64decode(file.content));
+        const d = (reg.drawings || []).find(x => x.number === number);
+        if (!d) throw new Error(number + ' staat niet (meer) in het register.');
+        if (d.status === status) { data = reg.drawings; render(); t.set('ok', status === 'archived' ? 'Al gearchiveerd' : 'Al actueel', number); return; }
+        d.status = status;
+        const text = JSON.stringify(reg, null, 2) + '\n';
+        const r = await gh(`/repos/${OWNER}/${REPO}/contents/drawings.json`, {
+          method: 'PUT',
+          body: JSON.stringify({ message: `${what}: ${number} (via het register, door ${user})`, content: b64encode(text), sha: file.sha, branch: 'main' })
+        });
+        if (r.status === 409 || r.status === 422) continue;   // someone saved in between: fetch again and retry
+        if (r.status === 403 || r.status === 404) throw new Error('Deze sleutel mag nog niet rechtstreeks opslaan. Zet bij je sleutel "Contents" op "Read and write".');
+        if (!r.ok) throw new Error('Opslaan mislukt (' + r.status + ').');
+        data = reg.drawings.filter(x => x.revisions && x.revisions.length);
+        render();
+        t.set('ok', status === 'archived' ? 'Gearchiveerd' : 'Teruggezet', `${number} · de website is binnen een minuut bijgewerkt`);
+        return;
+      }
+      throw new Error('Het register werd intussen gewijzigd. Probeer het opnieuw.');
+    } catch (err) {
+      t.set('bad', title, err.message === 'Failed to fetch' ? 'GitHub is niet bereikbaar.' : err.message);
+    } finally {
+      busy.delete(number); render();
     }
   }
 

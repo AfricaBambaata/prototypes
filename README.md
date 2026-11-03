@@ -26,9 +26,9 @@ Interactive 3D technical drawings, served with GitHub Pages. Start at `index.htm
 
 ## Managing drawings (on the register page)
 
-Open the register page and click **Beheer**. The first time on a device, the page asks for a GitHub access token; the dialog explains how to make one (fine-grained, only the `prototypes` repository, *Actions: Read and write*, *Contents: Read-only*). The token is stored only in that browser and is sent only to api.github.com.
+Open the register page and click **Beheer**. The first time on a device, the page asks for a GitHub access token; the dialog explains how to make one (fine-grained, only the `prototypes` repository, *Actions* and *Contents* both *Read and write*). The token is stored only in that browser and is sent only to api.github.com.
 
-Signed in, every drawing gets **Nieuwe revisie** and **Archiveren** (or **Terugzetten** in the archive), plus **Register controleren** at the top. The page starts the "Tekeningen beheren" workflow (`.github/workflows/register.yml`), which runs `tools/register.mjs` on GitHub and commits the result, and shows its progress. Only accounts with write access to this repository can make changes.
+Signed in, every drawing gets **Nieuwe revisie** and **Archiveren** (or **Terugzetten** in the archive), plus **Register controleren** at the top. Archiving and restoring change one line in `drawings.json`; the page saves that straight to the repository (a second or two). A new revision and the check start the "Tekeningen beheren" workflow (`.github/workflows/register.yml`), which runs `tools/register.mjs` on GitHub and commits the result (about half a minute); the page shows its progress. The public site follows about a minute after each change. Only accounts with write access to this repository can make changes.
 
 The same workflow can also be started under **Actions → Tekeningen beheren → Run workflow**.
 

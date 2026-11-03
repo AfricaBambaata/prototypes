@@ -38,10 +38,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
+      # Node.js is already on GitHub's machines; installing another copy only costs time.
       - name: Register bijwerken
         env:
           ACTIE: ${{ inputs.actie }}
