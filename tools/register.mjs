@@ -27,15 +27,68 @@ function find(reg, number) {
   return d;
 }
 
-function redirectPage(target, title) {
+// ---------- Link previews (WhatsApp, Mail, iMessage, Teams …) ----------
+// Crawlers don't run JavaScript, so the preview tags must be in the HTML of the page that is shared:
+// the short link pages (latest revision) and each revision file. They only describe the page; the
+// drawing itself is never touched. Images come from tools/previews.mjs.
+const attr = s => String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+function previewTags(reg, { title, description, path, image }) {
+  if (!reg.site) return '';
+  const site = reg.site.endsWith('/') ? reg.site : reg.site + '/';
+  const img = image && existsSync(join(ROOT, image)) ? site + image : null;
+  return [
+    `<meta name="description" content="${attr(description)}">`,
+    `<meta property="og:type" content="website">`,
+    `<meta property="og:site_name" content="Tekeningenregister">`,
+    `<meta property="og:title" content="${attr(title)}">`,
+    `<meta property="og:description" content="${attr(description)}">`,
+    `<meta property="og:url" content="${attr(site + path)}">`,
+    ...(img ? [
+      `<meta property="og:image" content="${attr(img)}">`,
+      `<meta property="og:image:type" content="image/jpeg">`,
+      `<meta property="og:image:width" content="1200">`,
+      `<meta property="og:image:height" content="630">`,
+      `<meta property="og:image:alt" content="${attr(title)}">`,
+      `<meta name="twitter:card" content="summary_large_image">`
+    ] : [`<meta name="twitter:card" content="summary">`])
+  ].join('\n');
+}
+const latestTags = (reg, d) => {
+  const L = d.revisions[d.revisions.length - 1];
+  return previewTags(reg, {
+    title: `${d.title} · ${d.number}`,
+    description: `${d.description} Altijd de laatste revisie (nu ${L.rev}).`,
+    path: `drawings/${d.number}/`,
+    image: `previews/${d.number}-${L.rev}.jpg`
+  });
+};
+const START = '<!-- link-preview -->', END = '<!-- /link-preview -->';
+function setRevisionTags(reg, d, r) {
+  const file = join(ROOT, r.file);
+  if (!existsSync(file)) return;
+  const html = readFileSync(file, 'utf8');
+  const tags = previewTags(reg, {
+    title: `${d.title} · ${d.number}-${r.rev}`,
+    description: `${d.description} Revisie ${r.rev} van ${r.date}.`,
+    path: r.file,
+    image: `previews/${d.number}-${r.rev}.jpg`
+  });
+  const block = tags ? `${START}\n${tags}\n${END}` : '';
+  let next;
+  if (html.includes(START)) next = html.replace(new RegExp(`${START}[\\s\\S]*?${END}\\n?`), block ? block + '\n' : '');
+  else if (block) next = html.replace(/(<\/title>\n)/, `$1${block}\n`);
+  else next = html;
+  if (next !== html) writeFileSync(file, next);
+}
+
+function redirectPage(target, title, tags = '') {
   return `<!doctype html>
 <html lang="nl">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>${title}</title>
-<meta http-equiv="refresh" content="0; url=${target}">
-<link rel="canonical" href="${target}">
+${tags ? tags + '\n' : ''}<meta http-equiv="refresh" content="0; url=${target}">
 <style>body{margin:0;padding:24px;font:15px system-ui,sans-serif}[hidden]{display:none!important}</style>
 </head>
 <body>
@@ -54,8 +107,10 @@ function sync(reg) {
     const dir = join(ROOT, 'drawings', d.number);
     mkdirSync(dir, { recursive: true });
     const title = `${d.title} (${d.number}-${latest.rev})`;
-    writeFileSync(join(dir, 'index.html'), redirectPage(relative(dir, join(ROOT, latest.file)), title));
-    if (d.link) writeFileSync(join(ROOT, d.link), redirectPage(`drawings/${d.number}/`, title));
+    const tags = latestTags(reg, d);
+    writeFileSync(join(dir, 'index.html'), redirectPage(relative(dir, join(ROOT, latest.file)), title, tags));
+    if (d.link) writeFileSync(join(ROOT, d.link), redirectPage(`drawings/${d.number}/`, title, tags));
+    d.revisions.forEach(r => setRevisionTags(reg, d, r));
   }
 }
 

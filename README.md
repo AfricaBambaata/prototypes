@@ -22,11 +22,16 @@ Interactive 3D technical drawings, served with GitHub Pages. Start at `index.htm
 | `trapleuning.html` etc. | Short links that forward to `drawings/<number>/` |
 | `viewer/1/` | The shared viewer every drawing uses: always the latest 1.x release (source in the private `3dViewer` repository). Do not edit here |
 | `viewer/<version>/` | Fixed copies of each release, for drawings that must never change |
+| `previews/` | Link preview images, one per revision (made by `tools/previews.mjs`) |
 | `tools/register.mjs` | Register tool, see below |
 
 ## Sharing a drawing
 
 Use **Delen** in the viewer, or **⋯ → Delen…** on the register page. By default the link always opens the latest revision (`drawings/<number>/`); choose **Alleen revisie X** to share that one revision (`drawings/<number>/<rev>.html`). The share sheet shows a QR code, copies the link, and opens Mail, WhatsApp or (on iPhone, iPad and Mac) the system share sheet.
+
+## Link previews
+
+Shared links show a card with the drawing's name, number and a picture of the model in WhatsApp, Mail, iMessage, Teams and similar apps. The "Voorbeeldbeelden" workflow (`.github/workflows/previews.yml`) renders `previews/<number>-<rev>.jpg` with `tools/previews.mjs` after every new revision or change to a drawing or the viewer, and `tools/register.mjs check` writes the matching preview tags (between `<!-- link-preview -->` markers in each revision file, and in the short link pages). The tags only describe the page; the drawing is not changed. Apps cache previews, so a link already shared keeps its old card for a while.
 
 ## Managing drawings (on the register page)
 

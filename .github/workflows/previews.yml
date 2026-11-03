@@ -1,0 +1,55 @@
+# Link preview images (WhatsApp, Mail, iMessage, Teams …): renders every new or changed revision with
+# tools/previews.mjs, writes the preview tags with tools/register.mjs, then saves and republishes.
+# Runs on its own after "Tekeningen beheren" and after changes to drawings or the viewer, so the
+# register itself never waits for it.
+name: Voorbeeldbeelden
+
+on:
+  push:
+    branches: [main]
+    paths: ['drawings/**', 'viewer/**']
+  workflow_run:
+    workflows: ['Tekeningen beheren']
+    types: [completed]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+
+concurrency:
+  group: previews
+  cancel-in-progress: true
+
+jobs:
+  previews:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Chromium installeren
+        run: |
+          npm install --no-save --no-audit --no-fund playwright@1.48.2
+          npx playwright install --with-deps chromium
+
+      - name: Beelden maken
+        run: |
+          node tools/previews.mjs
+          node tools/register.mjs check
+
+      - name: Opslaan en publiceren
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          git add -A previews drawings *.html
+          if git diff --cached --quiet; then echo "Niets veranderd."; exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Voorbeeldbeelden bijgewerkt"
+          git pull --rebase origin main
+          git push
+          gh api -X POST "repos/$GITHUB_REPOSITORY/pages/builds" >/dev/null || echo "::warning::Pages-build niet gestart; de site werkt bij met de volgende wijziging."
