@@ -2,7 +2,7 @@
 // Drawing register: keeps drawings.json, the revision files and the short links in step.
 //
 //   node tools/register.mjs check                      validate the register and rewrite the short links
-//   node tools/register.mjs revise MHB-0102 --note "Langere staaf" [--viewer 1.1.0]
+//   node tools/register.mjs revise MHB-0102 --note "Langere staaf" [--viewer 2]
 //                                                      new revision: copies the latest file to the next letter
 //   node tools/register.mjs archive MHB-0102           move a drawing to the archive
 //   node tools/register.mjs restore MHB-0102           bring it back from the archive
@@ -74,7 +74,7 @@ function check(reg) {
       const file = join(ROOT, r.file);
       if (!existsSync(file)) { problems.push(`${d.number}-${r.rev}: missing file ${r.file}`); continue; }
       const html = readFileSync(file, 'utf8');
-      const m = html.match(/viewer\/(\d+\.\d+\.\d+)\/viewer\.js/);
+      const m = html.match(/viewer\/(\d+(?:\.\d+\.\d+)?)\/viewer\.js/);
       if (!m) problems.push(`${d.number}-${r.rev}: does not load the shared viewer`);
       else {
         if (r.viewer && m[1] !== r.viewer) problems.push(`${d.number}-${r.rev}: register says viewer ${r.viewer}, file uses ${m[1]}`);
@@ -91,7 +91,7 @@ const opt = name => { const i = rest.indexOf('--' + name); return i >= 0 ? rest[
 const reg = load();
 
 if (cmd === 'revise') {
-  if (!number) die('Usage: revise <NUMBER> --note "what changed" [--viewer x.y.z]');
+  if (!number) die('Usage: revise <NUMBER> --note "what changed" [--viewer 2 | x.y.z]');
   const d = find(reg, number);
   const last = d.revisions[d.revisions.length - 1];
   const rev = nextRev(last.rev);
@@ -103,7 +103,7 @@ if (cmd === 'revise') {
   const viewer = opt('viewer');
   if (viewer) {
     if (!existsSync(join(ROOT, 'viewer', viewer, 'viewer.js'))) die(`viewer/${viewer} is not released yet`);
-    html = html.replace(/viewer\/\d+\.\d+\.\d+\//g, `viewer/${viewer}/`);
+    html = html.replace(/viewer\/\d+(?:\.\d+\.\d+)?\//g, `viewer/${viewer}/`);
   }
   writeFileSync(join(ROOT, file), html);
   d.revisions.push({ rev, date: today(), file, viewer: viewer || last.viewer, note: opt('note') || `Revisie ${rev}` });

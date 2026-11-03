@@ -8,7 +8,13 @@
       "status": "current",
       "link": "trapleuning.html",
       "revisions": [
-        { "rev": "A", "date": "2026-11-03", "file": "drawings/MHB-0200/A.html", "viewer": "1.0.0", "note": "Eerste uitgave" }
+        {
+          "rev": "A",
+          "date": "2026-11-03",
+          "file": "drawings/MHB-0200/A.html",
+          "viewer": "1",
+          "note": "Eerste uitgave"
+        }
       ]
     },
     {
@@ -19,7 +25,13 @@
       "status": "current",
       "link": "muurhouder.html",
       "revisions": [
-        { "rev": "A", "date": "2026-11-03", "file": "drawings/MHB-0102/A.html", "viewer": "1.0.0", "note": "Eerste uitgave" }
+        {
+          "rev": "A",
+          "date": "2026-11-03",
+          "file": "drawings/MHB-0102/A.html",
+          "viewer": "1",
+          "note": "Eerste uitgave"
+        }
       ]
     },
     {
@@ -30,7 +42,13 @@
       "status": "current",
       "link": "spacer-sleeve.html",
       "revisions": [
-        { "rev": "A", "date": "2026-11-03", "file": "drawings/SLV-0101/A.html", "viewer": "1.0.0", "note": "First issue" }
+        {
+          "rev": "A",
+          "date": "2026-11-03",
+          "file": "drawings/SLV-0101/A.html",
+          "viewer": "1",
+          "note": "First issue"
+        }
       ]
     },
     {
@@ -41,7 +59,13 @@
       "status": "current",
       "link": "bearing-bracket.html",
       "revisions": [
-        { "rev": "B", "date": "2026-11-03", "file": "drawings/BRK-0417/B.html", "viewer": "1.0.0", "note": "Revision B" }
+        {
+          "rev": "B",
+          "date": "2026-11-03",
+          "file": "drawings/BRK-0417/B.html",
+          "viewer": "1",
+          "note": "Revision B"
+        }
       ]
     }
   ]

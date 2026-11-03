@@ -20,7 +20,8 @@ Interactive 3D technical drawings, served with GitHub Pages. Start at `index.htm
 | `drawings/<number>/<rev>.html` | One file per revision. A released revision is never edited again |
 | `drawings/<number>/` | Always opens the latest revision |
 | `trapleuning.html` etc. | Short links that forward to `drawings/<number>/` |
-| `viewer/<version>/` | Released builds of the shared viewer (source in the private `3dViewer` repository). Do not edit here |
+| `viewer/1/` | The shared viewer every drawing uses: always the latest 1.x release (source in the private `3dViewer` repository). Do not edit here |
+| `viewer/<version>/` | Fixed copies of each release, for drawings that must never change |
 | `tools/register.mjs` | Register tool, see below |
 
 ## Managing drawings (on the register page)

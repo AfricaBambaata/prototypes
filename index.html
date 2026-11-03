@@ -4,133 +4,228 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Tekeningenregister</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
 <style>
 :root{
-  --bg:#e9ece9; --sheet:#f7f8f6; --ink:#1c2320; --ink-2:#5f6964; --line:#c4ccc7; --accent:#b6471a; --on-accent:#fff;
-  --ok:#2f7a4a; --bad:#b3261e;
-  --font-ui:'Barlow',system-ui,-apple-system,sans-serif;
-  --font-mono:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;
+  --font:-apple-system,BlinkMacSystemFont,'SF Pro Text','Segoe UI Variable','Segoe UI',system-ui,Roboto,'Helvetica Neue',sans-serif;
+  --mono:ui-monospace,'SF Mono',SFMono-Regular,Menlo,Consolas,monospace;
+  --bg:#f2f2f4; --bg-grad:radial-gradient(120% 70% at 50% 0%,#ffffff 0%,#f2f2f4 60%,#ebebef 100%);
+  --card:#ffffff; --ink:#1d1d1f; --ink-2:#6e6e73; --ink-3:#aeaeb2; --sep:rgba(60,60,67,.14);
+  --fill:rgba(120,120,128,.12); --fill-2:rgba(120,120,128,.2); --seg-on:#ffffff;
+  --glass:rgba(255,255,255,.66); --glass-edge:rgba(0,0,0,.08); --glass-hi:rgba(255,255,255,.75); --shadow:rgba(0,0,0,.14);
+  --accent:#0071e3; --on-accent:#fff; --tint:rgba(0,113,227,.12);
+  --ok:#248a3d; --bad:#d70015;
+  --ease:cubic-bezier(.32,.72,0,1);
   color-scheme:light;
 }
 @media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]){ --bg:#121715; --sheet:#1a211e; --ink:#e4eae6; --ink-2:#97a29c; --line:#2f3b36; --accent:#f08752; --on-accent:#1a0f0a; --ok:#6cc58f; --bad:#f2867d; color-scheme:dark; }
+  :root:not([data-theme="light"]){
+    --bg:#141517; --bg-grad:radial-gradient(120% 70% at 50% 0%,#2a2b2f 0%,#17181a 60%,#111214 100%);
+    --card:#1f2023; --ink:#f5f5f7; --ink-2:#a1a1a6; --ink-3:#636366; --sep:rgba(255,255,255,.1);
+    --fill:rgba(120,120,128,.24); --fill-2:rgba(120,120,128,.32); --seg-on:rgba(255,255,255,.16);
+    --glass:rgba(40,40,44,.6); --glass-edge:rgba(255,255,255,.1); --glass-hi:rgba(255,255,255,.07); --shadow:rgba(0,0,0,.5);
+    --accent:#0a84ff; --on-accent:#fff; --tint:rgba(10,132,255,.2); --ok:#30d158; --bad:#ff453a; color-scheme:dark;
+  }
 }
-:root[data-theme="dark"]{ --bg:#121715; --sheet:#1a211e; --ink:#e4eae6; --ink-2:#97a29c; --line:#2f3b36; --accent:#f08752; --on-accent:#1a0f0a; --ok:#6cc58f; --bad:#f2867d; color-scheme:dark; }
+:root[data-theme="dark"]{
+  --bg:#141517; --bg-grad:radial-gradient(120% 70% at 50% 0%,#2a2b2f 0%,#17181a 60%,#111214 100%);
+  --card:#1f2023; --ink:#f5f5f7; --ink-2:#a1a1a6; --ink-3:#636366; --sep:rgba(255,255,255,.1);
+  --fill:rgba(120,120,128,.24); --fill-2:rgba(120,120,128,.32); --seg-on:rgba(255,255,255,.16);
+  --glass:rgba(40,40,44,.6); --glass-edge:rgba(255,255,255,.1); --glass-hi:rgba(255,255,255,.07); --shadow:rgba(0,0,0,.5);
+  --accent:#0a84ff; --on-accent:#fff; --tint:rgba(10,132,255,.2); --ok:#30d158; --bad:#ff453a; color-scheme:dark;
+}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font-ui);font-size:15px;line-height:1.45}
+html{background:var(--bg)}
+body{margin:0;min-height:100vh;background:var(--bg-grad) fixed;color:var(--ink);font-family:var(--font);font-size:14px;line-height:1.4;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
 [hidden]{display:none!important}
-main{max-width:920px;margin:0 auto;padding:32px max(16px,env(safe-area-inset-right,0px)) 40px max(16px,env(safe-area-inset-left,0px))}
-.head{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start;justify-content:space-between}
-h1{margin:0 0 4px;font-size:18px;font-weight:600;letter-spacing:.08em;text-transform:uppercase}
-h2{margin:28px 0 10px;font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-2)}
-.sub{margin:0;color:var(--ink-2);font-size:14px}
-button,.btn{appearance:none;-webkit-appearance:none;display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:36px;padding:6px 12px;border:1px solid var(--line);border-radius:4px;background:var(--sheet);color:var(--ink);font:inherit;font-size:14px;cursor:pointer;white-space:nowrap;text-decoration:none}
-button.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
-button:disabled{opacity:.5;cursor:default}
-button:focus-visible,input:focus-visible,a:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-@media (pointer:coarse){button{min-height:44px}}
-.tools{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:20px 0 0}
-input[type=search],input[type=text],input[type=password]{flex:1 1 220px;min-width:0;font:inherit;font-size:15px;padding:8px 10px;border:1px solid var(--line);border-radius:4px;background:var(--sheet);color:var(--ink)}
-.count{font-size:13px;color:var(--ink-2)}
-ol{list-style:none;margin:0;padding:0;border:1px solid var(--line);background:var(--sheet)}
-ol>li+li{border-top:1px solid var(--line)}
-.row{display:grid;grid-template-columns:130px 1fr auto;gap:4px 18px;align-items:baseline;padding:14px 16px}
-.no{font-family:var(--font-mono);font-size:13px;color:var(--ink-2);font-variant-numeric:tabular-nums;white-space:nowrap}
-.t{font-weight:600;letter-spacing:.06em;text-transform:uppercase;font-size:14px;color:inherit;text-decoration:none}
-a.t:hover,a.t:focus-visible{color:var(--accent)}
-.d{grid-column:2;color:var(--ink-2);font-size:14px}
-.meta{grid-column:3;grid-row:1;font-family:var(--font-mono);font-size:12px;color:var(--ink-2);white-space:nowrap}
-.tag{display:inline-block;margin-left:8px;padding:0 6px;border:1px solid var(--line);border-radius:3px;font-family:var(--font-mono);font-size:11px;letter-spacing:0;text-transform:none;color:var(--ink-2);vertical-align:1px}
-details{grid-column:2 / -1;margin-top:4px}
-summary{cursor:pointer;font-size:13px;color:var(--ink-2);width:max-content;max-width:100%}
-.revs{margin:8px 0 0;padding:0;list-style:none;border-left:2px solid var(--line)}
-.revs li{display:grid;grid-template-columns:48px 96px 1fr;gap:2px 12px;padding:4px 0 4px 12px;font-size:13px}
-.revs .r{font-family:var(--font-mono)}
-.revs .dt{font-family:var(--font-mono);color:var(--ink-2)}
-.revs a{color:var(--accent)}
-.archive .t{color:var(--ink-2)}
-.empty{padding:14px 16px;color:var(--ink-2);font-size:14px}
-.msg{margin-top:20px;padding:12px 16px;border:1px solid var(--accent);background:var(--sheet)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}
+.glass{background:var(--glass);-webkit-backdrop-filter:blur(24px) saturate(180%);backdrop-filter:blur(24px) saturate(180%);border:0.5px solid var(--glass-edge);box-shadow:inset 0 1px 0 var(--glass-hi),0 12px 32px -12px var(--shadow),0 2px 6px -2px var(--shadow)}
+svg{flex:none}
 
-/* Admin */
-.admin{grid-column:2 / -1;display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
-.admin form{display:flex;flex-wrap:wrap;gap:8px;width:100%}
-.admin form input{flex:1 1 240px}
-.bar{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;margin-top:20px;padding:10px 12px;border:1px solid var(--accent);border-radius:4px;background:var(--sheet);font-size:14px}
-.bar .who{flex:1 1 auto}
-.jobs{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:6px}
-.jobs li{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline;padding:8px 12px;border:1px solid var(--line);border-radius:4px;background:var(--sheet);font-size:14px}
-.jobs .st{font-family:var(--font-mono);font-size:12px}
-.jobs .ok{color:var(--ok)} .jobs .bad{color:var(--bad)} .jobs .run{color:var(--ink-2)}
-.jobs a{color:var(--accent)}
-dialog{width:min(520px,calc(100vw - 32px));max-height:calc(100dvh - 32px);padding:0;border:1px solid var(--line);border-radius:8px;background:var(--sheet);color:var(--ink)}
-dialog::backdrop{background:rgba(10,14,12,.45)}
-.dlg{display:flex;flex-direction:column;gap:12px;padding:20px}
-.dlg h2{margin:0;color:var(--ink)}
-.dlg p,.dlg ol.steps{margin:0;font-size:14px}
-ol.steps{list-style:decimal;padding-left:22px;border:0;background:none;display:grid;gap:6px}
-.dlg input[type=password]{flex:none;width:100%}
-ol.steps li+li{border:0}
-.dlg a{color:var(--accent)}
-.dlg label{display:flex;gap:8px;align-items:center;font-size:14px}
-.dlg .actions{display:flex;justify-content:flex-end;gap:8px}
-.err{color:var(--bad);font-size:14px}
-@media (max-width:600px){
-  .row{grid-template-columns:1fr}
-  .d,.meta,details,.admin{grid-column:1;grid-row:auto}
-  .revs li{grid-template-columns:40px 90px 1fr}
+/* Toolbar */
+.top{position:sticky;top:0;z-index:5;padding:max(12px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px))}
+.toolbar{max-width:980px;margin:0 auto;display:flex;align-items:center;gap:10px;padding:8px 8px 8px 18px;border-radius:999px}
+.toolbar .brand{display:flex;align-items:center;gap:10px;min-width:0;margin-right:auto}
+.toolbar .brand svg{width:22px;height:22px;color:var(--accent)}
+.toolbar .brand span{font-size:15px;font-weight:600;letter-spacing:-.01em;white-space:nowrap}
+.search{position:relative;flex:0 1 280px;min-width:0}
+.search svg{position:absolute;left:11px;top:50%;width:15px;height:15px;transform:translateY(-50%);color:var(--ink-2);pointer-events:none}
+.search input{width:100%;height:34px;padding:0 12px 0 32px;border:0;border-radius:999px;background:var(--fill);color:var(--ink);font:inherit;font-size:14px;outline:none}
+.search input::placeholder{color:var(--ink-2)}
+.search input:focus-visible{box-shadow:0 0 0 3px var(--tint),inset 0 0 0 1px var(--accent)}
+.btn{appearance:none;-webkit-appearance:none;display:inline-flex;align-items:center;justify-content:center;gap:6px;height:34px;min-width:34px;padding:0 14px;border:0;border-radius:999px;background:var(--fill);color:var(--ink);font:inherit;font-size:14px;font-weight:500;cursor:pointer;white-space:nowrap;text-decoration:none;transition:background-color .2s,transform .1s}
+.btn:hover{background:var(--fill-2)}
+.btn:active{transform:scale(.97)}
+.btn svg{width:16px;height:16px}
+.btn.primary{background:var(--accent);color:var(--on-accent)}
+.btn.primary:hover{background:color-mix(in srgb,var(--accent) 88%,#000)}
+.btn.plain{background:transparent}
+.btn.plain:hover{background:var(--fill)}
+.btn.danger{color:var(--bad)}
+.btn:disabled{opacity:.45;cursor:default;transform:none}
+.btn:focus-visible,a:focus-visible,.seg button:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.user{display:flex;align-items:center;gap:8px;padding:0 6px 0 4px}
+.avatar{width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,var(--accent),color-mix(in srgb,var(--accent) 55%,#7a3cff));color:#fff;display:grid;place-items:center;font-size:12px;font-weight:600}
+@media (pointer:coarse){.btn,.search input{height:40px}.btn{min-width:40px}}
+
+/* Content */
+main{max-width:980px;margin:0 auto;padding:28px max(16px,env(safe-area-inset-right,0px)) 48px max(16px,env(safe-area-inset-left,0px))}
+.hero{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:14px 20px;margin:4px 4px 18px}
+h1{margin:0;font-size:32px;font-weight:700;letter-spacing:-.025em;line-height:1.1}
+.sub{margin:6px 0 0;color:var(--ink-2);font-size:15px}
+.seg{display:inline-flex;gap:2px;padding:3px;border-radius:999px;background:var(--fill)}
+.seg button{appearance:none;-webkit-appearance:none;height:30px;padding:0 14px;border:0;border-radius:999px;background:transparent;color:var(--ink);font:inherit;font-size:13px;font-weight:500;cursor:pointer;transition:background-color .2s,box-shadow .2s}
+.seg button[aria-pressed="true"]{background:var(--seg-on);box-shadow:0 1px 3px var(--shadow),0 0 0 .5px var(--glass-edge)}
+.seg .n{margin-left:6px;color:var(--ink-2);font-variant-numeric:tabular-nums}
+
+.list{list-style:none;margin:0;padding:0;border-radius:16px;background:var(--card);box-shadow:0 0 0 .5px var(--glass-edge),0 8px 24px -16px var(--shadow);overflow:visible}
+.item{position:relative;display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:2px 14px;align-items:center;padding:12px 12px 12px 14px;border-radius:16px;transition:background-color .15s}
+.item:hover{background:color-mix(in srgb,var(--fill) 55%,transparent)}
+.item+.item::before{content:"";position:absolute;top:0;left:72px;right:14px;height:.5px;background:var(--sep)}
+.item:hover::before,.item:hover+.item::before{opacity:0}
+.tile{grid-row:1 / span 2;width:44px;height:44px;border-radius:11px;display:grid;place-items:center;color:#fff;font-family:var(--mono);font-size:10.5px;font-weight:700;letter-spacing:.02em;box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 2px 6px -2px rgba(0,0,0,.3)}
+.archived .tile{filter:grayscale(1) opacity(.65)}
+.main{min-width:0;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.title{font-size:15px;font-weight:600;letter-spacing:-.01em;color:inherit;text-decoration:none}
+.title::after{content:"";position:absolute;inset:0;border-radius:16px}
+.title:focus-visible{outline:none}
+.title:focus-visible::after{box-shadow:inset 0 0 0 2px var(--accent)}
+.chip{display:inline-flex;align-items:center;height:20px;padding:0 7px;border-radius:6px;background:var(--fill);color:var(--ink-2);font-family:var(--mono);font-size:11px;font-weight:600}
+.desc{grid-column:2;color:var(--ink-2);font-size:13px;min-width:0}
+.trail{grid-column:3;grid-row:1 / span 2;display:flex;align-items:center;gap:6px;position:relative;z-index:1}
+.date{color:var(--ink-2);font-size:12.5px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.chev{width:16px;height:16px;color:var(--ink-3)}
+.hist{grid-column:2 / -1;position:relative;z-index:1;margin-top:6px}
+.hist summary{list-style:none;display:inline-flex;align-items:center;gap:4px;cursor:pointer;color:var(--accent);font-size:12.5px;font-weight:500}
+.hist summary::-webkit-details-marker{display:none}
+.hist summary svg{width:12px;height:12px;transition:transform .25s var(--ease)}
+.hist[open] summary svg{transform:rotate(90deg)}
+.revs{list-style:none;margin:8px 0 2px;padding:4px;border-radius:12px;background:var(--fill)}
+.revs li a{display:grid;grid-template-columns:28px 92px 1fr;gap:10px;align-items:center;padding:7px 10px;border-radius:9px;color:inherit;text-decoration:none;font-size:13px}
+.revs li a:hover{background:var(--card)}
+.revs .r{font-family:var(--mono);font-weight:600}
+.revs .d{color:var(--ink-2);font-variant-numeric:tabular-nums}
+.revs .cur{color:var(--accent);font-size:11.5px;font-weight:600;margin-left:6px}
+.empty{padding:28px 16px;text-align:center;color:var(--ink-2)}
+.msg{margin:16px 0 0;padding:12px 16px;border-radius:14px;background:var(--card);color:var(--bad);box-shadow:0 0 0 .5px var(--glass-edge)}
+footer{margin:18px 6px 0;color:var(--ink-2);font-size:12px}
+
+/* Menu, sheets, toasts */
+.menu{position:fixed;z-index:20;min-width:220px;padding:6px;border-radius:14px;transform-origin:top right;animation:pop .22s var(--ease)}
+.menu button{appearance:none;-webkit-appearance:none;display:flex;align-items:center;gap:10px;width:100%;height:34px;padding:0 10px;border:0;border-radius:8px;background:transparent;color:var(--ink);font:inherit;font-size:14px;text-align:left;cursor:pointer}
+.menu button svg{width:16px;height:16px;color:var(--ink-2)}
+.menu button:hover,.menu button:focus-visible{background:var(--accent);color:var(--on-accent);outline:none}
+.menu button:hover svg,.menu button:focus-visible svg{color:var(--on-accent)}
+.menu hr{border:0;height:.5px;margin:5px 8px;background:var(--sep)}
+.menu .lbl{padding:6px 10px 4px;color:var(--ink-2);font-size:12px}
+@keyframes pop{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:none}}
+dialog{width:min(440px,calc(100vw - 32px));max-height:calc(100dvh - 32px);padding:0;border:.5px solid var(--glass-edge);border-radius:22px;background:var(--glass);color:var(--ink);-webkit-backdrop-filter:blur(30px) saturate(180%);backdrop-filter:blur(30px) saturate(180%);box-shadow:0 30px 80px -20px rgba(0,0,0,.45)}
+dialog[open]{animation:pop .3s var(--ease)}
+dialog::backdrop{background:rgba(0,0,0,.25)}
+.sheet{display:flex;flex-direction:column;gap:14px;padding:22px}
+.sheet .icon{align-self:center;width:52px;height:52px;border-radius:14px;display:grid;place-items:center;background:var(--tint);color:var(--accent)}
+.sheet .icon svg{width:26px;height:26px}
+.sheet h2{margin:0;font-size:17px;font-weight:600;letter-spacing:-.01em;text-align:center}
+.sheet p{margin:0;color:var(--ink-2);font-size:13.5px;text-align:center}
+.sheet ol{margin:0;padding:12px 14px 12px 32px;border-radius:12px;background:var(--fill);font-size:13px;display:grid;gap:6px}
+.sheet a{color:var(--accent)}
+.field{width:100%;height:38px;padding:0 12px;border:0;border-radius:10px;background:var(--fill);color:var(--ink);font:inherit;font-size:14px;outline:none}
+.field:focus-visible{box-shadow:0 0 0 3px var(--tint),inset 0 0 0 1px var(--accent)}
+.check{display:flex;gap:8px;align-items:center;justify-content:center;font-size:13px;color:var(--ink-2)}
+.check input{accent-color:var(--accent);width:16px;height:16px;margin:0}
+.err{margin:0;color:var(--bad)!important}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.actions .btn{height:38px}
+.toasts{position:fixed;z-index:30;right:max(16px,env(safe-area-inset-right,0px));bottom:max(16px,env(safe-area-inset-bottom,0px));display:flex;flex-direction:column-reverse;gap:8px;width:min(380px,calc(100vw - 32px));pointer-events:none}
+.toast{pointer-events:auto;display:grid;grid-template-columns:22px 1fr auto;gap:2px 10px;align-items:center;padding:12px 14px;border-radius:16px;animation:rise .35s var(--ease)}
+.toast .st{grid-column:1;grid-row:1 / span 2;width:22px;height:22px;display:grid;place-items:center}
+.toast .st svg{width:20px;height:20px}
+.toast b{grid-column:2;grid-row:1;font-size:13.5px;font-weight:600}
+.toast span:not(.st):not(.spin){grid-column:2;grid-row:2;color:var(--ink-2);font-size:12.5px}
+.toast a{grid-column:3;grid-row:1 / span 2;color:var(--accent);font-size:13px;font-weight:500;text-decoration:none}
+.toast.ok .st{color:var(--ok)} .toast.bad .st{color:var(--bad)}
+.spin{width:18px;height:18px;border-radius:50%;border:2px solid var(--fill-2);border-top-color:var(--accent);animation:turn .8s linear infinite}
+@keyframes turn{to{transform:rotate(360deg)}}
+@keyframes rise{from{opacity:0;transform:translateY(10px) scale(.98)}to{opacity:1;transform:none}}
+@media (max-width:640px){
+  .toolbar{padding-left:14px}
+  .toolbar .brand span{display:none}
+  .search{flex:1 1 auto}
+  .btn .t{display:none}
+  .btn.has-t{padding:0;width:34px}
+  h1{font-size:28px}
+  .item{grid-template-columns:40px minmax(0,1fr) auto;gap:2px 12px}
+  .tile{width:40px;height:40px;font-size:9.5px;border-radius:10px}
+  .item+.item::before{left:66px}
+  .date{display:none}
+  .toasts{left:16px;right:16px;width:auto;align-items:center}
 }
-footer{margin-top:18px;font-size:12px;color:var(--ink-2)}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
-<main>
-  <div class="head">
-    <div>
-      <h1>Tekeningenregister</h1>
-      <p class="sub">3D-werktekeningen. Open een tekening om te draaien, te zoomen, de maten te bekijken en af te drukken.</p>
+<div class="top">
+  <div class="toolbar glass">
+    <div class="brand">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M12 2.8l8 4.6v9.2l-8 4.6-8-4.6V7.4z"/><path d="M4 7.4l8 4.6 8-4.6M12 12v9.2"/></g></svg>
+      <span>Tekeningenregister</span>
     </div>
-    <button type="button" id="login-btn">Beheer</button>
+    <label class="search"><span class="sr">Zoek tekening</span>
+      <svg viewBox="0 0 20 20" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="8.5" cy="8.5" r="5.5"/><path d="M13 13l4 4"/></g></svg>
+      <input type="search" id="q" placeholder="Zoeken" autocomplete="off">
+    </label>
+    <button type="button" class="btn has-t" id="login-btn"><svg viewBox="0 0 20 20" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="10" cy="7" r="3.2"/><path d="M3.8 17a6.2 6.2 0 0 1 12.4 0"/></g></svg><span class="t">Beheer</span></button>
+    <button type="button" class="btn plain user" id="user-btn" aria-haspopup="menu" hidden><span class="avatar" id="avatar"></span><span class="t" id="user-name"></span></button>
   </div>
+</div>
 
-  <div class="bar" id="admin-bar" hidden>
-    <span class="who" id="who"></span>
-    <button type="button" id="check-btn">Register controleren</button>
-    <button type="button" id="logout-btn">Afmelden</button>
+<main>
+  <div class="hero">
+    <div>
+      <h1>Tekeningen</h1>
+      <p class="sub">3D-werktekeningen om te draaien, te meten en af te drukken.</p>
+    </div>
+    <div class="seg" role="group" aria-label="Weergave">
+      <button type="button" data-tab="current" aria-pressed="true">Actueel<span class="n" id="n-current"></span></button>
+      <button type="button" data-tab="archived" aria-pressed="false">Archief<span class="n" id="n-archived"></span></button>
+    </div>
   </div>
-  <ul class="jobs" id="jobs" aria-live="polite"></ul>
-
-  <div class="tools">
-    <input type="search" id="q" placeholder="Zoek op nummer of naam" aria-label="Zoek tekening">
-    <span class="count" id="count" aria-live="polite"></span>
-  </div>
-  <h2 id="h-current">Actueel</h2>
-  <ol id="current" aria-labelledby="h-current"></ol>
-  <section id="archive-section" hidden>
-    <h2 id="h-archive">Archief</h2>
-    <ol id="archive" class="archive" aria-labelledby="h-archive"></ol>
-  </section>
+  <ul class="list" id="list" aria-live="polite"></ul>
   <div class="msg" id="msg" hidden></div>
   <footer>Maten in mm · eerste-hoekprojectie · oudere revisies blijven bewaard en tonen bij openen dat ze vervallen zijn</footer>
 </main>
 
+<div class="toasts" id="toasts" aria-live="polite"></div>
+
 <dialog id="login-dlg" aria-labelledby="login-title">
-  <form class="dlg" id="login-form" method="dialog">
+  <form class="sheet" id="login-form" method="dialog">
+    <div class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="15" r="4"/><path d="M11 12l8-8M16 7l2 2M14 9l2 2"/></g></svg></div>
     <h2 id="login-title">Aanmelden voor beheer</h2>
-    <p>Om wijzigingen op te slaan heeft deze pagina een sleutel van GitHub nodig. Die maak je één keer aan per apparaat.</p>
-    <ol class="steps">
-      <li><a id="token-link" href="#" target="_blank" rel="noopener">Maak een sleutel aan op GitHub</a> (opent in een nieuw tabblad).</li>
-      <li>Kies bij <strong>Repository access</strong>: <em>Only select repositories</em> → <strong>prototypes</strong>.</li>
-      <li>Zet bij <strong>Permissions</strong> → <strong>Actions</strong> op <em>Read and write</em> en <strong>Contents</strong> op <em>Read-only</em>.</li>
-      <li>Klik <strong>Generate token</strong>, kopieer de sleutel en plak hem hieronder.</li>
+    <p>Om wijzigingen op te slaan heeft deze pagina één keer een sleutel van GitHub nodig.</p>
+    <ol>
+      <li><a id="token-link" href="#" target="_blank" rel="noopener">Maak een sleutel aan op GitHub</a></li>
+      <li>Repository access: <em>Only select repositories</em> → <strong>prototypes</strong></li>
+      <li>Permissions: <strong>Actions</strong> op <em>Read and write</em>, <strong>Contents</strong> op <em>Read-only</em></li>
+      <li><strong>Generate token</strong>, kopieer en plak hieronder</li>
     </ol>
-    <input type="password" id="token" autocomplete="off" spellcheck="false" placeholder="github_pat_…" aria-label="Sleutel">
-    <label><input type="checkbox" id="remember" checked> Onthouden op dit apparaat</label>
+    <input type="password" class="field" id="token" autocomplete="off" spellcheck="false" placeholder="github_pat_…" aria-label="Sleutel">
+    <label class="check"><input type="checkbox" id="remember" checked> Onthouden op dit apparaat</label>
     <p class="err" id="login-err" hidden></p>
     <div class="actions">
-      <button type="button" id="login-cancel">Annuleren</button>
-      <button type="submit" class="primary" id="login-go">Aanmelden</button>
+      <button type="button" class="btn" id="login-cancel">Annuleren</button>
+      <button type="submit" class="btn primary" id="login-go">Aanmelden</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="act-dlg" aria-labelledby="act-title">
+  <form class="sheet" id="act-form" method="dialog">
+    <div class="icon" id="act-icon"></div>
+    <h2 id="act-title"></h2>
+    <p id="act-text"></p>
+    <input type="text" class="field" id="act-note" maxlength="120" autocomplete="off" aria-label="Wat verandert er">
+    <div class="actions">
+      <button type="button" class="btn" id="act-cancel">Annuleren</button>
+      <button type="submit" class="btn primary" id="act-go"></button>
     </div>
   </form>
 </dialog>
@@ -138,24 +233,39 @@ footer{margin-top:18px;font-size:12px;color:var(--ink-2)}
 <script>
 (function(){
   const OWNER = 'AfricaBambaata', REPO = 'prototypes', WORKFLOW = 'register.yml';
-  const API = 'https://api.github.com';
-  const KEY = 'tr-token';
+  const API = 'https://api.github.com', KEY = 'tr-token';
   const $ = id => document.getElementById(id);
   const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
   const latest = d => d.revisions[d.revisions.length - 1];
-  const fmtDate = s => { const [y,m,d] = (s||'').split('-'); return d ? `${d}-${m}-${y}` : (s||''); };
-  let data = [];
-  let token = null, user = null;
-  let openForm = null;          // drawing number whose "new revision" form is open
-  const busy = new Set();       // drawings with a running job
+  const fmtDate = s => { const t = new Date((s || '') + 'T12:00:00'); return isNaN(t) ? (s || '') : t.toLocaleDateString('nl-BE', { day: 'numeric', month: 'short', year: 'numeric' }); };
+  const ICON = {
+    chev: '<svg class="chev" viewBox="0 0 20 20" aria-hidden="true"><path d="M7.5 4.5L13 10l-5.5 5.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    tri: '<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M4 2.5L8 6l-4 3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    more: '<svg viewBox="0 0 20 20" aria-hidden="true"><g fill="currentColor"><circle cx="4.5" cy="10" r="1.6"/><circle cx="10" cy="10" r="1.6"/><circle cx="15.5" cy="10" r="1.6"/></g></svg>',
+    rev: '<svg viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M12 11v6M9 14h6"/></g></svg>',
+    box: '<svg viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="5" rx="1.5"/><path d="M5 9v9a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V9M10 13h4"/></g></svg>',
+    back: '<svg viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14L4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-3"/></g></svg>',
+    check: '<svg viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.5-3 8.5-7 10-4-1.5-7-5.5-7-10V6z"/><path d="M9 12l2 2 4-4"/></g></svg>',
+    out: '<svg viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4M10 16l-4-4 4-4M6 12h10"/></g></svg>',
+    ok: '<svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="9" fill="currentColor"/><path d="M6 10.3l2.6 2.6L14 7.5" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    bad: '<svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="9" fill="currentColor"/><path d="M10 5.5v5.5M10 14.2v.1" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>'
+  };
+  // A stable colour per drawing family (the letters before the dash).
+  const tileColor = n => {
+    const p = n.split('-')[0]; let h = 0;
+    for (const c of p) h = (h * 31 + c.charCodeAt(0)) % 360;
+    return `linear-gradient(145deg,hsl(${h} 70% 58%),hsl(${(h + 28) % 360} 72% 44%))`;
+  };
 
-  // ---------- Storage (the key never leaves this browser except to api.github.com) ----------
+  let data = [], tab = 'current';
+  let token = null, user = null;
+  const busy = new Set();
+
   const store = {
     get(){ try { return localStorage.getItem(KEY) || sessionStorage.getItem(KEY); } catch (_) { return null; } },
     set(v, remember){ try { (remember ? localStorage : sessionStorage).setItem(KEY, v); } catch (_) {} },
     clear(){ try { localStorage.removeItem(KEY); sessionStorage.removeItem(KEY); } catch (_) {} }
   };
-
   function gh(path, opts = {}){
     return fetch(API + path, { ...opts, headers: {
       Authorization: 'Bearer ' + token, Accept: opts.accept || 'application/vnd.github+json',
@@ -164,64 +274,117 @@ footer{margin-top:18px;font-size:12px;color:var(--ink-2)}
   }
 
   // ---------- List ----------
-  function row(d){
+  function item(d){
     const L = latest(d);
-    const lang = d.lang && d.lang !== 'nl' ? `<span class="tag">${esc(d.lang.toUpperCase())}</span>` : '';
-    const hist = d.revisions.length > 1 || d.status === 'archived'
-      ? `<details><summary>${d.revisions.length} ${d.revisions.length === 1 ? 'revisie' : 'revisies'}</summary><ul class="revs">${
-          d.revisions.slice().reverse().map(r => `<li><span class="r">${esc(r.rev)}</span><span class="dt">${esc(fmtDate(r.date))}</span><span><a href="${esc(r.file)}">${esc(r.note || 'Revisie ' + r.rev)}</a></span></li>`).join('')
+    const lang = d.lang && d.lang !== 'nl' ? `<span class="chip">${esc(d.lang.toUpperCase())}</span>` : '';
+    const revs = d.revisions.slice().reverse();
+    const hist = d.revisions.length > 1
+      ? `<details class="hist"><summary>${ICON.tri}${d.revisions.length} revisies</summary><ul class="revs">${
+          revs.map((r, i) => `<li><a href="${esc(r.file)}"><span class="r">${esc(r.rev)}</span><span class="d">${esc(fmtDate(r.date))}</span><span>${esc(r.note || 'Revisie ' + r.rev)}${i === 0 ? '<span class="cur">actueel</span>' : ''}</span></a></li>`).join('')
         }</ul></details>` : '';
-    let admin = '';
-    if (user) {
-      const dis = busy.has(d.number) ? ' disabled' : '';
-      const next = String.fromCharCode(L.rev.charCodeAt(0) + 1);
-      admin = openForm === d.number
-        ? `<div class="admin"><form data-revise="${esc(d.number)}">
-             <input type="text" name="note" required maxlength="120" placeholder="Wat verandert er in revisie ${esc(next)}?" aria-label="Wat verandert er in revisie ${esc(next)}">
-             <button type="submit" class="primary">Revisie ${esc(next)} maken</button>
-             <button type="button" data-cancel>Annuleren</button>
-           </form></div>`
-        : `<div class="admin">
-             ${d.status === 'archived' ? '' : `<button type="button" data-act="revise" data-n="${esc(d.number)}"${dis}>Nieuwe revisie</button>`}
-             ${d.status === 'archived'
-               ? `<button type="button" data-act="restore" data-n="${esc(d.number)}"${dis}>Terugzetten</button>`
-               : `<button type="button" data-act="archive" data-n="${esc(d.number)}"${dis}>Archiveren</button>`}
-           </div>`;
-    }
-    return `<li><div class="row">
-      <span class="no">${esc(d.number)}-${esc(L.rev)}</span>
-      <a class="t" href="${esc(L.file)}">${esc(d.title)}${lang}</a>
-      <span class="d">${esc(d.description)}</span>
-      <span class="meta">rev ${esc(L.rev)} · ${esc(fmtDate(L.date))}</span>
-      ${hist}${admin}
-    </div></li>`;
+    const more = user ? `<button type="button" class="btn plain" data-menu="${esc(d.number)}" aria-haspopup="menu" aria-label="Acties voor ${esc(d.number)}"${busy.has(d.number) ? ' disabled' : ''}>${busy.has(d.number) ? '<span class="spin"></span>' : ICON.more}</button>` : '';
+    return `<li class="item${d.status === 'archived' ? ' archived' : ''}">
+      <span class="tile" style="background:${tileColor(d.number)}" aria-hidden="true">${esc(d.number.split('-')[0])}</span>
+      <div class="main"><a class="title" href="${esc(L.file)}">${esc(d.title)}</a><span class="chip">${esc(d.number)}-${esc(L.rev)}</span>${lang}</div>
+      <div class="desc">${esc(d.description)}</div>
+      <div class="trail"><span class="date">${esc(fmtDate(L.date))}</span>${more}${user ? '' : ICON.chev}</div>
+      ${hist}
+    </li>`;
   }
-
   function render(){
     const q = $('q').value.trim().toLowerCase();
     const match = d => !q || (d.number + ' ' + d.title + ' ' + d.description).toLowerCase().includes(q);
     const cur = data.filter(d => d.status !== 'archived' && match(d));
     const arc = data.filter(d => d.status === 'archived' && match(d));
-    $('current').innerHTML = cur.length ? cur.map(row).join('') : '<li class="empty">Geen tekeningen gevonden.</li>';
-    $('archive').innerHTML = arc.map(row).join('');
-    $('archive-section').hidden = !arc.length;
-    $('count').textContent = `${cur.length} actueel` + (arc.length ? ` · ${arc.length} gearchiveerd` : '');
-    const f = document.querySelector('form[data-revise] input');
-    if (f) f.focus();
+    const list = tab === 'archived' ? arc : cur;
+    $('n-current').textContent = cur.length;
+    $('n-archived').textContent = arc.length;
+    const open = [...document.querySelectorAll('.hist[open] .revs a')].map(a => a.getAttribute('href'));
+    $('list').innerHTML = list.length ? list.map(item).join('')
+      : `<li class="empty">${q ? 'Geen tekeningen gevonden.' : tab === 'archived' ? 'Het archief is leeg.' : 'Nog geen tekeningen.'}</li>`;
+    open.forEach(h => { const a = document.querySelector(`.revs a[href="${CSS.escape(h)}"]`); if (a) a.closest('details').open = true; });
   }
+  document.querySelectorAll('.seg button').forEach(b => b.addEventListener('click', () => {
+    tab = b.dataset.tab;
+    document.querySelectorAll('.seg button').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+    render();
+  }));
+  $('q').addEventListener('input', render);
 
-  function setData(j){ data = (j.drawings || []).filter(d => d.revisions && d.revisions.length); render(); }
-
-  // Signed in, read the register straight from the repository: it is up to date the moment a job
-  // finishes, while the published site needs another minute.
   function loadData(){
-    const fromRepo = user
+    const src = user
       ? gh(`/repos/${OWNER}/${REPO}/contents/drawings.json?ref=main&t=${Date.now()}`, { accept: 'application/vnd.github.raw+json' })
       : fetch('drawings.json', { cache: 'no-cache' });
-    return fromRepo.then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
-      .then(j => { $('msg').hidden = true; setData(j); })
-      .catch(() => { $('msg').textContent = 'Het register (drawings.json) kon niet geladen worden.'; $('msg').hidden = false; });
+    return src.then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+      .then(j => { $('msg').hidden = true; data = (j.drawings || []).filter(d => d.revisions && d.revisions.length); render(); })
+      .catch(() => { $('msg').textContent = 'Het register kon niet geladen worden. Probeer het later opnieuw.'; $('msg').hidden = false; });
   }
+
+  // ---------- Menus ----------
+  let menuEl = null;
+  function closeMenu(){ if (menuEl) { menuEl.remove(); menuEl = null; } }
+  function openMenu(anchor, items){
+    closeMenu();
+    menuEl = document.createElement('div');
+    menuEl.className = 'menu glass';
+    menuEl.setAttribute('role', 'menu');
+    menuEl.innerHTML = items.map(it => it === '-' ? '<hr>' : it.label ? `<div class="lbl">${esc(it.label)}</div>`
+      : `<button type="button" role="menuitem" data-i="${items.indexOf(it)}">${it.icon || ''}<span>${esc(it.text)}</span></button>`).join('');
+    document.body.appendChild(menuEl);
+    const r = anchor.getBoundingClientRect(), m = menuEl.getBoundingClientRect();
+    const top = r.bottom + 6 + m.height > innerHeight - 8 ? r.top - m.height - 6 : r.bottom + 6;
+    menuEl.style.top = Math.max(8, top) + 'px';
+    menuEl.style.left = Math.max(8, Math.min(r.right - m.width, innerWidth - m.width - 8)) + 'px';
+    menuEl.addEventListener('click', e => { const b = e.target.closest('button[data-i]'); if (b) { const it = items[+b.dataset.i]; closeMenu(); it.run(); } });
+    menuEl.addEventListener('keydown', e => {
+      const bs = [...menuEl.querySelectorAll('button')], i = bs.indexOf(document.activeElement);
+      if (e.key === 'ArrowDown') { e.preventDefault(); bs[(i + 1) % bs.length].focus(); }
+      if (e.key === 'ArrowUp') { e.preventDefault(); bs[(i - 1 + bs.length) % bs.length].focus(); }
+      if (e.key === 'Escape') { closeMenu(); anchor.focus(); }
+    });
+    const first = menuEl.querySelector('button'); if (first) first.focus();
+  }
+  document.addEventListener('pointerdown', e => { if (menuEl && !menuEl.contains(e.target) && !e.target.closest('[data-menu],#user-btn')) closeMenu(); });
+  addEventListener('scroll', closeMenu, { passive: true });
+  addEventListener('resize', closeMenu);
+
+  document.addEventListener('click', e => {
+    const b = e.target.closest('button[data-menu]');
+    if (!b) return;
+    if (menuEl) { closeMenu(); return; }
+    const d = data.find(x => x.number === b.dataset.menu);
+    const next = String.fromCharCode(latest(d).rev.charCodeAt(0) + 1);
+    openMenu(b, d.status === 'archived'
+      ? [{ label: d.number }, { icon: ICON.back, text: 'Terugzetten uit archief', run: () => ask('restore', d) }]
+      : [{ label: d.number }, { icon: ICON.rev, text: `Nieuwe revisie (${next})…`, run: () => ask('revise', d) }, '-', { icon: ICON.box, text: 'Archiveren…', run: () => ask('archive', d) }]);
+  });
+
+  // ---------- Action sheet ----------
+  let pending = null;
+  function ask(kind, d){
+    const next = String.fromCharCode(latest(d).rev.charCodeAt(0) + 1);
+    const T = {
+      revise: [ICON.rev, `Nieuwe revisie ${next}`, `${d.title} (${d.number}). Revisie ${latest(d).rev} blijft bewaard en toont daarna dat ze vervallen is.`, `Revisie ${next} maken`],
+      archive: [ICON.box, 'Archiveren', `${d.title} (${d.number}) gaat naar het archief. Je kan de tekening later terugzetten.`, 'Archiveren'],
+      restore: [ICON.back, 'Terugzetten', `${d.title} (${d.number}) komt terug bij de actuele tekeningen.`, 'Terugzetten']
+    }[kind];
+    $('act-icon').innerHTML = T[0]; $('act-title').textContent = T[1]; $('act-text').textContent = T[2]; $('act-go').textContent = T[3];
+    $('act-note').hidden = kind !== 'revise'; $('act-note').value = ''; $('act-note').required = kind === 'revise';
+    $('act-note').placeholder = `Wat verandert er in revisie ${next}?`;
+    pending = { kind, d };
+    $('act-dlg').showModal();
+    (kind === 'revise' ? $('act-note') : $('act-go')).focus();
+  }
+  $('act-cancel').addEventListener('click', () => $('act-dlg').close());
+  $('act-form').addEventListener('submit', e => {
+    e.preventDefault();
+    if (!pending) return;
+    const note = $('act-note').value.trim();
+    if (pending.kind === 'revise' && !note) return;
+    $('act-dlg').close();
+    startJob(pending.kind, pending.d.number, note);
+    pending = null;
+  });
 
   // ---------- Sign in ----------
   $('token-link').href = 'https://github.com/settings/personal-access-tokens/new?' + new URLSearchParams({
@@ -232,7 +395,7 @@ footer{margin-top:18px;font-size:12px;color:var(--ink-2)}
     token = t;
     const [u, r] = await Promise.all([gh('/user'), gh(`/repos/${OWNER}/${REPO}`)]);
     if (u.status === 401 || r.status === 401) throw new Error('Deze sleutel is ongeldig of verlopen.');
-    if (!r.ok) throw new Error('Deze sleutel geeft geen toegang tot de repository "prototypes". Controleer stap 2.');
+    if (!r.ok) throw new Error('Deze sleutel geeft geen toegang tot "prototypes". Controleer stap 2.');
     const repo = await r.json();
     if (repo.permissions && !repo.permissions.push) throw new Error('Dit account mag niets wijzigen in "prototypes". Vraag de eigenaar om schrijfrechten.');
     const probe = await gh(`/repos/${OWNER}/${REPO}/actions/workflows/${WORKFLOW}`);
@@ -241,11 +404,12 @@ footer{margin-top:18px;font-size:12px;color:var(--ink-2)}
   }
   function showAdmin(){
     $('login-btn').hidden = !!user;
-    $('admin-bar').hidden = !user;
-    $('who').textContent = user ? `Beheer actief · aangemeld als ${user}` : '';
+    $('user-btn').hidden = !user;
+    $('user-name').textContent = user || '';
+    $('avatar').textContent = user ? user[0].toUpperCase() : '';
     loadData();
   }
-  $('login-btn').addEventListener('click', () => { $('login-err').hidden = true; $('token').value = ''; $('login-dlg').showModal(); });
+  $('login-btn').addEventListener('click', () => { $('login-err').hidden = true; $('token').value = ''; $('login-dlg').showModal(); $('token').focus(); });
   $('login-cancel').addEventListener('click', () => $('login-dlg').close());
   $('login-form').addEventListener('submit', async e => {
     e.preventDefault();
@@ -263,27 +427,44 @@ footer{margin-top:18px;font-size:12px;color:var(--ink-2)}
       $('login-err').hidden = false;
     } finally { $('login-go').disabled = false; }
   });
-  $('logout-btn').addEventListener('click', () => { store.clear(); token = null; user = null; openForm = null; showAdmin(); });
+  $('user-btn').addEventListener('click', e => {
+    if (menuEl) { closeMenu(); return; }
+    openMenu(e.currentTarget, [
+      { label: 'Aangemeld als ' + user },
+      { icon: ICON.check, text: 'Register controleren', run: () => startJob('check') },
+      '-',
+      { icon: ICON.out, text: 'Afmelden', run: () => { store.clear(); token = null; user = null; showAdmin(); } }
+    ]);
+  });
 
-  // ---------- Jobs: start the register workflow and follow it until it is done ----------
+  // ---------- Jobs ----------
   const ACTIONS = { revise: 'Nieuwe revisie', archive: 'Archiveren', restore: 'Terugzetten uit archief', check: 'Alleen controleren' };
-  const DONE = { revise: 'revisie gemaakt', archive: 'gearchiveerd', restore: 'teruggezet', check: 'register in orde' };
+  const DONE = { revise: 'Revisie gemaakt', archive: 'Gearchiveerd', restore: 'Teruggezet', check: 'Register in orde' };
   const sleep = ms => new Promise(r => setTimeout(r, ms));
-
+  function toast(){
+    const el = document.createElement('div');
+    el.className = 'toast glass';
+    $('toasts').appendChild(el);
+    return {
+      set(state, title, text, link){
+        el.className = 'toast glass ' + state;
+        el.innerHTML = `<span class="st">${state === 'run' ? '<span class="spin"></span>' : ICON[state]}</span><b>${esc(title)}</b><span>${esc(text)}</span>${link ? `<a href="${esc(link)}" target="_blank" rel="noopener">Details</a>` : ''}`;
+        if (state === 'ok') setTimeout(() => el.remove(), 9000);
+      }
+    };
+  }
   async function startJob(kind, number, note){
-    const li = document.createElement('li');
-    const label = (number ? number + ' · ' : '') + ACTIONS[kind];
-    const set = (cls, text, link) => { li.innerHTML = `<span>${esc(label)}</span><span class="st ${cls}">${esc(text)}</span>${link ? `<a href="${esc(link)}" target="_blank" rel="noopener">details</a>` : ''}`; };
-    set('run', 'wordt gestart…');
-    $('jobs').prepend(li);
+    const t = toast();
+    const title = number ? `${number} · ${ACTIONS[kind]}` : 'Register controleren';
+    t.set('run', title, 'Wordt gestart…');
     if (number) { busy.add(number); render(); }
     const since = Date.now() - 10000;
     try {
       const r = await gh(`/repos/${OWNER}/${REPO}/actions/workflows/${WORKFLOW}/dispatches`, {
         method: 'POST', body: JSON.stringify({ ref: 'main', inputs: { actie: ACTIONS[kind], tekening: number || '', wijziging: note || '' } })
       });
-      if (!r.ok) throw new Error(r.status === 403 || r.status === 404 ? 'geen toestemming om te starten' : 'starten mislukt (' + r.status + ')');
-      set('run', 'bezig…');
+      if (!r.ok) throw new Error(r.status === 403 || r.status === 404 ? 'Geen toestemming om te starten.' : 'Starten mislukt (' + r.status + ').');
+      t.set('run', title, 'Bezig…');
       let run = null;
       for (let i = 0; i < 100; i++) {
         await sleep(i < 5 ? 2000 : 4000);
@@ -293,57 +474,27 @@ footer{margin-top:18px;font-size:12px;color:var(--ink-2)}
         run = (run && runs.find(x => x.id === run.id)) ||
               runs.find(x => new Date(x.created_at).getTime() >= since && (!x.actor || x.actor.login === user)) || run;
         if (!run) continue;
-        if (run.status !== 'completed') { set('run', run.status === 'queued' ? 'in de wachtrij…' : 'bezig…'); continue; }
+        if (run.status !== 'completed') { t.set('run', title, run.status === 'queued' ? 'In de wachtrij…' : 'Bezig…'); continue; }
         if (run.conclusion === 'success') {
-          set('ok', `klaar: ${DONE[kind]} · de site is over ongeveer een minuut bijgewerkt`);
+          t.set('ok', DONE[kind], number ? `${number} · de website is binnen een minuut bijgewerkt` : 'Alles klopt');
           await loadData();
         } else {
-          set('bad', 'mislukt', run.html_url);
+          t.set('bad', title, 'Mislukt', run.html_url);
         }
         return;
       }
-      set('bad', 'duurt te lang — kijk later opnieuw', run && run.html_url);
+      t.set('bad', title, 'Duurt te lang. Kijk later opnieuw.', run && run.html_url);
     } catch (err) {
-      set('bad', err.message === 'Failed to fetch' ? 'GitHub is niet bereikbaar' : err.message);
+      t.set('bad', title, err.message === 'Failed to fetch' ? 'GitHub is niet bereikbaar.' : err.message);
     } finally {
       if (number) { busy.delete(number); render(); }
     }
   }
 
-  document.addEventListener('click', e => {
-    const b = e.target.closest('button[data-act]');
-    if (b) {
-      const n = b.dataset.n;
-      if (b.dataset.act === 'revise') { openForm = n; render(); return; }
-      const d = data.find(x => x.number === n);
-      const ask = b.dataset.act === 'archive'
-        ? `${n} (${d.title}) archiveren? De tekening blijft bewaard en kan teruggezet worden.`
-        : `${n} (${d.title}) terugzetten uit het archief?`;
-      if (confirm(ask)) startJob(b.dataset.act, n);
-      return;
-    }
-    if (e.target.closest('button[data-cancel]')) { openForm = null; render(); }
-  });
-  document.addEventListener('submit', e => {
-    const f = e.target.closest('form[data-revise]');
-    if (!f) return;
-    e.preventDefault();
-    const note = f.elements.note.value.trim();
-    if (!note) return;
-    const n = f.dataset.revise;
-    openForm = null;
-    startJob('revise', n, note);
-  });
-  $('check-btn').addEventListener('click', () => startJob('check'));
-  $('q').addEventListener('input', render);
-
   // ---------- Start ----------
   const saved = store.get();
-  if (saved) {
-    signIn(saved).then(showAdmin).catch(() => { token = null; user = null; showAdmin(); });
-  } else {
-    loadData();
-  }
+  if (saved) signIn(saved).then(showAdmin).catch(() => { token = null; user = null; showAdmin(); });
+  else loadData();
 })();
 </script>
 </body>
