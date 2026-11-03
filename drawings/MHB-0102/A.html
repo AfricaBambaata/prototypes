@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Muurhouder Buis</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../../viewer/1.0.0/viewer.css">
+</head>
+<body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="../../viewer/1.0.0/viewer.js"></script>
+<script>
+// Muurhouder buis MHB-0102-A (mm). Ringas langs Z, klemstaaf radiaal langs -X richting de muur.
+const PART = { OD:46, ID:41, width:30, rod:{ d:8, len:150, threadWall:50, threadRing:5, pitch:1.25, protrude:3 } }; // draad ringkant = uitsteek + wanddikte, blijft binnen de wand
+const R = PART.OD/2, r = PART.ID/2, Wd = PART.width;
+const rd = PART.rod.d/2, rodLen = PART.rod.len;
+const XTIP = -r + PART.rod.protrude;          // staafpunt, steekt in de boring (klemt de buis)
+const XRING = XTIP - PART.rod.threadRing;     // einde draad ringkant
+const XEND = XTIP - rodLen;                   // uiteinde in de muur
+const XWALL = XEND + PART.rod.threadWall;     // muurvlak: hier begint het ankerdeel
+
+DrawingViewer.create({
+  lang: 'nl',
+  title: 'Muurhouder buis',
+  subtitle: 'Ø46 × Ø41 × 30 · klemstaaf M8 × 150',
+  number: 'MHB-0102-A',
+  register: { url: '../../drawings.json', number: 'MHB-0102', rev: 'A' },
+  modes: ['solid', 'section', 'xray'],
+  camera: { radius: 440, target: [(XTIP+XEND)/2 + 20, 0, 0], min: 60, max: 1400 },
+  titleBlock: [
+    { k: 'Titel', v: 'Muurhouder buis', title: true },
+    { k: 'Tekeningnr.', v: 'MHB-0102-A' },
+    { k: 'Materiaal', v: 'Niet opgegeven' },
+    { k: 'Eenheden · Schaal', v: 'mm · 1:1', units: 'mm', scale: true },
+    { k: 'Algemene toleranties', v: 'ISO 2768-mK' },
+    { k: 'Schroefdraad', v: 'M8 × 50 muurkant (chemisch anker) · M8 in tapgat, verborgen in ringwand' },
+    { k: 'Verbinding staaf–ring', v: 'Tapgat M8 door ringwand, punt steekt 3 mm in boring en klemt de buis' },
+    { k: 'Projectie', v: 'Eerste hoek', projection: true },
+    { k: 'Getekend · Blad', v: '2026-11-03 · 1/1' }
+  ],
+  build(m) {
+    const { THREE, V } = m;
+
+    function ring(){
+      const s = new THREE.Shape(); s.absarc(0,0,R,0,Math.PI*2,false);
+      const hole = new THREE.Path(); hole.absarc(0,0,r,0,Math.PI*2,true); s.holes.push(hole);
+      const g = new THREE.ExtrudeGeometry(s,{depth:Wd,bevelEnabled:false,curveSegments:96});
+      g.translate(0,0,-Wd/2);
+      return g;
+    }
+    function shank(){
+      const len = XRING - XWALL;
+      const g = new THREE.CylinderGeometry(rd, rd, len, 48);
+      g.rotateZ(Math.PI/2);            // as langs X
+      g.translate(XWALL + len/2, 0, 0);
+      return g;
+    }
+    function thread(xStart, len){
+      // Draadprofiel als omwentelingslichaam: ringvormige groeven met M8-spoed, kernmaat ~Ø6.6, beide einden afgeschuind.
+      const p = PART.rod.pitch, core = rd*0.83;
+      const pts = [new THREE.Vector2(0,0), new THREE.Vector2(rd*0.6,0), new THREE.Vector2(core,1)];
+      const n = Math.floor((len-2)/p);
+      for (let i=0;i<n;i++){ const y=1+i*p; pts.push(new THREE.Vector2(rd, y+p/2), new THREE.Vector2(core, y+p)); }
+      pts.push(new THREE.Vector2(core, len-1), new THREE.Vector2(rd*0.6, len), new THREE.Vector2(0, len));
+      const g = new THREE.LatheGeometry(pts, 48);
+      g.rotateZ(Math.PI/2);            // +Y wordt -X
+      g.translate(xStart, 0, 0);
+      return g;
+    }
+    // Randen van het tapgat: snijlijn van de Ø8-boring met het buiten- en binnenoppervlak van de ring.
+    function holeEdge(S){
+      const pts=[]; for(let i=0;i<=96;i++){ const a=i/96*Math.PI*2, y=rd*Math.cos(a), z=rd*Math.sin(a); pts.push(V(-Math.sqrt(S*S-y*y), y, z)); }
+      return pts;
+    }
+
+    m.part(ring(), { edges: 25 });
+    m.part(shank(), { edges: 25 });
+    m.part(thread(XTIP, PART.rod.threadRing), { edges: 60 });
+    m.part(thread(XWALL, PART.rod.threadWall), { edges: 60 });
+    [R, r].forEach(S => m.edgeLine(holeEdge(S)));
+
+    // Halve doorsnede op x = 0: de ringwand toont twee gearceerde rechthoeken.
+    m.section({
+      plane: new THREE.Plane(V(-1, 0, 0), 0),
+      hatch: [...m.hatchYZ(0, r, R, -Wd/2, Wd/2), ...m.hatchYZ(0, -R, -r, -Wd/2, Wd/2)]
+    });
+
+    // Muurvlak als verticaal raster (10 mm), op de plaats waar de schroefdraad de muur ingaat.
+    const grid = new THREE.GridHelper(240, 24, 0xd9dfdb, 0xd9dfdb);
+    grid.rotation.z = Math.PI/2;
+    grid.position.set(XWALL - 0.05, 0, 0);
+    m.add(grid, { color: 'grid', print: false });
+
+    const c45 = Math.SQRT1_2;
+    const d = m.dims({ arrow: 4 });
+    d.linear({ a: V(R+14,0,-Wd/2), b: V(R+14,0,Wd/2), n: V(1,0,0), text: '30',
+      ext: [[V(R,0,-Wd/2),V(R+16,0,-Wd/2)],[V(R,0,Wd/2),V(R+16,0,Wd/2)]] });
+    d.leader({ p: V(R*c45, R*c45, Wd/2), e: V(R*c45+22, R*c45+22, Wd/2), text: 'Ø46' });
+    d.leader({ p: V(r*c45, -r*c45, Wd/2), e: V(r*c45+22, -r*c45-14, Wd/2), text: 'Ø41' });
+    d.linear({ a: V(XTIP,-R-20,0), b: V(XEND,-R-20,0), n: V(0,0,1), text: '150',
+      ext: [[V(XTIP,-rd,0),V(XTIP,-R-22,0)],[V(XEND,-rd,0),V(XEND,-R-22,0)]] });
+    d.linear({ a: V(XWALL,-R-8,0), b: V(XEND,-R-8,0), n: V(0,0,1), text: '50',
+      ext: [[V(XWALL,-rd,0),V(XWALL,-R-10,0)]] });
+    d.leader({ p: V((XRING+XWALL)/2, rd, 0), e: V((XRING+XWALL)/2-12, 30, 0), text: 'Ø8' });
+    d.leader({ p: V(XWALL-25, rd, 0), e: V(XWALL-37, 30, 0), text: 'M8' });
+    d.leader({ p: V(-Math.sqrt(R*R-rd*rd), 0, rd), e: V(-R+8, 22, 46), text: 'Tapgat M8' });
+    d.note({ pos: V(XWALL, 112, 0), text: 'Muurvlak' });
+  }
+});
+</script>
+</body>
+</html>

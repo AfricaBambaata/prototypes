@@ -7,77 +7,117 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
 <style>
 :root{
-  --bg:#e9ece9;
-  --sheet:#f7f8f6;
-  --ink:#1c2320;
-  --ink-2:#5f6964;
-  --line:#c4ccc7;
-  --accent:#b6471a;
+  --bg:#e9ece9; --sheet:#f7f8f6; --ink:#1c2320; --ink-2:#5f6964; --line:#c4ccc7; --accent:#b6471a;
   --font-ui:'Barlow',system-ui,-apple-system,sans-serif;
   --font-mono:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;
   color-scheme:light;
 }
 @media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]){
-    --bg:#121715; --sheet:#1a211e; --ink:#e4eae6; --ink-2:#97a29c; --line:#2f3b36; --accent:#f08752; color-scheme:dark;
-  }
+  :root:not([data-theme="light"]){ --bg:#121715; --sheet:#1a211e; --ink:#e4eae6; --ink-2:#97a29c; --line:#2f3b36; --accent:#f08752; color-scheme:dark; }
 }
-:root[data-theme="dark"]{
-  --bg:#121715; --sheet:#1a211e; --ink:#e4eae6; --ink-2:#97a29c; --line:#2f3b36; --accent:#f08752; color-scheme:dark;
-}
+:root[data-theme="dark"]{ --bg:#121715; --sheet:#1a211e; --ink:#e4eae6; --ink-2:#97a29c; --line:#2f3b36; --accent:#f08752; color-scheme:dark; }
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font-ui);font-size:15px;line-height:1.45}
 [hidden]{display:none!important}
-main{max-width:860px;margin:0 auto;padding:32px max(16px,env(safe-area-inset-right,0px)) 40px max(16px,env(safe-area-inset-left,0px))}
+main{max-width:900px;margin:0 auto;padding:32px max(16px,env(safe-area-inset-right,0px)) 40px max(16px,env(safe-area-inset-left,0px))}
 h1{margin:0 0 4px;font-size:18px;font-weight:600;letter-spacing:.08em;text-transform:uppercase}
-.sub{margin:0 0 24px;color:var(--ink-2);font-size:14px}
+h2{margin:28px 0 10px;font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-2)}
+.sub{margin:0;color:var(--ink-2);font-size:14px}
+.tools{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:20px 0 0}
+.tools input{flex:1 1 220px;min-width:0;font:inherit;font-size:15px;padding:8px 10px;border:1px solid var(--line);border-radius:4px;background:var(--sheet);color:var(--ink)}
+.tools input:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.count{font-size:13px;color:var(--ink-2)}
 ol{list-style:none;margin:0;padding:0;border:1px solid var(--line);background:var(--sheet)}
-li+li{border-top:1px solid var(--line)}
-a{display:grid;grid-template-columns:120px 1fr auto;gap:4px 18px;align-items:baseline;padding:14px 16px;color:inherit;text-decoration:none}
-a:hover .t,a:focus-visible .t{color:var(--accent)}
-a:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
-.no{font-family:var(--font-mono);font-size:13px;color:var(--ink-2);font-variant-numeric:tabular-nums}
-.t{font-weight:600;letter-spacing:.06em;text-transform:uppercase;font-size:14px}
+ol>li+li{border-top:1px solid var(--line)}
+.row{display:grid;grid-template-columns:130px 1fr auto;gap:4px 18px;align-items:baseline;padding:14px 16px}
+.no{font-family:var(--font-mono);font-size:13px;color:var(--ink-2);font-variant-numeric:tabular-nums;white-space:nowrap}
+.t{font-weight:600;letter-spacing:.06em;text-transform:uppercase;font-size:14px;color:inherit;text-decoration:none}
+a.t:hover,a.t:focus-visible{color:var(--accent)}
+a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .d{grid-column:2;color:var(--ink-2);font-size:14px}
-.f{grid-column:3;grid-row:1;font-family:var(--font-mono);font-size:12px;color:var(--ink-2)}
-@media (max-width:560px){
-  a{grid-template-columns:1fr}
-  .d,.f{grid-column:1;grid-row:auto}
+.meta{grid-column:3;grid-row:1;font-family:var(--font-mono);font-size:12px;color:var(--ink-2);white-space:nowrap}
+.tag{display:inline-block;margin-left:8px;padding:0 6px;border:1px solid var(--line);border-radius:3px;font-family:var(--font-mono);font-size:11px;letter-spacing:0;text-transform:none;color:var(--ink-2);vertical-align:1px}
+details{grid-column:2 / -1;margin-top:4px}
+summary{cursor:pointer;font-size:13px;color:var(--ink-2);width:max-content;max-width:100%}
+summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.revs{margin:8px 0 0;padding:0;list-style:none;border-left:2px solid var(--line)}
+.revs li{display:grid;grid-template-columns:48px 96px 1fr;gap:2px 12px;padding:4px 0 4px 12px;font-size:13px}
+.revs .r{font-family:var(--font-mono)}
+.revs .dt{font-family:var(--font-mono);color:var(--ink-2)}
+.revs a{color:var(--accent)}
+.archive .t{color:var(--ink-2)}
+.empty{padding:14px 16px;color:var(--ink-2);font-size:14px}
+.msg{margin-top:20px;padding:12px 16px;border:1px solid var(--accent);background:var(--sheet)}
+@media (max-width:600px){
+  .row{grid-template-columns:1fr}
+  .d,.meta,details{grid-column:1;grid-row:auto}
+  .revs li{grid-template-columns:40px 90px 1fr}
 }
-footer{margin-top:14px;font-size:12px;color:var(--ink-2)}
+footer{margin-top:18px;font-size:12px;color:var(--ink-2)}
 </style>
 </head>
 <body>
 <main>
   <h1>Tekeningenregister</h1>
-  <p class="sub">3D-werktekeningen. Open een tekening om te draaien, te zoomen en de maten te bekijken.</p>
-  <ol>
-    <li><a href="trapleuning.html">
-      <span class="no">MHB-0200-A</span>
-      <span class="t">Trapleuning met muurhouders</span>
-      <span class="d">Samenstelling: messing buis Ø40 × 3000 onder 30°, gedragen door twee muurhouders MHB-0102.</span>
-      <span class="f">trapleuning.html</span>
-    </a></li>
-    <li><a href="muurhouder.html">
-      <span class="no">MHB-0102-A</span>
-      <span class="t">Muurhouder buis</span>
-      <span class="d">Ring Ø46 × Ø41 × 30 met klemstaaf M8 × 150 en chemisch anker in de muur.</span>
-      <span class="f">muurhouder.html</span>
-    </a></li>
-    <li><a href="spacer-sleeve.html">
-      <span class="no">SLV-0101-A</span>
-      <span class="t">Spacer sleeve</span>
-      <span class="d">Afstandsbus Ø46 × Ø41 × 30 met wand van 2,5 mm (tekening in het Engels).</span>
-      <span class="f">spacer-sleeve.html</span>
-    </a></li>
-    <li><a href="bearing-bracket.html">
-      <span class="no">BRK-0417-B</span>
-      <span class="t">Bearing bracket</span>
-      <span class="d">Lagerbok in EN AW-6082 T6 met boring Ø30 H7 en vier bevestigingsgaten Ø9 (tekening in het Engels).</span>
-      <span class="f">bearing-bracket.html</span>
-    </a></li>
-  </ol>
-  <footer>Maten in mm · eerste-hoekprojectie</footer>
+  <p class="sub">3D-werktekeningen. Open een tekening om te draaien, te zoomen, de maten te bekijken en af te drukken.</p>
+  <div class="tools">
+    <input type="search" id="q" placeholder="Zoek op nummer of naam" aria-label="Zoek tekening">
+    <span class="count" id="count" aria-live="polite"></span>
+  </div>
+  <h2 id="h-current">Actueel</h2>
+  <ol id="current" aria-labelledby="h-current"></ol>
+  <section id="archive-section" hidden>
+    <h2 id="h-archive">Archief</h2>
+    <ol id="archive" class="archive" aria-labelledby="h-archive"></ol>
+  </section>
+  <div class="msg" id="msg" hidden></div>
+  <footer>Maten in mm · eerste-hoekprojectie · oudere revisies blijven bewaard en tonen bij openen dat ze vervallen zijn</footer>
 </main>
+<script>
+(function(){
+  const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const latest = d => d.revisions[d.revisions.length - 1];
+  const fmtDate = s => { const [y,m,d] = (s||'').split('-'); return d ? `${d}-${m}-${y}` : (s||''); };
+  let data = [];
+
+  function row(d){
+    const L = latest(d);
+    const older = d.revisions.slice(0, -1).reverse();
+    const lang = d.lang && d.lang !== 'nl' ? `<span class="tag">${esc(d.lang.toUpperCase())}</span>` : '';
+    const hist = d.revisions.length > 1 || d.status === 'archived'
+      ? `<details><summary>${d.revisions.length} ${d.revisions.length === 1 ? 'revisie' : 'revisies'}</summary><ul class="revs">${
+          d.revisions.slice().reverse().map(r => `<li><span class="r">${esc(r.rev)}</span><span class="dt">${esc(fmtDate(r.date))}</span><span><a href="${esc(r.file)}">${esc(r.note || 'Revisie ' + r.rev)}</a></span></li>`).join('')
+        }</ul></details>` : '';
+    return `<li><div class="row">
+      <span class="no">${esc(d.number)}-${esc(L.rev)}</span>
+      <a class="t" href="${esc(L.file)}">${esc(d.title)}${lang}</a>
+      <span class="d">${esc(d.description)}</span>
+      <span class="meta">rev ${esc(L.rev)} · ${esc(fmtDate(L.date))}</span>
+      ${hist}
+    </div></li>`;
+  }
+
+  function render(){
+    const q = document.getElementById('q').value.trim().toLowerCase();
+    const match = d => !q || (d.number + ' ' + d.title + ' ' + d.description).toLowerCase().includes(q);
+    const cur = data.filter(d => d.status !== 'archived' && match(d));
+    const arc = data.filter(d => d.status === 'archived' && match(d));
+    document.getElementById('current').innerHTML = cur.length ? cur.map(row).join('') : '<li class="empty">Geen tekeningen gevonden.</li>';
+    document.getElementById('archive').innerHTML = arc.map(row).join('');
+    document.getElementById('archive-section').hidden = !arc.length;
+    document.getElementById('count').textContent = `${cur.length} actueel` + (arc.length ? ` · ${arc.length} gearchiveerd` : '');
+  }
+
+  fetch('drawings.json', { cache: 'no-cache' })
+    .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+    .then(j => { data = (j.drawings || []).filter(d => d.revisions && d.revisions.length); render(); })
+    .catch(() => {
+      const m = document.getElementById('msg');
+      m.textContent = 'Het register (drawings.json) kon niet geladen worden.';
+      m.hidden = false;
+    });
+  document.getElementById('q').addEventListener('input', render);
+})();
+</script>
 </body>
 </html>

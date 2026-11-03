@@ -1,0 +1,48 @@
+{
+  "drawings": [
+    {
+      "number": "MHB-0200",
+      "title": "Trapleuning met muurhouders",
+      "description": "Samenstelling: messing buis Ø40 × 3000 onder 30°, gedragen door twee muurhouders MHB-0102.",
+      "lang": "nl",
+      "status": "current",
+      "link": "trapleuning.html",
+      "revisions": [
+        { "rev": "A", "date": "2026-11-03", "file": "drawings/MHB-0200/A.html", "viewer": "1.0.0", "note": "Eerste uitgave" }
+      ]
+    },
+    {
+      "number": "MHB-0102",
+      "title": "Muurhouder buis",
+      "description": "Ring Ø46 × Ø41 × 30 met klemstaaf M8 × 150 en chemisch anker in de muur.",
+      "lang": "nl",
+      "status": "current",
+      "link": "muurhouder.html",
+      "revisions": [
+        { "rev": "A", "date": "2026-11-03", "file": "drawings/MHB-0102/A.html", "viewer": "1.0.0", "note": "Eerste uitgave" }
+      ]
+    },
+    {
+      "number": "SLV-0101",
+      "title": "Spacer sleeve",
+      "description": "Afstandsbus Ø46 × Ø41 × 30 met wand van 2,5 mm.",
+      "lang": "en",
+      "status": "current",
+      "link": "spacer-sleeve.html",
+      "revisions": [
+        { "rev": "A", "date": "2026-11-03", "file": "drawings/SLV-0101/A.html", "viewer": "1.0.0", "note": "First issue" }
+      ]
+    },
+    {
+      "number": "BRK-0417",
+      "title": "Bearing bracket",
+      "description": "Lagerbok in EN AW-6082 T6 met boring Ø30 H7 en vier bevestigingsgaten Ø9.",
+      "lang": "en",
+      "status": "current",
+      "link": "bearing-bracket.html",
+      "revisions": [
+        { "rev": "B", "date": "2026-11-03", "file": "drawings/BRK-0417/B.html", "viewer": "1.0.0", "note": "Revision B" }
+      ]
+    }
+  ]
+}

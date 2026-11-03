@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Bearing Bracket Viewer</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../../viewer/1.0.0/viewer.css">
+</head>
+<body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="../../viewer/1.0.0/viewer.js"></script>
+<script>
+// Bearing bracket BRK-0417-B. All dimensions in mm, Y up, plate on the XZ plane.
+const PART = {
+  plate:{ L:120, W:80, T:12 },
+  holes:{ d:9, x:45, z:28 },
+  upright:{ w:60, t:20, boreY:45, r:30 },
+  bore:{ d:30 },
+  boss:{ r:22, len:36 },
+  rib:{ t:6, run:18, rise:28 }
+};
+
+DrawingViewer.create({
+  lang: 'en',
+  title: 'Bearing bracket',
+  subtitle: 'BRK-0417 · rev B',
+  number: 'BRK-0417-B',
+  register: { url: '../../drawings.json', number: 'BRK-0417', rev: 'B' },
+  modes: ['solid', 'xray'],
+  materials: { part: { metalness: 0.25, roughness: 0.55 } },
+  camera: { radius: 330, target: [0, 30, 0], min: 80, max: 1200 },
+  titleBlock: [
+    { k: 'Title', v: 'Bearing bracket', title: true },
+    { k: 'Drawing no.', v: 'BRK-0417-B' },
+    { k: 'Material', v: 'EN AW-6082 T6' },
+    { k: 'Units · Scale', v: 'mm · 1:1', units: 'mm', scale: true },
+    { k: 'General tolerances', v: 'ISO 2768-mK' },
+    { k: 'Surface', v: 'Ra 3.2 · bore Ra 0.8' },
+    { k: 'Projection', v: 'First angle', projection: true },
+    { k: 'Drawn · Sheet', v: '2026-11-03 · 1/1' }
+  ],
+  build(m) {
+    const { THREE, V } = m;
+
+    function platePlan(){
+      const {L,W,T} = PART.plate;
+      const s = new THREE.Shape();
+      s.moveTo(-L/2,-W/2); s.lineTo(L/2,-W/2); s.lineTo(L/2,W/2); s.lineTo(-L/2,W/2); s.closePath();
+      const h = PART.holes;
+      [[-h.x,-h.z],[h.x,-h.z],[h.x,h.z],[-h.x,h.z]].forEach(([x,y])=>{
+        const p = new THREE.Path(); p.absarc(x,y,h.d/2,0,Math.PI*2,true); s.holes.push(p);
+      });
+      const g = new THREE.ExtrudeGeometry(s,{depth:T,bevelEnabled:false,curveSegments:32});
+      g.rotateX(-Math.PI/2);
+      return g;
+    }
+    function uprightPlan(){
+      const u = PART.upright, T = PART.plate.T;
+      const s = new THREE.Shape();
+      s.moveTo(-u.w/2,T); s.lineTo(u.w/2,T); s.lineTo(u.w/2,u.boreY);
+      s.absarc(0,u.boreY,u.r,0,Math.PI,false);
+      s.lineTo(-u.w/2,T); s.closePath();
+      const hole = new THREE.Path(); hole.absarc(0,u.boreY,PART.boss.r,0,Math.PI*2,true); s.holes.push(hole);
+      const g = new THREE.ExtrudeGeometry(s,{depth:u.t,bevelEnabled:false,curveSegments:48});
+      g.translate(0,0,-u.t/2);
+      return g;
+    }
+    function bossPlan(){
+      const s = new THREE.Shape(); s.absarc(0,PART.upright.boreY,PART.boss.r,0,Math.PI*2,false);
+      const hole = new THREE.Path(); hole.absarc(0,PART.upright.boreY,PART.bore.d/2,0,Math.PI*2,true); s.holes.push(hole);
+      const g = new THREE.ExtrudeGeometry(s,{depth:PART.boss.len,bevelEnabled:false,curveSegments:48});
+      g.translate(0,0,-PART.boss.len/2);
+      return g;
+    }
+    function ribPlan(sign){
+      const r = PART.rib, T = PART.plate.T, z0 = PART.boss.len/2;
+      const s = new THREE.Shape();
+      s.moveTo(z0,T); s.lineTo(z0+r.run,T); s.lineTo(z0,T+r.rise); s.closePath();
+      const g = new THREE.ExtrudeGeometry(s,{depth:r.t,bevelEnabled:false});
+      g.rotateY(sign*Math.PI/2);
+      g.translate(-sign*r.t/2,0,0);
+      return g;
+    }
+    [platePlan(), uprightPlan(), bossPlan(), ribPlan(1), ribPlan(-1)].forEach(g => m.part(g, { edges: 25 }));
+
+    // Grid, 10 mm pitch
+    const grid = new THREE.GridHelper(300, 30, 0xd9dfdb, 0xd9dfdb);
+    grid.position.y = -0.05;
+    m.add(grid, { color: 'grid', print: false });
+
+    const L = PART.plate.L/2, W = PART.plate.W/2, H = PART.upright.boreY + PART.upright.r;
+    const up = V(0, 1, 0);
+    const d = m.dims({ arrow: 4.5 });
+    d.linear({ a: V(-L,0,W+14), b: V(L,0,W+14), n: V(0,0,1), text: '120',
+      ext: [[V(-L,0,W),V(-L,0,W+16)],[V(L,0,W),V(L,0,W+16)]] });
+    d.linear({ a: V(L+14,0,-W), b: V(L+14,0,W), n: V(1,0,0), text: '80',
+      ext: [[V(L,0,-W),V(L+16,0,-W)],[V(L,0,W),V(L+16,0,W)]] });
+    d.linear({ a: V(-L-14,0,0), b: V(-L-14,H,0), n: V(-1,0,0), text: '75',
+      ext: [[V(-L,0,0),V(-L-16,0,0)],[V(0,H,0),V(-L-16,H,0)]] });
+    d.linear({ a: V(L+14,0,-W-14), b: V(L+14,PART.plate.T,-W-14), n: V(1,0,-1).normalize(), text: '12',
+      ext: [[V(L,0,-W),V(L+16,0,-W-16)],[V(L,PART.plate.T,-W),V(L+16,PART.plate.T,-W-16)]] });
+    d.linear({ a: V(PART.boss.r+14,H+8,-PART.boss.len/2), b: V(PART.boss.r+14,H+8,PART.boss.len/2), n: V(1,0,0), text: '36',
+      ext: [[V(PART.boss.r,PART.upright.boreY,-PART.boss.len/2),V(PART.boss.r+16,H+8,-PART.boss.len/2)],[V(PART.boss.r,PART.upright.boreY,PART.boss.len/2),V(PART.boss.r+16,H+8,PART.boss.len/2)]] });
+    d.leader({ p: V(PART.bore.d/2*0.71, PART.upright.boreY+PART.bore.d/2*0.71, PART.boss.len/2), e: V(40,92,PART.boss.len/2), n: up, text: 'Ø30 H7 THRU' });
+    d.leader({ p: V(PART.holes.x+3.2, PART.plate.T, PART.holes.z+3.2), e: V(PART.holes.x+36, 36, PART.holes.z+36), n: up, text: '4× Ø9 THRU' });
+  }
+});
+</script>
+</body>
+</html>

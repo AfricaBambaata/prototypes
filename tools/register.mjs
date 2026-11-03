@@ -1,0 +1,125 @@
+#!/usr/bin/env node
+// Drawing register: keeps drawings.json, the revision files and the short links in step.
+//
+//   node tools/register.mjs check                      validate the register and rewrite the short links
+//   node tools/register.mjs revise MHB-0102 --note "Langere staaf" [--viewer 1.1.0]
+//                                                      new revision: copies the latest file to the next letter
+//   node tools/register.mjs archive MHB-0102           move a drawing to the archive
+//   node tools/register.mjs restore MHB-0102           bring it back from the archive
+//
+// Rules: a released revision file is never edited again; changes go into a new revision.
+// Old revisions stay online and show a "superseded" banner, read from drawings.json.
+import { readFileSync, writeFileSync, existsSync, copyFileSync, mkdirSync } from 'node:fs';
+import { dirname, join, relative, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
+const REG = join(ROOT, 'drawings.json');
+const load = () => JSON.parse(readFileSync(REG, 'utf8'));
+const save = reg => writeFileSync(REG, JSON.stringify(reg, null, 2) + '\n');
+const today = () => new Date().toISOString().slice(0, 10);
+const nextRev = r => (r === 'Z' ? null : String.fromCharCode(r.charCodeAt(0) + 1));
+const die = msg => { console.error(msg); process.exit(1); };
+
+function find(reg, number) {
+  const d = reg.drawings.find(x => x.number === number);
+  if (!d) die(`Unknown drawing ${number}. Known: ${reg.drawings.map(x => x.number).join(', ')}`);
+  return d;
+}
+
+function redirectPage(target, title) {
+  return `<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>${title}</title>
+<meta http-equiv="refresh" content="0; url=${target}">
+<link rel="canonical" href="${target}">
+<style>body{margin:0;padding:24px;font:15px system-ui,sans-serif}[hidden]{display:none!important}</style>
+</head>
+<body>
+<p><a href="${target}">${title}</a></p>
+<script>location.replace(${JSON.stringify(target)} + location.hash);</script>
+</body>
+</html>
+`;
+}
+
+// Short links: drawings/<number>/ always opens the latest revision, and the optional "link"
+// (e.g. trapleuning.html) points there too, so shared links keep working after a new revision.
+function sync(reg) {
+  for (const d of reg.drawings) {
+    const latest = d.revisions[d.revisions.length - 1];
+    const dir = join(ROOT, 'drawings', d.number);
+    mkdirSync(dir, { recursive: true });
+    const title = `${d.title} (${d.number}-${latest.rev})`;
+    writeFileSync(join(dir, 'index.html'), redirectPage(relative(dir, join(ROOT, latest.file)), title));
+    if (d.link) writeFileSync(join(ROOT, d.link), redirectPage(`drawings/${d.number}/`, title));
+  }
+}
+
+function check(reg) {
+  const problems = [];
+  const seen = new Set();
+  for (const d of reg.drawings) {
+    if (seen.has(d.number)) problems.push(`${d.number}: listed twice`);
+    seen.add(d.number);
+    if (!['current', 'archived'].includes(d.status)) problems.push(`${d.number}: status must be "current" or "archived"`);
+    if (!d.revisions || !d.revisions.length) { problems.push(`${d.number}: no revisions`); continue; }
+    let prev = '';
+    for (const r of d.revisions) {
+      if (!/^[A-Z]$/.test(r.rev) || r.rev <= prev) problems.push(`${d.number}: revisions must be single letters in order (got ${r.rev} after ${prev || 'start'})`);
+      prev = r.rev;
+      const file = join(ROOT, r.file);
+      if (!existsSync(file)) { problems.push(`${d.number}-${r.rev}: missing file ${r.file}`); continue; }
+      const html = readFileSync(file, 'utf8');
+      const m = html.match(/viewer\/(\d+\.\d+\.\d+)\/viewer\.js/);
+      if (!m) problems.push(`${d.number}-${r.rev}: does not load the shared viewer`);
+      else {
+        if (r.viewer && m[1] !== r.viewer) problems.push(`${d.number}-${r.rev}: register says viewer ${r.viewer}, file uses ${m[1]}`);
+        if (!existsSync(join(ROOT, 'viewer', m[1], 'viewer.js'))) problems.push(`${d.number}-${r.rev}: viewer ${m[1]} is not released in viewer/`);
+      }
+      if (!html.includes(`number: '${d.number}', rev: '${r.rev}'`)) problems.push(`${d.number}-${r.rev}: register block in the file does not match`);
+    }
+  }
+  return problems;
+}
+
+const [cmd, number, ...rest] = process.argv.slice(2);
+const opt = name => { const i = rest.indexOf('--' + name); return i >= 0 ? rest[i + 1] : undefined; };
+const reg = load();
+
+if (cmd === 'revise') {
+  if (!number) die('Usage: revise <NUMBER> --note "what changed" [--viewer x.y.z]');
+  const d = find(reg, number);
+  const last = d.revisions[d.revisions.length - 1];
+  const rev = nextRev(last.rev);
+  if (!rev) die(`${number} is at revision Z`);
+  const file = `drawings/${number}/${rev}.html`;
+  let html = readFileSync(join(ROOT, last.file), 'utf8')
+    .split(`${number}-${last.rev}`).join(`${number}-${rev}`)
+    .replace(`number: '${number}', rev: '${last.rev}'`, `number: '${number}', rev: '${rev}'`);
+  const viewer = opt('viewer');
+  if (viewer) {
+    if (!existsSync(join(ROOT, 'viewer', viewer, 'viewer.js'))) die(`viewer/${viewer} is not released yet`);
+    html = html.replace(/viewer\/\d+\.\d+\.\d+\//g, `viewer/${viewer}/`);
+  }
+  writeFileSync(join(ROOT, file), html);
+  d.revisions.push({ rev, date: today(), file, viewer: viewer || last.viewer, note: opt('note') || `Revisie ${rev}` });
+  if (d.status === 'archived') d.status = 'current';
+  save(reg); sync(reg);
+  console.log(`${number}-${rev} created: ${file}. Edit that file; ${last.file} stays as it was and now shows as superseded.`);
+} else if (cmd === 'archive' || cmd === 'restore') {
+  if (!number) die(`Usage: ${cmd} <NUMBER>`);
+  find(reg, number).status = cmd === 'archive' ? 'archived' : 'current';
+  save(reg); sync(reg);
+  console.log(`${number} ${cmd === 'archive' ? 'archived' : 'restored'}.`);
+} else if (cmd === 'check' || !cmd) {
+  const problems = check(reg);
+  sync(reg);
+  if (problems.length) { problems.forEach(p => console.log('  ' + p)); die(`${problems.length} problem(s) in the register`); }
+  console.log(`register ok: ${reg.drawings.length} drawings, ${reg.drawings.reduce((n, d) => n + d.revisions.length, 0)} revisions; short links rewritten`);
+} else {
+  die('Commands: check | revise <NUMBER> --note "..." [--viewer x.y.z] | archive <NUMBER> | restore <NUMBER>');
+}

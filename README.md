@@ -1,13 +1,44 @@
 # Prototypes
 
-Interactive 3D technical drawings, served with GitHub Pages. Start at `index.html` for the register.
+Interactive 3D technical drawings, served with GitHub Pages. Start at `index.html`, the drawing register.
 
-| File | Drawing no. | Title | Language |
+## Drawings
+
+| Drawing | Title | Language | Short link |
 | --- | --- | --- | --- |
-| `index.html` | — | Tekeningenregister (register of drawings) | nl |
-| `trapleuning.html` | MHB-0200-A | Trapleuning met muurhouders | nl |
-| `muurhouder.html` | MHB-0102-A | Muurhouder buis | nl |
-| `spacer-sleeve.html` | SLV-0101-A | Spacer sleeve | en |
-| `bearing-bracket.html` | BRK-0417-B | Bearing bracket | en |
+| MHB-0200-A | Trapleuning met muurhouders | nl | `trapleuning.html` |
+| MHB-0102-A | Muurhouder buis | nl | `muurhouder.html` |
+| SLV-0101-A | Spacer sleeve | en | `spacer-sleeve.html` |
+| BRK-0417-B | Bearing bracket | en | `bearing-bracket.html` |
 
-The drawings load three.js r128 from cdnjs and fonts from Google Fonts.
+## Layout
+
+| Path | What it is |
+| --- | --- |
+| `index.html` | Register page: current drawings, revision history, archive. Reads `drawings.json` |
+| `drawings.json` | The register: number, title, description, status (`current` or `archived`) and revisions per drawing |
+| `drawings/<number>/<rev>.html` | One file per revision. A released revision is never edited again |
+| `drawings/<number>/` | Always opens the latest revision |
+| `trapleuning.html` etc. | Short links that forward to `drawings/<number>/` |
+| `viewer/<version>/` | Released builds of the shared viewer (source in the private `3dViewer` repository). Do not edit here |
+| `tools/register.mjs` | Register tool, see below |
+
+## Managing drawings
+
+```bash
+node tools/register.mjs revise MHB-0102 --note "Langere klemstaaf"
+```
+
+Creates `drawings/MHB-0102/B.html` as a copy of the latest revision, with the drawing number and register block updated, and adds it to the register. Then edit the new file. Revision A stays online, and when someone opens it, it shows a "superseded" banner with a link to the current revision. Printouts of it carry "Vervallen" in the title block. Add `--viewer 1.1.0` to move the new revision to a newer viewer.
+
+```bash
+node tools/register.mjs archive SLV-0101
+```
+
+Moves a drawing to the archive section of the register. When opened, it shows an "archived" banner. `restore` brings it back.
+
+```bash
+node tools/register.mjs check
+```
+
+Checks that every revision file exists, uses a released viewer and matches the register. It also rewrites the short links. Run it before every commit.

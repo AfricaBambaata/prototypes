@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Spacer Sleeve Viewer</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../../viewer/1.0.0/viewer.css">
+</head>
+<body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="../../viewer/1.0.0/viewer.js"></script>
+<script>
+// Spacer sleeve SLV-0101-A. Axis along Z, resting on the grid. All dimensions in mm.
+const PART = { OD:46, ID:41, width:30 };
+const R = PART.OD/2, r = PART.ID/2, Wd = PART.width, CY = R; // centre height above the grid
+
+DrawingViewer.create({
+  lang: 'en',
+  title: 'Spacer sleeve',
+  subtitle: 'Ø46 × Ø41 × 30',
+  number: 'SLV-0101-A',
+  register: { url: '../../drawings.json', number: 'SLV-0101', rev: 'A' },
+  modes: ['solid', 'section', 'xray'],
+  camera: { radius: 190, target: [0, CY, 0], min: 40, max: 800 },
+  titleBlock: [
+    { k: 'Title', v: 'Spacer sleeve', title: true },
+    { k: 'Drawing no.', v: 'SLV-0101-A' },
+    { k: 'Material', v: 'Not specified' },
+    { k: 'Units · Scale', v: 'mm · 1:1', units: 'mm', scale: true },
+    { k: 'General tolerances', v: 'ISO 2768-mK' },
+    { k: 'Wall', v: '2.5 (derived)' },
+    { k: 'Projection', v: 'First angle', projection: true },
+    { k: 'Drawn · Sheet', v: '2026-11-03 · 1/1' }
+  ],
+  build(m) {
+    const { THREE, V } = m;
+
+    const s = new THREE.Shape(); s.absarc(0, 0, R, 0, Math.PI*2, false);
+    const hole = new THREE.Path(); hole.absarc(0, 0, r, 0, Math.PI*2, true); s.holes.push(hole);
+    const g = new THREE.ExtrudeGeometry(s, { depth: Wd, bevelEnabled: false, curveSegments: 96 });
+    g.translate(0, CY, -Wd/2);
+    m.part(g, { edges: 25 });
+
+    // Half section: cut away the +X half; the cut face of a ring is two hatched rectangles.
+    m.section({
+      plane: new THREE.Plane(V(-1, 0, 0), 0),
+      hatch: [...m.hatchYZ(0, CY+r, CY+R, -Wd/2, Wd/2), ...m.hatchYZ(0, CY-R, CY-r, -Wd/2, Wd/2)]
+    });
+
+    // Grid, 10 mm pitch
+    const grid = new THREE.GridHelper(200, 20, 0xd9dfdb, 0xd9dfdb);
+    grid.position.y = -0.05;
+    m.add(grid, { color: 'grid', print: false });
+
+    const c45 = Math.SQRT1_2;
+    const d = m.dims({ arrow: 4 });
+    d.linear({ a: V(R+14, CY, -Wd/2), b: V(R+14, CY, Wd/2), n: V(1, 0, 0), text: '30',
+      ext: [[V(R, CY, -Wd/2), V(R+16, CY, -Wd/2)], [V(R, CY, Wd/2), V(R+16, CY, Wd/2)]] });
+    d.leader({ p: V(R*c45, CY+R*c45, Wd/2), e: V(R*c45+22, CY+R*c45+22, Wd/2), text: 'Ø46' });
+    d.leader({ p: V(-r*c45, CY-r*c45, Wd/2), e: V(-r*c45-22, CY-r*c45-14, Wd/2), text: 'Ø41 THRU' });
+  }
+});
+</script>
+</body>
+</html>
