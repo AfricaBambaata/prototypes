@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Tekeningenregister</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --bg:#e9ece9;
+  --sheet:#f7f8f6;
+  --ink:#1c2320;
+  --ink-2:#5f6964;
+  --line:#c4ccc7;
+  --accent:#b6471a;
+  --font-ui:'Barlow',system-ui,-apple-system,sans-serif;
+  --font-mono:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#121715; --sheet:#1a211e; --ink:#e4eae6; --ink-2:#97a29c; --line:#2f3b36; --accent:#f08752; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#121715; --sheet:#1a211e; --ink:#e4eae6; --ink-2:#97a29c; --line:#2f3b36; --accent:#f08752; color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font-ui);font-size:15px;line-height:1.45}
+[hidden]{display:none!important}
+main{max-width:860px;margin:0 auto;padding:32px max(16px,env(safe-area-inset-right,0px)) 40px max(16px,env(safe-area-inset-left,0px))}
+h1{margin:0 0 4px;font-size:18px;font-weight:600;letter-spacing:.08em;text-transform:uppercase}
+.sub{margin:0 0 24px;color:var(--ink-2);font-size:14px}
+ol{list-style:none;margin:0;padding:0;border:1px solid var(--line);background:var(--sheet)}
+li+li{border-top:1px solid var(--line)}
+a{display:grid;grid-template-columns:120px 1fr auto;gap:4px 18px;align-items:baseline;padding:14px 16px;color:inherit;text-decoration:none}
+a:hover .t,a:focus-visible .t{color:var(--accent)}
+a:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.no{font-family:var(--font-mono);font-size:13px;color:var(--ink-2);font-variant-numeric:tabular-nums}
+.t{font-weight:600;letter-spacing:.06em;text-transform:uppercase;font-size:14px}
+.d{grid-column:2;color:var(--ink-2);font-size:14px}
+.f{grid-column:3;grid-row:1;font-family:var(--font-mono);font-size:12px;color:var(--ink-2)}
+@media (max-width:560px){
+  a{grid-template-columns:1fr}
+  .d,.f{grid-column:1;grid-row:auto}
+}
+footer{margin-top:14px;font-size:12px;color:var(--ink-2)}
+</style>
+</head>
+<body>
+<main>
+  <h1>Tekeningenregister</h1>
+  <p class="sub">3D-werktekeningen. Open een tekening om te draaien, te zoomen en de maten te bekijken.</p>
+  <ol>
+    <li><a href="trapleuning.html">
+      <span class="no">MHB-0200-A</span>
+      <span class="t">Trapleuning met muurhouders</span>
+      <span class="d">Samenstelling: messing buis Ø40 × 3000 onder 30°, gedragen door twee muurhouders MHB-0102.</span>
+      <span class="f">trapleuning.html</span>
+    </a></li>
+    <li><a href="muurhouder.html">
+      <span class="no">MHB-0102-A</span>
+      <span class="t">Muurhouder buis</span>
+      <span class="d">Ring Ø46 × Ø41 × 30 met klemstaaf M8 × 150 en chemisch anker in de muur.</span>
+      <span class="f">muurhouder.html</span>
+    </a></li>
+    <li><a href="spacer-sleeve.html">
+      <span class="no">SLV-0101-A</span>
+      <span class="t">Spacer sleeve</span>
+      <span class="d">Afstandsbus Ø46 × Ø41 × 30 met wand van 2,5 mm (tekening in het Engels).</span>
+      <span class="f">spacer-sleeve.html</span>
+    </a></li>
+    <li><a href="bearing-bracket.html">
+      <span class="no">BRK-0417-B</span>
+      <span class="t">Bearing bracket</span>
+      <span class="d">Lagerbok in EN AW-6082 T6 met boring Ø30 H7 en vier bevestigingsgaten Ø9 (tekening in het Engels).</span>
+      <span class="f">bearing-bracket.html</span>
+    </a></li>
+  </ol>
+  <footer>Maten in mm · eerste-hoekprojectie</footer>
+</main>
+</body>
+</html>

@@ -1,0 +1,477 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>body{margin:0}[hidden]{display:none!important}</style>
+<title>Trapleuning met Muurhouders</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Opmaak: een samenstellingstekening. Bedieningsstrook bovenaan, 3D-venster in het midden, titelblok onderaan. */
+:root{
+  --bg:#e9ece9;
+  --sheet:#f7f8f6;
+  --ink:#1c2320;
+  --ink-2:#5f6964;
+  --line:#c4ccc7;
+  --grid:#c9d0cb;
+  --wall:#dde2de;
+  --accent:#1f5f8b;
+  --on-accent:#ffffff;
+  --part:#b08a3c;
+  --tube:#c9a352;
+  --font-ui:'Barlow',system-ui,-apple-system,sans-serif;
+  --font-mono:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#121715; --sheet:#1a211e; --ink:#e4eae6; --ink-2:#97a29c; --line:#2f3b36; --grid:#34403a; --wall:#222b27; --accent:#7db6e2; --on-accent:#0f1d27; --part:#9c7a33; --tube:#b39046; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#121715; --sheet:#1a211e; --ink:#e4eae6; --ink-2:#97a29c; --line:#2f3b36; --grid:#34403a; --wall:#222b27; --accent:#7db6e2; --on-accent:#0f1d27; --part:#9c7a33; --tube:#b39046; color-scheme:dark;
+}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-ui);font-size:14px;line-height:1.4}
+*{box-sizing:border-box}
+.app{height:100%;display:grid;grid-template-rows:auto 1fr auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:12px;gap:10px;min-height:0}
+.bar{display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px;min-width:0}
+.name{display:flex;align-items:baseline;gap:10px;min-width:0;flex-wrap:wrap}
+.name h1{margin:0;font-size:15px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;text-wrap:balance}
+.name .no{font-family:var(--font-mono);font-size:12px;color:var(--ink-2)}
+.group{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.group .lbl{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2);margin-right:2px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:4px;overflow:hidden;background:var(--sheet)}
+.seg button{appearance:none;border:0;background:transparent;color:var(--ink);font:inherit;font-size:13px;padding:5px 10px;cursor:pointer;border-right:1px solid var(--line)}
+.seg button:last-child{border-right:0}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--on-accent)}
+.seg button:focus-visible,.chk input:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.chk{display:inline-flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;user-select:none}
+.chk input{accent-color:var(--accent);margin:0}
+.stage{position:relative;min-height:320px;border:1px solid var(--line);background:var(--sheet);overflow:hidden;min-width:0}
+.stage canvas{display:block;width:100%;height:100%;touch-action:none;cursor:grab}
+.stage canvas.grabbing{cursor:grabbing}
+#labels{position:absolute;inset:0;pointer-events:none}
+.dim{position:absolute;transform:translate(-50%,-50%);font-family:var(--font-mono);font-size:12px;font-weight:500;color:var(--accent);background:var(--sheet);padding:1px 4px;border-radius:2px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.dim.note{color:var(--ink-2);font-family:var(--font-ui);font-size:11px;letter-spacing:.1em;text-transform:uppercase}
+.hint{position:absolute;left:10px;bottom:8px;font-size:11px;color:var(--ink-2);letter-spacing:.02em;pointer-events:none}
+.viewtag{position:absolute;right:10px;top:8px;font-family:var(--font-mono);font-size:11px;color:var(--ink-2);letter-spacing:.08em;text-transform:uppercase;pointer-events:none}
+.tb{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));border:1px solid var(--line);background:var(--sheet);font-size:12px}
+.tb .cell{padding:6px 10px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);min-width:0}
+.tb .cell .k{display:block;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2);margin-bottom:2px}
+.tb .cell .v{font-family:var(--font-mono);font-size:12.5px;overflow-wrap:anywhere}
+.tb .cell.title .v{font-family:var(--font-ui);font-weight:600;font-size:14px;letter-spacing:.06em;text-transform:uppercase}
+.proj{display:inline-flex;align-items:center;gap:8px}
+.proj svg{width:46px;height:18px;display:block}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="bar">
+    <div class="name"><h1>Trapleuning met muurhouders</h1><span class="no">Ø40 × 3000 · helling 30° · 2× MHB-0102 · messing</span></div>
+    <div class="group" role="group" aria-label="Aanzichten">
+      <span class="lbl">Aanzicht</span>
+      <span class="seg" id="views">
+        <button type="button" data-view="iso" aria-pressed="true">Overzicht</button>
+        <button type="button" data-view="front" aria-pressed="false">Voor</button>
+        <button type="button" data-view="top" aria-pressed="false">Boven</button>
+        <button type="button" data-view="detail" aria-pressed="false">Detail houder</button>
+      </span>
+    </div>
+    <div class="group" role="group" aria-label="Weergave">
+      <span class="lbl">Weergave</span>
+      <span class="seg" id="shading">
+        <button type="button" data-mode="solid" aria-pressed="true">Massief</button>
+        <button type="button" data-mode="xray" aria-pressed="false">Röntgen</button>
+        <button type="button" data-mode="wire" aria-pressed="false">Draadmodel</button>
+      </span>
+    </div>
+    <div class="group">
+      <label class="chk"><input type="checkbox" id="dims" checked> Maten</label>
+      <label class="chk"><input type="checkbox" id="ortho"> Orthografisch</label>
+      <label class="chk"><input type="checkbox" id="spin"> Automatisch draaien</label>
+    </div>
+  </header>
+
+  <div class="stage" id="stage">
+    <canvas id="c"></canvas>
+    <div id="labels"></div>
+    <div class="viewtag" id="viewtag">Overzicht · Perspectief</div>
+    <div class="hint">Slepen om te draaien · Scrollen of knijpen om te zoomen · Rechts slepen of shift-slepen om te verschuiven</div>
+  </div>
+
+  <footer class="tb" aria-label="Titelblok">
+    <div class="cell title"><span class="k">Titel</span><span class="v">Trapleuning met muurhouders</span></div>
+    <div class="cell"><span class="k">Tekeningnr.</span><span class="v">MHB-0200-A (samenstelling)</span></div>
+    <div class="cell"><span class="k">Onderdelen</span><span class="v">1× buis Ø40 × 3000 · 2× muurhouder MHB-0102</span></div>
+    <div class="cell"><span class="k">Muur tot hartlijn buis</span><span class="v">120</span></div>
+    <div class="cell"><span class="k">Speling buis in ring</span><span class="v">0,5 per zijde (Ø40 in Ø41)</span></div>
+    <div class="cell"><span class="k">Materiaal</span><span class="v">Messing</span></div>
+    <div class="cell"><span class="k">Helling · Eenheden</span><span class="v">30° · mm</span></div>
+    <div class="cell"><span class="k">Projectie</span><span class="v proj"><svg viewBox="0 0 46 18" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.2"><circle cx="9" cy="9" r="7"/><circle cx="9" cy="9" r="3.5"/><path d="M26 3.5 L42 1.5 V16.5 L26 14.5 Z"/><line x1="30.5" y1="3" x2="30.5" y2="15"/></g></svg>Eerste hoek</span></div>
+    <div class="cell"><span class="k">Getekend · Blad</span><span class="v">2026-11-03 · 1/1</span></div>
+  </footer>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function(){
+  const stage = document.getElementById('stage');
+  const canvas = document.getElementById('c');
+  const labelsEl = document.getElementById('labels');
+  const viewtag = document.getElementById('viewtag');
+  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function tokens(){
+    const cs = getComputedStyle(document.documentElement);
+    const t = k => cs.getPropertyValue(k).trim();
+    return { sheet:t('--sheet'), ink:t('--ink'), grid:t('--grid'), wall:t('--wall'), accent:t('--accent'), part:t('--part'), tube:t('--tube') };
+  }
+
+  const renderer = new THREE.WebGLRenderer({canvas, antialias:true});
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  const scene = new THREE.Scene();
+
+  // ---------- Maten (mm) ----------
+  // Muurvlak is x = 0, x positief = weg van de muur. Buis loopt langs Z, evenwijdig aan de muur.
+  const TUBE = { d:40, len:3000, fromEnd:700 };
+  const RING = { OD:46, ID:41, width:30 };
+  const ROD  = { d:8, len:150, anchor:50, pitch:1.25 };
+  const rt = TUBE.d/2, R = RING.OD/2, r = RING.ID/2, Wd = RING.width, rd = ROD.d/2;
+  const XTIP  = ROD.len - ROD.anchor;          // 100: staafpunt, raakt de buis
+  const XTUBE = XTIP + rt;                      // 120: hartlijn buis
+  const XRING = XTUBE - (r - rt);               // 119.5: ring trekt de buis tegen de staafpunt
+  const THR_RING = 3;                           // draad ringkant, blijft binnen de ringwand
+  const ZH = TUBE.len/2 - TUBE.fromEnd;         // 800: houders op z = ±800
+
+  // ---------- Geometrie ----------
+  function threadGeo(xStart, len, chamStart, chamEnd, z0){
+    const p = ROD.pitch, core = rd*0.83, c = 0.6;
+    const pts = [new THREE.Vector2(0,0)];
+    if (chamStart) pts.push(new THREE.Vector2(rd*0.75,0), new THREE.Vector2(rd,c)); else pts.push(new THREE.Vector2(rd,0));
+    let y = chamStart ? c : 0;
+    const yMax = len - (chamEnd ? c : 0);
+    while (y + p <= yMax){ pts.push(new THREE.Vector2(core, y+p/2), new THREE.Vector2(rd, y+p)); y += p; }
+    if (chamEnd) pts.push(new THREE.Vector2(rd, len-c), new THREE.Vector2(rd*0.75, len)); else pts.push(new THREE.Vector2(rd, len));
+    pts.push(new THREE.Vector2(0, len));
+    const g = new THREE.LatheGeometry(pts, 40);
+    g.rotateZ(Math.PI/2);           // +Y wordt -X
+    g.translate(xStart, 0, z0);
+    return g;
+  }
+  function ringGeo(z0){
+    const s = new THREE.Shape(); s.absarc(0,0,R,0,Math.PI*2,false);
+    const h = new THREE.Path(); h.absarc(0,0,r,0,Math.PI*2,true); s.holes.push(h);
+    const g = new THREE.ExtrudeGeometry(s,{depth:Wd,bevelEnabled:false,curveSegments:96});
+    g.translate(XRING, 0, z0 - Wd/2);
+    return g;
+  }
+  function shankGeo(z0){
+    const x1 = XTIP - THR_RING, len = x1;
+    const g = new THREE.CylinderGeometry(rd, rd, len, 40);
+    g.rotateZ(Math.PI/2);
+    g.translate(len/2, 0, z0);
+    return g;
+  }
+  function holeEdge(S, z0){
+    const pts=[]; for(let i=0;i<=96;i++){ const a=i/96*Math.PI*2, y=rd*Math.cos(a), z=rd*Math.sin(a); pts.push(new THREE.Vector3(XRING-Math.sqrt(S*S-y*y), y, z0+z)); }
+    return new THREE.BufferGeometry().setFromPoints(pts);
+  }
+  function tubeGeo(){
+    const g = new THREE.CylinderGeometry(rt, rt, TUBE.len, 72, 1, false);
+    g.rotateX(Math.PI/2);
+    g.translate(XTUBE, 0, 0);
+    return g;
+  }
+
+  const partMat = new THREE.MeshStandardMaterial({ color:0xb08a3c, metalness:0.45, roughness:0.38, side:THREE.DoubleSide, polygonOffset:true, polygonOffsetFactor:1, polygonOffsetUnits:1 });
+  const tubeMat = new THREE.MeshStandardMaterial({ color:0xc9a352, metalness:0.45, roughness:0.32, side:THREE.DoubleSide, polygonOffset:true, polygonOffsetFactor:1, polygonOffsetUnits:1 });
+  const edgeMat = new THREE.LineBasicMaterial({ color:0x1c2320 });
+  const wireMat = new THREE.LineBasicMaterial({ color:0x1c2320, transparent:true, opacity:0.5 });
+  // De hele leuning (buis, houders, maten langs de buis) staat in één groep die 30° kantelt in het muurvlak.
+  // Kantelen rond de X-as houdt de staven loodrecht op de muur en radiaal op de buis.
+  const SLOPE = 30*Math.PI/180;
+  const asm = new THREE.Group(); asm.rotation.x = -SLOPE; scene.add(asm); asm.updateMatrixWorld(true);
+  const toW = v => v.clone().applyMatrix4(asm.matrixWorld);
+  const solids=[], edges=[], wires=[];
+  function addPart(g, mat, thr){
+    const m = new THREE.Mesh(g, mat); solids.push(m); asm.add(m);
+    const e = new THREE.LineSegments(new THREE.EdgesGeometry(g, thr), edgeMat); edges.push(e); asm.add(e);
+    const w = new THREE.LineSegments(new THREE.WireframeGeometry(g), wireMat); w.visible=false; wires.push(w); asm.add(w);
+  }
+  addPart(tubeGeo(), tubeMat, 25);
+  [-ZH, ZH].forEach(z0=>{
+    addPart(ringGeo(z0), partMat, 25);
+    addPart(shankGeo(z0), partMat, 25);
+    addPart(threadGeo(XTIP, THR_RING, true, false, z0), partMat, 60);
+    addPart(threadGeo(0, ROD.anchor, false, true, z0), partMat, 60);
+    [R, r].forEach(S=>{ const e = new THREE.Line(holeEdge(S, z0), edgeMat); edges.push(e); asm.add(e); });
+  });
+
+  // Muur: licht vlak met raster van 100 mm. De ankers zitten erachter.
+  const WALL_Z = 1700, WALL_Y = 1000;
+  const wallMat = new THREE.MeshBasicMaterial({ color:0xdde2de, transparent:true, opacity:0.55, depthWrite:false, side:THREE.DoubleSide });
+  const wallGeo = new THREE.PlaneGeometry(WALL_Z*2, WALL_Y*2); wallGeo.rotateY(Math.PI/2);
+  const wall = new THREE.Mesh(wallGeo, wallMat); wall.renderOrder = 2; scene.add(wall);
+  const gridPts = [];
+  for (let z=-WALL_Z; z<=WALL_Z; z+=100) gridPts.push(new THREE.Vector3(0.3,-WALL_Y,z), new THREE.Vector3(0.3,WALL_Y,z));
+  for (let y=-WALL_Y; y<=WALL_Y; y+=100) gridPts.push(new THREE.Vector3(0.3,y,-WALL_Z), new THREE.Vector3(0.3,y,WALL_Z));
+  const gridMat = new THREE.LineBasicMaterial({ color:0xc9d0cb });
+  scene.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(gridPts), gridMat));
+
+  // Licht
+  scene.add(new THREE.HemisphereLight(0xffffff, 0x6b7a72, 0.85));
+  const key = new THREE.DirectionalLight(0xffffff, 0.75); key.position.set(900,1400,700); scene.add(key);
+  const fill = new THREE.DirectionalLight(0xffffff, 0.25); fill.position.set(-300,400,-900); scene.add(fill);
+
+  // ---------- Maatvoering ----------
+  // Twee lagen: 'all' (overzicht, grote pijlen) en 'detail' (rond een houder, kleine pijlen).
+  const dimMat = new THREE.LineBasicMaterial({ color:0xb6471a });
+  const layers = { all:new THREE.Group(), detail:new THREE.Group(), world:new THREE.Group() };
+  asm.add(layers.all, layers.detail); scene.add(layers.world);
+  const V = (x,y,z)=>new THREE.Vector3(x,y,z);
+  const c45 = Math.SQRT1_2;
+  const D = V(1,-1,0).normalize();                 // maatlijnen schuin voor en onder de buis
+  const N = V(1,1,0).normalize();
+  const onTube = (z, dist)=>V(XTUBE,0,z).addScaledVector(D, dist);
+  const zf = ZH - Wd/2;                            // onderste vlak van de bovenste houder (z = +800)
+
+  const DIMS = [
+    // Overzicht
+    { lvl:'all', kind:'linear', a:onTube(-1500,170), b:onTube(-ZH,170), as:40, n:N, text:'700',
+      ext:[[onTube(-1500,26),onTube(-1500,182)],[onTube(-ZH,30),onTube(-ZH,182)]] },
+    { lvl:'all', kind:'linear', a:onTube(-ZH,170), b:onTube(ZH,170), as:40, n:N, text:'(1600)',
+      ext:[[onTube(ZH,30),onTube(ZH,182)]] },
+    { lvl:'all', kind:'linear', a:onTube(ZH,170), b:onTube(1500,170), as:40, n:N, text:'700',
+      ext:[[onTube(1500,26),onTube(1500,182)]] },
+    { lvl:'all', kind:'linear', a:onTube(-1500,300), b:onTube(1500,300), as:40, n:N, text:'3000',
+      ext:[[onTube(-1500,182),onTube(-1500,312)],[onTube(1500,182),onTube(1500,312)]] },
+    { lvl:'all', kind:'leader', p:V(XTUBE, rt, -350), e:V(XTUBE, rt+200, -350), as:30, n:V(1,0,0), text:'Ø40 × 3000' },
+    // Detail houder z = +800
+    { lvl:'detail', kind:'linear', a:V(0,70,zf), b:V(XTUBE,70,zf), as:5, n:V(0,0,1), text:'120',
+      ext:[[V(0,rd,zf),V(0,74,zf)],[V(XTUBE,R+3,zf),V(XTUBE,74,zf)]] },
+    { lvl:'detail', kind:'leader', p:V(XRING+R*c45, R*c45, zf), e:V(XRING+R*c45+34, R*c45+34, zf), as:5, n:V(0,0,1), text:'Muurhouder MHB-0102 (2×)' },
+    { lvl:'detail', kind:'leader', p:V(-25, rd, ZH-rd), e:V(-45, 40, ZH-60), as:5, n:V(0,0,1), text:'M8 × 50 chemisch anker' },
+    { lvl:'detail', kind:'leader', p:V(XTUBE+rt*c45, rt*c45, ZH-110), e:V(XTUBE+rt*c45+30, rt*c45+30, ZH-110), as:5, n:V(0,0,1), text:'Ø40' }
+  ];
+  // Maten op de muur (wereldassen): hartafstand van de ankers, horizontaal en in hoogte, plus de helling.
+  const A1 = toW(V(0,0,-ZH)), A2 = toW(V(0,0,ZH)), E0 = toW(V(XTUBE,0,-TUBE.len/2));
+  const dH = Math.round(A2.z - A1.z), dV = Math.round(A2.y - A1.y);
+  const yTop = A2.y + 170, zLeft = A1.z - 170;
+  DIMS.push(
+    { lvl:'all', grp:'world', kind:'linear', a:V(1,yTop,A1.z), b:V(1,yTop,A2.z), as:40, n:V(1,0,0), text:dH+' horizontaal',
+      ext:[[V(1,A1.y+20,A1.z),V(1,yTop+12,A1.z)],[V(1,A2.y+20,A2.z),V(1,yTop+12,A2.z)]] },
+    { lvl:'all', grp:'world', kind:'linear', a:V(1,A1.y,zLeft), b:V(1,A2.y,zLeft), as:40, n:V(1,0,0), text:dV+' hoogte',
+      ext:[[V(1,A1.y,A1.z-20),V(1,A1.y,zLeft-12)],[V(1,A2.y,A2.z-20),V(1,A2.y,zLeft-12)]] },
+    { lvl:'all', grp:'world', kind:'label', pos:E0.clone().add(V(0, 640*Math.sin(SLOPE/2), 640*Math.cos(SLOPE/2))), text:'30°' },
+    { lvl:'all', grp:'world', kind:'note', pos:V(0, WALL_Y+40, 0), text:'Muurvlak' }
+  );
+  (function(){
+    const arc=[]; for(let i=0;i<=24;i++){ const t=i/24*SLOPE; arc.push(E0.clone().add(V(0, 560*Math.sin(t), 560*Math.cos(t)))); }
+    addLine(layers.world, arc);
+    addLine(layers.world, [E0.clone(), E0.clone().add(V(0,0,700))]);
+  })();
+  const labels = [];
+  function addLine(group, pts){ group.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), dimMat)); }
+  function arrow(group, tip, dir, n, size){
+    const u = new THREE.Vector3().crossVectors(dir, n).normalize();
+    const base = tip.clone().addScaledVector(dir, size);
+    addLine(group, [base.clone().addScaledVector(u, size*0.32), tip, base.clone().addScaledVector(u, -size*0.32)]);
+  }
+  // Hartlijn van de buis (streep-stip) in het overzicht.
+  (function(){
+    const pts=[]; for(let z=-1560; z<1560; z+=60){ pts.push(V(XTUBE,0,z), V(XTUBE,0,Math.min(z+36,1560))); pts.push(V(XTUBE,0,z+44), V(XTUBE,0,z+50)); }
+    layers.all.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(pts), dimMat));
+  })();
+  DIMS.forEach(d=>{
+    const lab = document.createElement('div'); lab.className='dim'+(d.kind==='note'?' note':''); lab.textContent=d.text; labelsEl.appendChild(lab);
+    const g = layers[d.grp || d.lvl];
+    if (d.kind==='linear'){
+      addLine(g,[d.a,d.b]); d.ext.forEach(e=>addLine(g,e));
+      const dir = d.b.clone().sub(d.a).normalize();
+      arrow(g, d.a, dir, d.n, d.as); arrow(g, d.b, dir.clone().negate(), d.n, d.as);
+      labels.push({el:lab, lvl:d.lvl, pos:d.a.clone().add(d.b).multiplyScalar(0.5)});
+    } else if (d.kind==='leader'){
+      addLine(g,[d.p,d.e]);
+      arrow(g, d.p, d.e.clone().sub(d.p).normalize(), d.n, d.as);
+      labels.push({el:lab, lvl:d.lvl, pos:d.e.clone(), anchor:'end'});
+    } else {
+      labels.push({el:lab, lvl:d.lvl, pos:d.pos.clone(), world:true});
+    }
+    const L = labels[labels.length-1];
+    if (d.grp !== 'world') L.pos = toW(L.pos);
+  });
+
+  // ---------- Camera's en orbit ----------
+  const FOV = 32;
+  const persp = new THREE.PerspectiveCamera(FOV, 1, 1, 50000);
+  const ortho = new THREE.OrthographicCamera(-1,1,1,-1,-50000,50000);
+  let camera = persp;
+  const VIEWS = {
+    iso:    { theta: 1.0,           phi: 1.2,           radius: 4600, target: V(60,0,0) },
+    front:  { theta: Math.PI/2,     phi: Math.PI/2,     radius: 4600, target: V(60,0,0) },
+    top:    { theta: Math.PI/2,     phi: 0.0001,        radius: 4600, target: V(60,0,0) },
+    detail: { theta: Math.PI/2+0.45, phi: 0.72,         radius: 560,  target: toW(V(60,0,ZH)) }
+  };
+  const orbit = { theta: VIEWS.iso.theta, phi: VIEWS.iso.phi, radius: VIEWS.iso.radius, target: VIEWS.iso.target.clone() };
+  let anim = null;
+  function goView(name){
+    const v = VIEWS[name];
+    const twoPi = Math.PI*2;
+    const toTheta = orbit.theta + ((((v.theta - orbit.theta) % twoPi) + twoPi*1.5) % twoPi - Math.PI);
+    const to = { theta:toTheta, phi:v.phi, radius:v.radius, target:v.target.clone() };
+    if (reduceMotion){ Object.assign(orbit, to); return; }
+    anim = { t0: performance.now(), dur: 650, from:{ theta:orbit.theta, phi:orbit.phi, radius:orbit.radius, target:orbit.target.clone() }, to };
+  }
+  function tickAnim(now){
+    if (!anim) return;
+    let k = Math.min(1, (now - anim.t0)/anim.dur); k = 1 - Math.pow(1-k, 3);
+    const f = anim.from, t = anim.to;
+    orbit.theta = f.theta + (t.theta - f.theta)*k;
+    orbit.phi = f.phi + (t.phi - f.phi)*k;
+    orbit.radius = Math.exp(Math.log(f.radius) + (Math.log(t.radius) - Math.log(f.radius))*k);
+    orbit.target.lerpVectors(f.target, t.target, k);
+    if (k>=1) anim = null;
+  }
+  function applyCamera(){
+    const {theta, phi, radius, target} = orbit;
+    const p = Math.max(phi, 0.0001);
+    const pos = V(Math.sin(p)*Math.sin(theta), Math.cos(p), Math.sin(p)*Math.cos(theta)).multiplyScalar(radius).add(target);
+    camera.position.copy(pos);
+    camera.up.set(0,1,0);
+    if (phi < 0.01) camera.up.set(-Math.sin(theta), 0, -Math.cos(theta));
+    camera.lookAt(target);
+    const aspect = stage.clientWidth / Math.max(1, stage.clientHeight);
+    if (camera === ortho){
+      const halfH = radius * Math.tan(FOV*Math.PI/360);
+      ortho.left = -halfH*aspect; ortho.right = halfH*aspect; ortho.top = halfH; ortho.bottom = -halfH;
+    } else {
+      persp.aspect = aspect; persp.near = Math.max(0.5, radius/200); persp.far = radius*20 + 6000;
+    }
+    camera.updateProjectionMatrix();
+  }
+
+  const pointers = new Map();
+  let lastPinch = 0;
+  const RMIN = 60, RMAX = 9000;
+  canvas.addEventListener('contextmenu', e=>e.preventDefault());
+  canvas.addEventListener('pointerdown', e=>{
+    canvas.setPointerCapture(e.pointerId);
+    pointers.set(e.pointerId, {x:e.clientX, y:e.clientY, button:e.button, shift:e.shiftKey});
+    canvas.classList.add('grabbing'); anim = null; spinInput.checked = false;
+    if (pointers.size===2){ const [a,b]=[...pointers.values()]; lastPinch = Math.hypot(a.x-b.x,a.y-b.y); }
+  });
+  canvas.addEventListener('pointermove', e=>{
+    const p = pointers.get(e.pointerId); if (!p) return;
+    if (e.pointerType === 'mouse' && !e.buttons){ endPointer(e); return; }
+    const dx = e.clientX - p.x, dy = e.clientY - p.y;
+    p.x = e.clientX; p.y = e.clientY;
+    if (pointers.size===2){
+      const [a,b]=[...pointers.values()]; const d = Math.hypot(a.x-b.x,a.y-b.y);
+      if (lastPinch>0) orbit.radius = clamp(orbit.radius * (lastPinch/d), RMIN, RMAX);
+      lastPinch = d; return;
+    }
+    if (p.button===2 || p.button===1 || p.shift){ pan(dx,dy); }
+    else {
+      orbit.theta -= dx*0.006;
+      orbit.phi = clamp(orbit.phi - dy*0.006, 0.0001, Math.PI-0.0001);
+      setFree();
+    }
+  });
+  const endPointer = e=>{ pointers.delete(e.pointerId); if(!pointers.size) canvas.classList.remove('grabbing'); lastPinch=0; };
+  canvas.addEventListener('pointerup', endPointer); canvas.addEventListener('pointercancel', endPointer);
+  canvas.addEventListener('lostpointercapture', endPointer);
+  const clearPointers = ()=>{ pointers.clear(); canvas.classList.remove('grabbing'); lastPinch=0; };
+  window.addEventListener('blur', clearPointers);
+  window.addEventListener('pointerup', e=>{ if (!e.buttons) clearPointers(); });
+  canvas.addEventListener('wheel', e=>{ e.preventDefault(); anim = null; orbit.radius = clamp(orbit.radius * Math.exp(e.deltaY*0.0012), RMIN, RMAX); }, {passive:false});
+  function pan(dx,dy){
+    const worldPerPx = (2*orbit.radius*Math.tan(FOV*Math.PI/360)) / Math.max(1, stage.clientHeight);
+    const right = V(1,0,0).applyQuaternion(camera.quaternion);
+    const up = V(0,1,0).applyQuaternion(camera.quaternion);
+    orbit.target.addScaledVector(right, -dx*worldPerPx).addScaledVector(up, dy*worldPerPx);
+  }
+  function clamp(v,a,b){ return Math.min(b, Math.max(a, v)); }
+
+  // ---------- Bediening ----------
+  function seg(id, attr, onPick){
+    const box = document.getElementById(id);
+    box.addEventListener('click', e=>{
+      const btn = e.target.closest('button'); if(!btn) return;
+      box.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed', String(b===btn)));
+      onPick(btn.dataset[attr]);
+    });
+  }
+  let currentView = 'iso';
+  seg('views','view', v=>{ clearPointers(); currentView = v; goView(v); updateTag(); });
+  function setFree(){
+    if (currentView === 'free') return;
+    currentView = 'free';
+    document.querySelectorAll('#views button').forEach(b=>b.setAttribute('aria-pressed','false'));
+    updateTag();
+  }
+  let mode = 'solid';
+  seg('shading','mode', m=>{ mode = m; applyMode(); });
+  function applyMode(){
+    const solid = mode!=='wire', xray = mode==='xray';
+    solids.forEach(m=>m.visible = solid); edges.forEach(e=>e.visible = solid); wires.forEach(w=>w.visible = !solid);
+    [partMat, tubeMat].forEach(m=>{ m.transparent = xray; m.opacity = xray ? 0.3 : 1; m.depthWrite = !xray; m.needsUpdate = true; });
+  }
+  const dimsInput = document.getElementById('dims');
+  dimsInput.addEventListener('change', ()=>{ labelsEl.hidden = !dimsInput.checked; });
+  const orthoInput = document.getElementById('ortho');
+  orthoInput.addEventListener('change', ()=>{ camera = orthoInput.checked ? ortho : persp; updateTag(); });
+  const spinInput = document.getElementById('spin');
+  function updateTag(){
+    const names = {iso:'Overzicht', front:'Vooraanzicht', top:'Bovenaanzicht', detail:'Detail houder', free:'Vrij aanzicht'};
+    viewtag.textContent = names[currentView] + ' · ' + (orthoInput.checked ? 'Orthografisch' : 'Perspectief');
+  }
+
+  // ---------- Thema ----------
+  function applyTheme(){
+    const t = tokens();
+    scene.background = new THREE.Color(t.sheet);
+    partMat.color.set(t.part); tubeMat.color.set(t.tube);
+    edgeMat.color.set(t.ink); wireMat.color.set(t.ink);
+    dimMat.color.set(t.accent);
+    wallMat.color.set(t.wall); gridMat.color.set(t.grid);
+  }
+  applyTheme();
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applyTheme);
+  new MutationObserver(applyTheme).observe(document.documentElement, {attributes:true, attributeFilter:['data-theme']});
+
+  // ---------- Grootte en tekenlus ----------
+  function resize(){ renderer.setSize(stage.clientWidth, stage.clientHeight, false); }
+  new ResizeObserver(resize).observe(stage); resize();
+
+  const tmp = new THREE.Vector3();
+  function placeLabels(showAll, showDetail){
+    const w = stage.clientWidth, h = stage.clientHeight;
+    labels.forEach(l=>{
+      const on = l.lvl==='all' ? showAll : showDetail;
+      tmp.copy(l.pos).project(camera);
+      const inView = tmp.z < 1 && Math.abs(tmp.x) < 1.05 && Math.abs(tmp.y) < 1.05;
+      l.el.style.visibility = (on && inView) ? 'visible' : 'hidden';
+      let x = (tmp.x*0.5+0.5)*w, y = (-tmp.y*0.5+0.5)*h;
+      if (l.anchor==='end'){ x += 6; l.el.style.transform = 'translate(0,-50%)'; }
+      l.el.style.left = x+'px'; l.el.style.top = y+'px';
+    });
+  }
+  let last = performance.now();
+  function frame(now){
+    requestAnimationFrame(frame);
+    const dt = (now-last)/1000; last = now;
+    tickAnim(now);
+    if (spinInput.checked && !reduceMotion) orbit.theta += dt*0.3;
+    applyCamera();
+    const showAll = dimsInput.checked && orbit.radius >= 700;
+    const showDetail = dimsInput.checked && orbit.radius < 1300;
+    layers.all.visible = showAll; layers.world.visible = showAll; layers.detail.visible = showDetail;
+    renderer.render(scene, camera);
+    placeLabels(showAll, showDetail);
+  }
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
