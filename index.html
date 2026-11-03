@@ -146,6 +146,25 @@ dialog::backdrop{background:rgba(0,0,0,.25)}
 .spin{width:18px;height:18px;border-radius:50%;border:2px solid var(--fill-2);border-top-color:var(--accent);animation:turn .8s linear infinite}
 @keyframes turn{to{transform:rotate(360deg)}}
 @keyframes rise{from{opacity:0;transform:translateY(10px) scale(.98)}to{opacity:1;transform:none}}
+.which{margin:0;padding:0;border:0;display:grid;gap:8px}
+.choice{display:flex;gap:12px;align-items:center;padding:11px 14px;border-radius:14px;background:var(--fill);cursor:pointer;transition:box-shadow .2s,background-color .2s}
+.choice:has(input:checked){background:var(--tint);box-shadow:inset 0 0 0 1.5px var(--accent)}
+.choice input{accent-color:var(--accent);width:18px;height:18px;margin:0;flex:none}
+.choice span{display:flex;flex-direction:column;gap:1px}
+.choice strong{font-size:13.5px;font-weight:600}
+.choice small{font-size:12px;color:var(--ink-2)}
+.sharebox{display:grid;grid-template-columns:128px 1fr;gap:14px;align-items:center;padding:12px;border-radius:16px;background:var(--fill)}
+.qr{width:128px;height:128px;border-radius:10px;overflow:hidden;background:#fff}
+.qr svg{display:block;width:100%;height:100%}
+.sharelink{display:flex;flex-direction:column;gap:8px;min-width:0}
+.field.mono{font-family:var(--mono);font-size:11.5px;text-overflow:ellipsis;background:var(--card)}
+.sharelink .btn{background:var(--card)}
+.sharebtns{display:flex;flex-wrap:wrap;gap:8px}
+.sharebtns .btn{flex:1 1 0;height:38px;color:var(--ink);text-decoration:none}
+.sharebtns .btn.primary{color:var(--on-accent)}
+.sharebtns .btn.primary{flex-basis:100%}
+#share-close{height:38px}
+@media (max-width:380px){.sharebox{grid-template-columns:1fr;justify-items:center}.sharelink{width:100%}}
 @media (max-width:640px){
   .toolbar{padding-left:14px}
   .toolbar .brand span{display:none}
@@ -217,6 +236,31 @@ dialog::backdrop{background:rgba(0,0,0,.25)}
   </form>
 </dialog>
 
+<dialog id="share-dlg" aria-labelledby="share-title">
+  <form class="sheet" method="dialog">
+    <h2 id="share-title">Delen</h2>
+    <p id="share-sub"></p>
+    <fieldset class="which">
+      <legend class="sr">Welke versie deel je?</legend>
+      <label class="choice"><input type="radio" name="which" value="latest" checked><span><strong>Altijd de laatste revisie</strong><small id="share-latest-note"></small></span></label>
+      <label class="choice"><input type="radio" name="which" value="this"><span><strong id="share-this-title"></strong><small>Latere wijzigingen zijn via deze link niet zichtbaar</small></span></label>
+    </fieldset>
+    <div class="sharebox">
+      <div class="qr" id="share-qr"></div>
+      <div class="sharelink">
+        <input type="text" class="field mono" id="share-link" readonly aria-label="Link">
+        <button type="button" class="btn" id="share-copy">Kopiëren</button>
+      </div>
+    </div>
+    <div class="sharebtns">
+      <button type="button" class="btn primary" id="share-native" hidden>Delen via…</button>
+      <a class="btn" id="share-mail" href="#">Mail</a>
+      <a class="btn" id="share-wa" href="#" target="_blank" rel="noopener">WhatsApp</a>
+    </div>
+    <button type="button" class="btn" id="share-close">Klaar</button>
+  </form>
+</dialog>
+
 <dialog id="act-dlg" aria-labelledby="act-title">
   <form class="sheet" id="act-form" method="dialog">
     <div class="icon" id="act-icon"></div>
@@ -230,6 +274,7 @@ dialog::backdrop{background:rgba(0,0,0,.25)}
   </form>
 </dialog>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
 <script>
 (function(){
   const OWNER = 'AfricaBambaata', REPO = 'prototypes', WORKFLOW = 'register.yml';
@@ -247,6 +292,7 @@ dialog::backdrop{background:rgba(0,0,0,.25)}
     back: '<svg viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14L4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-3"/></g></svg>',
     check: '<svg viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.5-3 8.5-7 10-4-1.5-7-5.5-7-10V6z"/><path d="M9 12l2 2 4-4"/></g></svg>',
     out: '<svg viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4M10 16l-4-4 4-4M6 12h10"/></g></svg>',
+    share: '<svg viewBox="0 0 20 20" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 12.5V2.8M6.6 6L10 2.6 13.4 6"/><path d="M7 8.5H5.5A1.5 1.5 0 0 0 4 10v6a1.5 1.5 0 0 0 1.5 1.5h9A1.5 1.5 0 0 0 16 16v-6a1.5 1.5 0 0 0-1.5-1.5H13"/></g></svg>',
     ok: '<svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="9" fill="currentColor"/><path d="M6 10.3l2.6 2.6L14 7.5" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>',
     bad: '<svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="9" fill="currentColor"/><path d="M10 5.5v5.5M10 14.2v.1" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>'
   };
@@ -282,12 +328,12 @@ dialog::backdrop{background:rgba(0,0,0,.25)}
       ? `<details class="hist"><summary>${ICON.tri}${d.revisions.length} revisies</summary><ul class="revs">${
           revs.map((r, i) => `<li><a href="${esc(r.file)}"><span class="r">${esc(r.rev)}</span><span class="d">${esc(fmtDate(r.date))}</span><span>${esc(r.note || 'Revisie ' + r.rev)}${i === 0 ? '<span class="cur">actueel</span>' : ''}</span></a></li>`).join('')
         }</ul></details>` : '';
-    const more = user ? `<button type="button" class="btn plain" data-menu="${esc(d.number)}" aria-haspopup="menu" aria-label="Acties voor ${esc(d.number)}"${busy.has(d.number) ? ' disabled' : ''}>${busy.has(d.number) ? '<span class="spin"></span>' : ICON.more}</button>` : '';
+    const more = `<button type="button" class="btn plain" data-menu="${esc(d.number)}" aria-haspopup="menu" aria-label="Acties voor ${esc(d.number)}"${busy.has(d.number) ? ' disabled' : ''}>${busy.has(d.number) ? '<span class="spin"></span>' : ICON.more}</button>`;
     return `<li class="item${d.status === 'archived' ? ' archived' : ''}">
       <span class="tile" style="background:${tileColor(d.number)}" aria-hidden="true">${esc(d.number.split('-')[0])}</span>
       <div class="main"><a class="title" href="${esc(L.file)}">${esc(d.title)}</a><span class="chip">${esc(d.number)}-${esc(L.rev)}</span>${lang}</div>
       <div class="desc">${esc(d.description)}</div>
-      <div class="trail"><span class="date">${esc(fmtDate(L.date))}</span>${more}${user ? '' : ICON.chev}</div>
+      <div class="trail"><span class="date">${esc(fmtDate(L.date))}</span>${more}</div>
       ${hist}
     </li>`;
   }
@@ -354,10 +400,57 @@ dialog::backdrop{background:rgba(0,0,0,.25)}
     if (menuEl) { closeMenu(); return; }
     const d = data.find(x => x.number === b.dataset.menu);
     const next = String.fromCharCode(latest(d).rev.charCodeAt(0) + 1);
-    openMenu(b, d.status === 'archived'
-      ? [{ label: d.number }, { icon: ICON.back, text: 'Terugzetten uit archief', run: () => ask('restore', d) }]
-      : [{ label: d.number }, { icon: ICON.rev, text: `Nieuwe revisie (${next})…`, run: () => ask('revise', d) }, '-', { icon: ICON.box, text: 'Archiveren…', run: () => ask('archive', d) }]);
+    const items = [{ label: d.number }, { icon: ICON.share, text: 'Delen…', run: () => openShare(d) }];
+    if (user) items.push('-', ...(d.status === 'archived'
+      ? [{ icon: ICON.back, text: 'Terugzetten uit archief', run: () => ask('restore', d) }]
+      : [{ icon: ICON.rev, text: `Nieuwe revisie (${next})…`, run: () => ask('revise', d) }, { icon: ICON.box, text: 'Archiveren…', run: () => ask('archive', d) }]));
+    openMenu(b, items);
   });
+
+  // ---------- Share: by default always the latest revision; "only this revision" on request ----------
+  function qrSvg(text){
+    const qr = qrcode(0, 'M'); qr.addData(text, 'Byte'); qr.make();
+    const n = qr.getModuleCount(), q = 4, size = n + q * 2; let d = '';
+    for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) if (qr.isDark(r, c)) d += `M${c + q} ${r + q}h1v1h-1z`;
+    return `<svg viewBox="0 0 ${size} ${size}" role="img" aria-label="QR-code van de link" shape-rendering="crispEdges"><rect width="${size}" height="${size}" fill="#fff"/><path d="${d}" fill="#000"/></svg>`;
+  }
+  let shareD = null;
+  function shareTarget(){
+    const L = latest(shareD);
+    const which = document.querySelector('#share-dlg input[name="which"]:checked').value;
+    const url = new URL(which === 'latest' ? `drawings/${shareD.number}/` : L.file, location.href).href;
+    const text = which === 'latest' ? `${shareD.title} (tekening ${shareD.number})` : `${shareD.title} (tekening ${shareD.number}-${L.rev})`;
+    return { url, text };
+  }
+  function updateShare(){
+    const { url, text } = shareTarget();
+    $('share-link').value = url;
+    $('share-qr').innerHTML = typeof qrcode === 'function' ? qrSvg(url) : '';
+    $('share-mail').href = `mailto:?subject=${encodeURIComponent(text)}&body=${encodeURIComponent(text + '\n' + url)}`;
+    $('share-wa').href = `https://wa.me/?text=${encodeURIComponent(text + '\n' + url)}`;
+    $('share-copy').textContent = 'Kopiëren';
+  }
+  function openShare(d){
+    shareD = d;
+    const L = latest(d);
+    $('share-sub').textContent = `${d.title} · ${d.number}`;
+    $('share-latest-note').textContent = `De link toont altijd de actuele revisie van ${d.number}, ook na latere wijzigingen`;
+    $('share-this-title').textContent = `Alleen revisie ${L.rev}`;
+    document.querySelector('#share-dlg input[value="latest"]').checked = true;
+    $('share-native').hidden = typeof navigator.share !== 'function';
+    updateShare();
+    $('share-dlg').showModal();
+  }
+  $('share-dlg').addEventListener('change', updateShare);
+  $('share-copy').addEventListener('click', async () => {
+    try { await navigator.clipboard.writeText($('share-link').value); }
+    catch (_) { $('share-link').select(); document.execCommand && document.execCommand('copy'); }
+    $('share-copy').textContent = 'Gekopieerd ✓';
+    setTimeout(() => { $('share-copy').textContent = 'Kopiëren'; }, 2000);
+  });
+  $('share-link').addEventListener('focus', () => $('share-link').select());
+  $('share-native').addEventListener('click', () => { const { url, text } = shareTarget(); navigator.share({ title: text, text, url }).catch(() => {}); });
+  $('share-close').addEventListener('click', () => $('share-dlg').close());
 
   // ---------- Action sheet ----------
   let pending = null;

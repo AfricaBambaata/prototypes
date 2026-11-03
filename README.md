@@ -24,6 +24,10 @@ Interactive 3D technical drawings, served with GitHub Pages. Start at `index.htm
 | `viewer/<version>/` | Fixed copies of each release, for drawings that must never change |
 | `tools/register.mjs` | Register tool, see below |
 
+## Sharing a drawing
+
+Use **Delen** in the viewer, or **⋯ → Delen…** on the register page. By default the link always opens the latest revision (`drawings/<number>/`); choose **Alleen revisie X** to share that one revision (`drawings/<number>/<rev>.html`). The share sheet shows a QR code, copies the link, and opens Mail, WhatsApp or (on iPhone, iPad and Mac) the system share sheet.
+
 ## Managing drawings (on the register page)
 
 Open the register page and click **Beheer**. The first time on a device, the page asks for a GitHub access token; the dialog explains how to make one (fine-grained, only the `prototypes` repository, *Actions* and *Contents* both *Read and write*). The token is stored only in that browser and is sent only to api.github.com.
