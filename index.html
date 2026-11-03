@@ -7,25 +7,31 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
 <style>
 :root{
-  --bg:#e9ece9; --sheet:#f7f8f6; --ink:#1c2320; --ink-2:#5f6964; --line:#c4ccc7; --accent:#b6471a;
+  --bg:#e9ece9; --sheet:#f7f8f6; --ink:#1c2320; --ink-2:#5f6964; --line:#c4ccc7; --accent:#b6471a; --on-accent:#fff;
+  --ok:#2f7a4a; --bad:#b3261e;
   --font-ui:'Barlow',system-ui,-apple-system,sans-serif;
   --font-mono:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;
   color-scheme:light;
 }
 @media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]){ --bg:#121715; --sheet:#1a211e; --ink:#e4eae6; --ink-2:#97a29c; --line:#2f3b36; --accent:#f08752; color-scheme:dark; }
+  :root:not([data-theme="light"]){ --bg:#121715; --sheet:#1a211e; --ink:#e4eae6; --ink-2:#97a29c; --line:#2f3b36; --accent:#f08752; --on-accent:#1a0f0a; --ok:#6cc58f; --bad:#f2867d; color-scheme:dark; }
 }
-:root[data-theme="dark"]{ --bg:#121715; --sheet:#1a211e; --ink:#e4eae6; --ink-2:#97a29c; --line:#2f3b36; --accent:#f08752; color-scheme:dark; }
+:root[data-theme="dark"]{ --bg:#121715; --sheet:#1a211e; --ink:#e4eae6; --ink-2:#97a29c; --line:#2f3b36; --accent:#f08752; --on-accent:#1a0f0a; --ok:#6cc58f; --bad:#f2867d; color-scheme:dark; }
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font-ui);font-size:15px;line-height:1.45}
 [hidden]{display:none!important}
-main{max-width:900px;margin:0 auto;padding:32px max(16px,env(safe-area-inset-right,0px)) 40px max(16px,env(safe-area-inset-left,0px))}
+main{max-width:920px;margin:0 auto;padding:32px max(16px,env(safe-area-inset-right,0px)) 40px max(16px,env(safe-area-inset-left,0px))}
+.head{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start;justify-content:space-between}
 h1{margin:0 0 4px;font-size:18px;font-weight:600;letter-spacing:.08em;text-transform:uppercase}
 h2{margin:28px 0 10px;font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-2)}
 .sub{margin:0;color:var(--ink-2);font-size:14px}
+button,.btn{appearance:none;-webkit-appearance:none;display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:36px;padding:6px 12px;border:1px solid var(--line);border-radius:4px;background:var(--sheet);color:var(--ink);font:inherit;font-size:14px;cursor:pointer;white-space:nowrap;text-decoration:none}
+button.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+button:disabled{opacity:.5;cursor:default}
+button:focus-visible,input:focus-visible,a:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media (pointer:coarse){button{min-height:44px}}
 .tools{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:20px 0 0}
-.tools input{flex:1 1 220px;min-width:0;font:inherit;font-size:15px;padding:8px 10px;border:1px solid var(--line);border-radius:4px;background:var(--sheet);color:var(--ink)}
-.tools input:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+input[type=search],input[type=text],input[type=password]{flex:1 1 220px;min-width:0;font:inherit;font-size:15px;padding:8px 10px;border:1px solid var(--line);border-radius:4px;background:var(--sheet);color:var(--ink)}
 .count{font-size:13px;color:var(--ink-2)}
 ol{list-style:none;margin:0;padding:0;border:1px solid var(--line);background:var(--sheet)}
 ol>li+li{border-top:1px solid var(--line)}
@@ -33,13 +39,11 @@ ol>li+li{border-top:1px solid var(--line)}
 .no{font-family:var(--font-mono);font-size:13px;color:var(--ink-2);font-variant-numeric:tabular-nums;white-space:nowrap}
 .t{font-weight:600;letter-spacing:.06em;text-transform:uppercase;font-size:14px;color:inherit;text-decoration:none}
 a.t:hover,a.t:focus-visible{color:var(--accent)}
-a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .d{grid-column:2;color:var(--ink-2);font-size:14px}
 .meta{grid-column:3;grid-row:1;font-family:var(--font-mono);font-size:12px;color:var(--ink-2);white-space:nowrap}
 .tag{display:inline-block;margin-left:8px;padding:0 6px;border:1px solid var(--line);border-radius:3px;font-family:var(--font-mono);font-size:11px;letter-spacing:0;text-transform:none;color:var(--ink-2);vertical-align:1px}
 details{grid-column:2 / -1;margin-top:4px}
 summary{cursor:pointer;font-size:13px;color:var(--ink-2);width:max-content;max-width:100%}
-summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .revs{margin:8px 0 0;padding:0;list-style:none;border-left:2px solid var(--line)}
 .revs li{display:grid;grid-template-columns:48px 96px 1fr;gap:2px 12px;padding:4px 0 4px 12px;font-size:13px}
 .revs .r{font-family:var(--font-mono)}
@@ -48,9 +52,33 @@ summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .archive .t{color:var(--ink-2)}
 .empty{padding:14px 16px;color:var(--ink-2);font-size:14px}
 .msg{margin-top:20px;padding:12px 16px;border:1px solid var(--accent);background:var(--sheet)}
+
+/* Admin */
+.admin{grid-column:2 / -1;display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.admin form{display:flex;flex-wrap:wrap;gap:8px;width:100%}
+.admin form input{flex:1 1 240px}
+.bar{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;margin-top:20px;padding:10px 12px;border:1px solid var(--accent);border-radius:4px;background:var(--sheet);font-size:14px}
+.bar .who{flex:1 1 auto}
+.jobs{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:6px}
+.jobs li{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline;padding:8px 12px;border:1px solid var(--line);border-radius:4px;background:var(--sheet);font-size:14px}
+.jobs .st{font-family:var(--font-mono);font-size:12px}
+.jobs .ok{color:var(--ok)} .jobs .bad{color:var(--bad)} .jobs .run{color:var(--ink-2)}
+.jobs a{color:var(--accent)}
+dialog{width:min(520px,calc(100vw - 32px));max-height:calc(100dvh - 32px);padding:0;border:1px solid var(--line);border-radius:8px;background:var(--sheet);color:var(--ink)}
+dialog::backdrop{background:rgba(10,14,12,.45)}
+.dlg{display:flex;flex-direction:column;gap:12px;padding:20px}
+.dlg h2{margin:0;color:var(--ink)}
+.dlg p,.dlg ol.steps{margin:0;font-size:14px}
+ol.steps{list-style:decimal;padding-left:22px;border:0;background:none;display:grid;gap:6px}
+.dlg input[type=password]{flex:none;width:100%}
+ol.steps li+li{border:0}
+.dlg a{color:var(--accent)}
+.dlg label{display:flex;gap:8px;align-items:center;font-size:14px}
+.dlg .actions{display:flex;justify-content:flex-end;gap:8px}
+.err{color:var(--bad);font-size:14px}
 @media (max-width:600px){
   .row{grid-template-columns:1fr}
-  .d,.meta,details{grid-column:1;grid-row:auto}
+  .d,.meta,details,.admin{grid-column:1;grid-row:auto}
   .revs li{grid-template-columns:40px 90px 1fr}
 }
 footer{margin-top:18px;font-size:12px;color:var(--ink-2)}
@@ -58,8 +86,21 @@ footer{margin-top:18px;font-size:12px;color:var(--ink-2)}
 </head>
 <body>
 <main>
-  <h1>Tekeningenregister</h1>
-  <p class="sub">3D-werktekeningen. Open een tekening om te draaien, te zoomen, de maten te bekijken en af te drukken.</p>
+  <div class="head">
+    <div>
+      <h1>Tekeningenregister</h1>
+      <p class="sub">3D-werktekeningen. Open een tekening om te draaien, te zoomen, de maten te bekijken en af te drukken.</p>
+    </div>
+    <button type="button" id="login-btn">Beheer</button>
+  </div>
+
+  <div class="bar" id="admin-bar" hidden>
+    <span class="who" id="who"></span>
+    <button type="button" id="check-btn">Register controleren</button>
+    <button type="button" id="logout-btn">Afmelden</button>
+  </div>
+  <ul class="jobs" id="jobs" aria-live="polite"></ul>
+
   <div class="tools">
     <input type="search" id="q" placeholder="Zoek op nummer of naam" aria-label="Zoek tekening">
     <span class="count" id="count" aria-live="polite"></span>
@@ -73,50 +114,236 @@ footer{margin-top:18px;font-size:12px;color:var(--ink-2)}
   <div class="msg" id="msg" hidden></div>
   <footer>Maten in mm · eerste-hoekprojectie · oudere revisies blijven bewaard en tonen bij openen dat ze vervallen zijn</footer>
 </main>
+
+<dialog id="login-dlg" aria-labelledby="login-title">
+  <form class="dlg" id="login-form" method="dialog">
+    <h2 id="login-title">Aanmelden voor beheer</h2>
+    <p>Om wijzigingen op te slaan heeft deze pagina een sleutel van GitHub nodig. Die maak je één keer aan per apparaat.</p>
+    <ol class="steps">
+      <li><a id="token-link" href="#" target="_blank" rel="noopener">Maak een sleutel aan op GitHub</a> (opent in een nieuw tabblad).</li>
+      <li>Kies bij <strong>Repository access</strong>: <em>Only select repositories</em> → <strong>prototypes</strong>.</li>
+      <li>Zet bij <strong>Permissions</strong> → <strong>Actions</strong> op <em>Read and write</em> en <strong>Contents</strong> op <em>Read-only</em>.</li>
+      <li>Klik <strong>Generate token</strong>, kopieer de sleutel en plak hem hieronder.</li>
+    </ol>
+    <input type="password" id="token" autocomplete="off" spellcheck="false" placeholder="github_pat_…" aria-label="Sleutel">
+    <label><input type="checkbox" id="remember" checked> Onthouden op dit apparaat</label>
+    <p class="err" id="login-err" hidden></p>
+    <div class="actions">
+      <button type="button" id="login-cancel">Annuleren</button>
+      <button type="submit" class="primary" id="login-go">Aanmelden</button>
+    </div>
+  </form>
+</dialog>
+
 <script>
 (function(){
+  const OWNER = 'AfricaBambaata', REPO = 'prototypes', WORKFLOW = 'register.yml';
+  const API = 'https://api.github.com';
+  const KEY = 'tr-token';
+  const $ = id => document.getElementById(id);
   const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
   const latest = d => d.revisions[d.revisions.length - 1];
   const fmtDate = s => { const [y,m,d] = (s||'').split('-'); return d ? `${d}-${m}-${y}` : (s||''); };
   let data = [];
+  let token = null, user = null;
+  let openForm = null;          // drawing number whose "new revision" form is open
+  const busy = new Set();       // drawings with a running job
 
+  // ---------- Storage (the key never leaves this browser except to api.github.com) ----------
+  const store = {
+    get(){ try { return localStorage.getItem(KEY) || sessionStorage.getItem(KEY); } catch (_) { return null; } },
+    set(v, remember){ try { (remember ? localStorage : sessionStorage).setItem(KEY, v); } catch (_) {} },
+    clear(){ try { localStorage.removeItem(KEY); sessionStorage.removeItem(KEY); } catch (_) {} }
+  };
+
+  function gh(path, opts = {}){
+    return fetch(API + path, { ...opts, headers: {
+      Authorization: 'Bearer ' + token, Accept: opts.accept || 'application/vnd.github+json',
+      'X-GitHub-Api-Version': '2022-11-28', ...(opts.body ? { 'Content-Type': 'application/json' } : {})
+    }});
+  }
+
+  // ---------- List ----------
   function row(d){
     const L = latest(d);
-    const older = d.revisions.slice(0, -1).reverse();
     const lang = d.lang && d.lang !== 'nl' ? `<span class="tag">${esc(d.lang.toUpperCase())}</span>` : '';
     const hist = d.revisions.length > 1 || d.status === 'archived'
       ? `<details><summary>${d.revisions.length} ${d.revisions.length === 1 ? 'revisie' : 'revisies'}</summary><ul class="revs">${
           d.revisions.slice().reverse().map(r => `<li><span class="r">${esc(r.rev)}</span><span class="dt">${esc(fmtDate(r.date))}</span><span><a href="${esc(r.file)}">${esc(r.note || 'Revisie ' + r.rev)}</a></span></li>`).join('')
         }</ul></details>` : '';
+    let admin = '';
+    if (user) {
+      const dis = busy.has(d.number) ? ' disabled' : '';
+      const next = String.fromCharCode(L.rev.charCodeAt(0) + 1);
+      admin = openForm === d.number
+        ? `<div class="admin"><form data-revise="${esc(d.number)}">
+             <input type="text" name="note" required maxlength="120" placeholder="Wat verandert er in revisie ${esc(next)}?" aria-label="Wat verandert er in revisie ${esc(next)}">
+             <button type="submit" class="primary">Revisie ${esc(next)} maken</button>
+             <button type="button" data-cancel>Annuleren</button>
+           </form></div>`
+        : `<div class="admin">
+             ${d.status === 'archived' ? '' : `<button type="button" data-act="revise" data-n="${esc(d.number)}"${dis}>Nieuwe revisie</button>`}
+             ${d.status === 'archived'
+               ? `<button type="button" data-act="restore" data-n="${esc(d.number)}"${dis}>Terugzetten</button>`
+               : `<button type="button" data-act="archive" data-n="${esc(d.number)}"${dis}>Archiveren</button>`}
+           </div>`;
+    }
     return `<li><div class="row">
       <span class="no">${esc(d.number)}-${esc(L.rev)}</span>
       <a class="t" href="${esc(L.file)}">${esc(d.title)}${lang}</a>
       <span class="d">${esc(d.description)}</span>
       <span class="meta">rev ${esc(L.rev)} · ${esc(fmtDate(L.date))}</span>
-      ${hist}
+      ${hist}${admin}
     </div></li>`;
   }
 
   function render(){
-    const q = document.getElementById('q').value.trim().toLowerCase();
+    const q = $('q').value.trim().toLowerCase();
     const match = d => !q || (d.number + ' ' + d.title + ' ' + d.description).toLowerCase().includes(q);
     const cur = data.filter(d => d.status !== 'archived' && match(d));
     const arc = data.filter(d => d.status === 'archived' && match(d));
-    document.getElementById('current').innerHTML = cur.length ? cur.map(row).join('') : '<li class="empty">Geen tekeningen gevonden.</li>';
-    document.getElementById('archive').innerHTML = arc.map(row).join('');
-    document.getElementById('archive-section').hidden = !arc.length;
-    document.getElementById('count').textContent = `${cur.length} actueel` + (arc.length ? ` · ${arc.length} gearchiveerd` : '');
+    $('current').innerHTML = cur.length ? cur.map(row).join('') : '<li class="empty">Geen tekeningen gevonden.</li>';
+    $('archive').innerHTML = arc.map(row).join('');
+    $('archive-section').hidden = !arc.length;
+    $('count').textContent = `${cur.length} actueel` + (arc.length ? ` · ${arc.length} gearchiveerd` : '');
+    const f = document.querySelector('form[data-revise] input');
+    if (f) f.focus();
   }
 
-  fetch('drawings.json', { cache: 'no-cache' })
-    .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
-    .then(j => { data = (j.drawings || []).filter(d => d.revisions && d.revisions.length); render(); })
-    .catch(() => {
-      const m = document.getElementById('msg');
-      m.textContent = 'Het register (drawings.json) kon niet geladen worden.';
-      m.hidden = false;
-    });
-  document.getElementById('q').addEventListener('input', render);
+  function setData(j){ data = (j.drawings || []).filter(d => d.revisions && d.revisions.length); render(); }
+
+  // Signed in, read the register straight from the repository: it is up to date the moment a job
+  // finishes, while the published site needs another minute.
+  function loadData(){
+    const fromRepo = user
+      ? gh(`/repos/${OWNER}/${REPO}/contents/drawings.json?ref=main&t=${Date.now()}`, { accept: 'application/vnd.github.raw+json' })
+      : fetch('drawings.json', { cache: 'no-cache' });
+    return fromRepo.then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+      .then(j => { $('msg').hidden = true; setData(j); })
+      .catch(() => { $('msg').textContent = 'Het register (drawings.json) kon niet geladen worden.'; $('msg').hidden = false; });
+  }
+
+  // ---------- Sign in ----------
+  $('token-link').href = 'https://github.com/settings/personal-access-tokens/new?' + new URLSearchParams({
+    name: 'Tekeningenregister', description: 'Beheer van het tekeningenregister (' + location.host + ')',
+    target_name: OWNER, expires_in: '90', actions: 'write', contents: 'read'
+  });
+  async function signIn(t){
+    token = t;
+    const [u, r] = await Promise.all([gh('/user'), gh(`/repos/${OWNER}/${REPO}`)]);
+    if (u.status === 401 || r.status === 401) throw new Error('Deze sleutel is ongeldig of verlopen.');
+    if (!r.ok) throw new Error('Deze sleutel geeft geen toegang tot de repository "prototypes". Controleer stap 2.');
+    const repo = await r.json();
+    if (repo.permissions && !repo.permissions.push) throw new Error('Dit account mag niets wijzigen in "prototypes". Vraag de eigenaar om schrijfrechten.');
+    const probe = await gh(`/repos/${OWNER}/${REPO}/actions/workflows/${WORKFLOW}`);
+    if (!probe.ok) throw new Error('Deze sleutel mag het beheer niet starten. Zet bij stap 3 "Actions" op "Read and write".');
+    user = u.ok ? (await u.json()).login : 'beheerder';
+  }
+  function showAdmin(){
+    $('login-btn').hidden = !!user;
+    $('admin-bar').hidden = !user;
+    $('who').textContent = user ? `Beheer actief · aangemeld als ${user}` : '';
+    loadData();
+  }
+  $('login-btn').addEventListener('click', () => { $('login-err').hidden = true; $('token').value = ''; $('login-dlg').showModal(); });
+  $('login-cancel').addEventListener('click', () => $('login-dlg').close());
+  $('login-form').addEventListener('submit', async e => {
+    e.preventDefault();
+    const t = $('token').value.trim();
+    if (!t) return;
+    $('login-go').disabled = true;
+    try {
+      await signIn(t);
+      store.set(t, $('remember').checked);
+      $('login-dlg').close();
+      showAdmin();
+    } catch (err) {
+      token = null; user = null;
+      $('login-err').textContent = err.message === 'Failed to fetch' ? 'GitHub is niet bereikbaar. Probeer het opnieuw.' : err.message;
+      $('login-err').hidden = false;
+    } finally { $('login-go').disabled = false; }
+  });
+  $('logout-btn').addEventListener('click', () => { store.clear(); token = null; user = null; openForm = null; showAdmin(); });
+
+  // ---------- Jobs: start the register workflow and follow it until it is done ----------
+  const ACTIONS = { revise: 'Nieuwe revisie', archive: 'Archiveren', restore: 'Terugzetten uit archief', check: 'Alleen controleren' };
+  const DONE = { revise: 'revisie gemaakt', archive: 'gearchiveerd', restore: 'teruggezet', check: 'register in orde' };
+  const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+  async function startJob(kind, number, note){
+    const li = document.createElement('li');
+    const label = (number ? number + ' · ' : '') + ACTIONS[kind];
+    const set = (cls, text, link) => { li.innerHTML = `<span>${esc(label)}</span><span class="st ${cls}">${esc(text)}</span>${link ? `<a href="${esc(link)}" target="_blank" rel="noopener">details</a>` : ''}`; };
+    set('run', 'wordt gestart…');
+    $('jobs').prepend(li);
+    if (number) { busy.add(number); render(); }
+    const since = Date.now() - 10000;
+    try {
+      const r = await gh(`/repos/${OWNER}/${REPO}/actions/workflows/${WORKFLOW}/dispatches`, {
+        method: 'POST', body: JSON.stringify({ ref: 'main', inputs: { actie: ACTIONS[kind], tekening: number || '', wijziging: note || '' } })
+      });
+      if (!r.ok) throw new Error(r.status === 403 || r.status === 404 ? 'geen toestemming om te starten' : 'starten mislukt (' + r.status + ')');
+      set('run', 'bezig…');
+      let run = null;
+      for (let i = 0; i < 100; i++) {
+        await sleep(i < 5 ? 2000 : 4000);
+        const q = await gh(`/repos/${OWNER}/${REPO}/actions/workflows/${WORKFLOW}/runs?event=workflow_dispatch&per_page=10`);
+        if (!q.ok) continue;
+        const runs = (await q.json()).workflow_runs || [];
+        run = (run && runs.find(x => x.id === run.id)) ||
+              runs.find(x => new Date(x.created_at).getTime() >= since && (!x.actor || x.actor.login === user)) || run;
+        if (!run) continue;
+        if (run.status !== 'completed') { set('run', run.status === 'queued' ? 'in de wachtrij…' : 'bezig…'); continue; }
+        if (run.conclusion === 'success') {
+          set('ok', `klaar: ${DONE[kind]} · de site is over ongeveer een minuut bijgewerkt`);
+          await loadData();
+        } else {
+          set('bad', 'mislukt', run.html_url);
+        }
+        return;
+      }
+      set('bad', 'duurt te lang — kijk later opnieuw', run && run.html_url);
+    } catch (err) {
+      set('bad', err.message === 'Failed to fetch' ? 'GitHub is niet bereikbaar' : err.message);
+    } finally {
+      if (number) { busy.delete(number); render(); }
+    }
+  }
+
+  document.addEventListener('click', e => {
+    const b = e.target.closest('button[data-act]');
+    if (b) {
+      const n = b.dataset.n;
+      if (b.dataset.act === 'revise') { openForm = n; render(); return; }
+      const d = data.find(x => x.number === n);
+      const ask = b.dataset.act === 'archive'
+        ? `${n} (${d.title}) archiveren? De tekening blijft bewaard en kan teruggezet worden.`
+        : `${n} (${d.title}) terugzetten uit het archief?`;
+      if (confirm(ask)) startJob(b.dataset.act, n);
+      return;
+    }
+    if (e.target.closest('button[data-cancel]')) { openForm = null; render(); }
+  });
+  document.addEventListener('submit', e => {
+    const f = e.target.closest('form[data-revise]');
+    if (!f) return;
+    e.preventDefault();
+    const note = f.elements.note.value.trim();
+    if (!note) return;
+    const n = f.dataset.revise;
+    openForm = null;
+    startJob('revise', n, note);
+  });
+  $('check-btn').addEventListener('click', () => startJob('check'));
+  $('q').addEventListener('input', render);
+
+  // ---------- Start ----------
+  const saved = store.get();
+  if (saved) {
+    signIn(saved).then(showAdmin).catch(() => { token = null; user = null; showAdmin(); });
+  } else {
+    loadData();
+  }
 })();
 </script>
 </body>

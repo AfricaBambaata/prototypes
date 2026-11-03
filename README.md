@@ -23,14 +23,13 @@ Interactive 3D technical drawings, served with GitHub Pages. Start at `index.htm
 | `viewer/<version>/` | Released builds of the shared viewer (source in the private `3dViewer` repository). Do not edit here |
 | `tools/register.mjs` | Register tool, see below |
 
-## Managing drawings (in the browser)
+## Managing drawings (on the register page)
 
-1. Open https://github.com/AfricaBambaata/prototypes/actions/workflows/register.yml
-2. Click **Run workflow** (right).
-3. Choose the action (**Nieuwe revisie**, **Archiveren**, **Terugzetten uit archief** or **Alleen controleren**), type the drawing number without revision letter (e.g. `MHB-0102`) and, for a new revision, what changed.
-4. Click the green **Run workflow**. After about a minute the run shows a green tick and the site is updated.
+Open the register page and click **Beheer**. The first time on a device, the page asks for a GitHub access token; the dialog explains how to make one (fine-grained, only the `prototypes` repository, *Actions: Read and write*, *Contents: Read-only*). The token is stored only in that browser and is sent only to api.github.com.
 
-Only people with write access to this repository see the **Run workflow** button.
+Signed in, every drawing gets **Nieuwe revisie** and **Archiveren** (or **Terugzetten** in the archive), plus **Register controleren** at the top. The page starts the "Tekeningen beheren" workflow (`.github/workflows/register.yml`), which runs `tools/register.mjs` on GitHub and commits the result, and shows its progress. Only accounts with write access to this repository can make changes.
+
+The same workflow can also be started under **Actions → Tekeningen beheren → Run workflow**.
 
 ## Managing drawings (command line)
 
