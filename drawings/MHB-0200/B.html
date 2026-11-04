@@ -28,11 +28,11 @@
 // Muurvlak is x = 0, x positief = weg van de muur. Buis loopt langs Z, evenwijdig aan de muur.
 const TUBE = { d:40, len:3000, fromEnd:700 };
 const RING = { OD:46, ID:41, width:30 };
-const ROD  = { d:8, len:150, anchor:50, pitch:1.25 };
+const ROD  = { d:8, len:130, anchor:70, pitch:1.25 };   // rev B: 60 vrij tot de muur + 70 in de muur
 const rt = TUBE.d/2, R = RING.OD/2, r = RING.ID/2, Wd = RING.width, rd = ROD.d/2;
-const XTIP  = ROD.len - ROD.anchor;          // 100: staafpunt, raakt de buis
-const XTUBE = XTIP + rt;                      // 120: hartlijn buis
-const XRING = XTUBE - (r - rt);               // 119.5: ring trekt de buis tegen de staafpunt
+const XTIP  = ROD.len - ROD.anchor;          // 60: staafpunt, raakt de buis (vrije ruimte buis–muur)
+const XTUBE = XTIP + rt;                      // 80: hartlijn buis
+const XRING = XTUBE - (r - rt);               // 79.5: ring trekt de buis tegen de staafpunt
 const THR_RING = 3;                           // draad ringkant, blijft binnen de ringwand
 const ZH = TUBE.len/2 - TUBE.fromEnd;         // 800: houders op z = ±800
 const SLOPE = 30*Math.PI/180;                 // de hele leuning kantelt 30° in het muurvlak
@@ -41,7 +41,7 @@ const WALL_Z = 1700, WALL_Y = 1000;
 DrawingViewer.create({
   lang: 'nl',
   title: 'Trapleuning met muurhouders',
-  subtitle: 'Ø40 × 3000 · helling 30° · 2× MHB-0102 · messing',
+  subtitle: 'Ø40 × 3000 · helling 30° · 60 vrij tot de muur · messing',
   number: 'MHB-0200-B',
   register: { url: '../../drawings.json', number: 'MHB-0200', rev: 'B' },
   colors: {
@@ -51,11 +51,11 @@ DrawingViewer.create({
   materials: { part: { metalness: 0.45, roughness: 0.38 }, tube: { metalness: 0.45, roughness: 0.32 } },
   modes: ['solid', 'xray'],
   views: [
-    { id: 'iso', label: 'Overzicht', tag: 'Overzicht', theta: 1.0, phi: 1.2, radius: 4600, target: [60, 0, 0] },
-    { id: 'front', theta: Math.PI/2, phi: Math.PI/2, radius: 4600, target: [60, 0, 0] },
-    { id: 'top', theta: Math.PI/2, phi: 0.0001, radius: 4600, target: [60, 0, 0] },
+    { id: 'iso', label: 'Overzicht', tag: 'Overzicht', theta: 1.0, phi: 1.2, radius: 4600, target: [XTUBE/2, 0, 0] },
+    { id: 'front', theta: Math.PI/2, phi: Math.PI/2, radius: 4600, target: [XTUBE/2, 0, 0] },
+    { id: 'top', theta: Math.PI/2, phi: 0.0001, radius: 4600, target: [XTUBE/2, 0, 0] },
     { id: 'detail', label: 'Detail houder', tag: 'Detail houder', theta: Math.PI/2 + 0.45, phi: 0.72, radius: 560,
-      target: [60, ZH*Math.sin(SLOPE), ZH*Math.cos(SLOPE)] }   // houder op z = +800, gekanteld
+      target: [XTUBE/2, ZH*Math.sin(SLOPE), ZH*Math.cos(SLOPE)] }   // houder op z = +800, gekanteld
   ],
   camera: { min: 60, max: 9000 },
   spinSpeed: 0.3,
@@ -63,13 +63,13 @@ DrawingViewer.create({
   titleBlock: [
     { k: 'Titel', v: 'Trapleuning met muurhouders', title: true },
     { k: 'Tekeningnr.', v: 'MHB-0200-B (samenstelling)' },
-    { k: 'Onderdelen', v: '1× buis Ø40 × 3000 · 2× muurhouder MHB-0102' },
-    { k: 'Muur tot hartlijn buis', v: '120' },
+    { k: 'Onderdelen', v: '1× buis Ø40 × 3000 · 2× muurhouder MHB-0102 met staaf M8 × 130 (70 in de muur)' },
+    { k: 'Muur tot buis · hartlijn', v: '60 vrij · 80' },
     { k: 'Speling buis in ring', v: '0,5 per zijde (Ø40 in Ø41)' },
     { k: 'Materiaal', v: 'Messing' },
     { k: 'Helling · Eenheden', v: '30° · mm' },
     { k: 'Projectie', v: 'Eerste hoek', projection: true },
-    { k: 'Getekend · Blad', v: '2026-11-03 · 1/1' }
+    { k: 'Getekend · Blad', v: '2026-11-04 · 1/1' }
   ],
   build(m) {
     const { THREE, V } = m;
@@ -163,10 +163,13 @@ DrawingViewer.create({
     for (let z=-1560; z<1560; z+=60){ cl.push(V(XTUBE,0,z), V(XTUBE,0,Math.min(z+36,1560))); cl.push(V(XTUBE,0,z+44), V(XTUBE,0,z+50)); }
     all.segments(cl);
 
-    detail.linear({ a: V(0,70,zf), b: V(XTUBE,70,zf), n: V(0,0,1), text: '120',
-      ext: [[V(0,rd,zf),V(0,74,zf)],[V(XTUBE,R+3,zf),V(XTUBE,74,zf)]] });
+    detail.linear({ a: V(0,92,zf), b: V(XTUBE,92,zf), n: V(0,0,1), text: String(XTUBE),
+      ext: [[V(0,rd,zf),V(0,96,zf)],[V(XTUBE,R+3,zf),V(XTUBE,96,zf)]] });
     detail.leader({ p: V(XRING+R*c45, R*c45, zf), e: V(XRING+R*c45+34, R*c45+34, zf), text: 'Muurhouder MHB-0102 (2×)' });
-    detail.leader({ p: V(-25, rd, ZH-rd), e: V(-45, 40, ZH-60), text: 'M8 × 50 chemisch anker' });
+    detail.leader({ p: V(-ROD.anchor/2, rd, ZH-rd), e: V(-ROD.anchor/2-20, 40, ZH-60), text: `M8 × ${ROD.anchor} chemisch anker` });
+    // Vrije ruimte tussen muur en buis (rev B: 60), gestapeld binnen de 80 tot de hartlijn
+    detail.linear({ a: V(0,48,zf), b: V(XTIP,48,zf), n: V(0,0,1), text: String(XTIP),
+      ext: [[V(XTIP,4,zf),V(XTIP,52,zf)]] });
     detail.leader({ p: V(XTUBE+rt*c45, rt*c45, ZH-110), e: V(XTUBE+rt*c45+30, rt*c45+30, ZH-110), text: 'Ø40' });
 
     // Maten op de muur (wereldassen): hartafstand van de ankers, horizontaal en in hoogte, plus de helling.
