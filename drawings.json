@@ -116,6 +116,23 @@
           "note": "Variant zonder aanslag"
         }
       ]
+    },
+    {
+      "number": "SOL-0101",
+      "title": "Zonnestelsel",
+      "description": "De zon en de acht planeten in ongeveer hun echte kleuren, met banen, de ringen van Saturnus en Uranus en de banden van Jupiter. Schematisch: groottes en afstanden niet op schaal.",
+      "lang": "nl",
+      "status": "current",
+      "revisions": [
+        {
+          "rev": "A",
+          "date": "2026-11-04",
+          "file": "drawings/SOL-0101/A.html",
+          "viewer": "1",
+          "note": "Eerste uitgave",
+          "status": "draft"
+        }
+      ]
     }
   ]
 }

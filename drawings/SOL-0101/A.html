@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Zonnestelsel</title>
+<!-- link-preview -->
+<meta name="description" content="De zon en de acht planeten in ongeveer hun echte kleuren, met banen, de ringen van Saturnus en Uranus en de banden van Jupiter. Schematisch: groottes en afstanden niet op schaal. Revisie A van 2026-11-04.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Tekeningenregister">
+<meta property="og:title" content="Zonnestelsel · SOL-0101-A">
+<meta property="og:description" content="De zon en de acht planeten in ongeveer hun echte kleuren, met banen, de ringen van Saturnus en Uranus en de banden van Jupiter. Schematisch: groottes en afstanden niet op schaal. Revisie A van 2026-11-04.">
+<meta property="og:url" content="https://africabambaata.github.io/prototypes/drawings/SOL-0101/A.html">
+<meta property="og:image" content="https://africabambaata.github.io/prototypes/previews/SOL-0101-A.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Zonnestelsel · SOL-0101-A">
+<meta name="twitter:card" content="summary_large_image">
+<!-- /link-preview -->
+<link rel="stylesheet" href="../../viewer/1/viewer.css">
+</head>
+<body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="../../viewer/1/viewer.js"></script>
+<script>
+// Zonnestelsel SOL-0101-A. Schematisch: op ware schaal zou alles een stipje zijn.
+// Baanstraal = 20 + 48 × √(afstand in AE); planeetstraal = 3,5 × √(straal / straal aarde). Zon verkleind.
+// Banen in het XZ-vlak (Y omhoog); de planeten staan op gespreide posities zodat ze niet op één lijn liggen.
+const PLANETS = [
+  // naam, afstand (AE), straal (km), positie op de baan (graden), kleurtoken
+  { name: 'Mercurius', au: 0.39, km: 2440,  deg: 20,  token: 'mercurius' },
+  { name: 'Venus',     au: 0.72, km: 6052,  deg: 140, token: 'venus' },
+  { name: 'Aarde',     au: 1.00, km: 6371,  deg: 205, token: 'aarde' },
+  { name: 'Mars',      au: 1.52, km: 3390,  deg: 320, token: 'mars' },
+  { name: 'Jupiter',   au: 5.20, km: 69911, deg: 60,  token: 'jupiter' },
+  { name: 'Saturnus',  au: 9.54, km: 58232, deg: 195, token: 'saturnus' },
+  { name: 'Uranus',    au: 19.2, km: 25362, deg: 290, token: 'uranus' },
+  { name: 'Neptunus',  au: 30.1, km: 24622, deg: 110, token: 'neptunus' }
+];
+const orbitR = au => 20 + 48 * Math.sqrt(au);
+const bodyR = km => 3.5 * Math.sqrt(km / 6371);
+const SUN_R = 20;
+
+// Ongeveer de echte kleuren, gelijk in licht en donker thema.
+const BODY = {
+  mercurius: '#9c9690', venus: '#e3c98f', aarde: '#2f6db5', mars: '#c1532c',
+  jupiter: '#d8b98f', jup1: '#efe2c6', jup2: '#b8865a', jup3: '#9d5f3d',
+  saturnus: '#e2c98c', ring: '#cdb98a', uranus: '#9ad6dc', uranusring: '#8fb7bd', neptunus: '#3f63d8',
+  ijs: '#f4f6f8', zon: '#ffbf2e', gloed: '#ff9a1a', baan: '#56607a', ster: '#d6dcea'
+};
+const SPACE = 'radial-gradient(120% 90% at 50% 35%,#1d2436 0%,#0c0f18 60%,#05070b 100%)';
+
+const viewer = DrawingViewer.create({
+  lang: 'nl',
+  title: 'Zonnestelsel',
+  subtitle: 'zon en acht planeten · schematisch, niet op schaal',
+  number: 'SOL-0101-A',
+  register: { url: '../../drawings.json', number: 'SOL-0101', rev: 'A' },
+  colors: {
+    light: { ...BODY, stage: SPACE },
+    dark: { ...BODY, stage: SPACE }
+  },
+  materials: Object.fromEntries(PLANETS.map(p => [p.token, { metalness: 0, roughness: 0.85 }])),
+  modes: ['solid'],
+  views: [
+    { id: 'iso', label: 'Overzicht', tag: 'Overzicht', theta: 0.55, phi: 1.08, radius: 760, target: [0, 0, 0] },
+    { id: 'top', label: 'Boven', tag: 'Bovenaanzicht', theta: 0, phi: 0.0001, radius: 820, target: [0, 0, 0] },
+    { id: 'front', label: 'Zijkant', tag: 'Zijaanzicht (in het baanvlak)', theta: 0, phi: Math.PI / 2, radius: 820, target: [0, 0, 0] },
+    { id: 'inner', label: 'Binnenplaneten', tag: 'Binnenplaneten', theta: 0.55, phi: 0.95, radius: 230, target: [0, 0, 0] }
+  ],
+  camera: { min: 60, max: 3000 },
+  spinSpeed: 0.15,
+  print: { scale: false },
+  titleBlock: [
+    { k: 'Titel', v: 'Zonnestelsel', title: true },
+    { k: 'Tekeningnr.', v: 'SOL-0101-A' },
+    { k: 'Inhoud', v: 'Zon, Mercurius, Venus, Aarde, Mars, Jupiter, Saturnus, Uranus, Neptunus' },
+    { k: 'Weergave', v: 'Schematisch: groottes en afstanden niet op schaal' },
+    { k: 'Banen', v: 'Straal ∝ √ afstand tot de zon (AE)' },
+    { k: 'Planeten', v: 'Straal ∝ √ ware straal; zon sterk verkleind' },
+    { k: 'Getekend · Blad', v: '2026-11-04 · 1/1' }
+  ],
+  build(m) {
+    const { THREE, V } = m;
+    const d = m.dims({ arrow: 3 });
+    const sphere = (r, seg = 48) => new THREE.SphereGeometry(r, seg, Math.round(seg * 0.66));
+    // Banden en kappen: een deel van een bol, net buiten het oppervlak van de planeet.
+    const band = (r, t0, t1, token, parent) => {
+      const g = new THREE.SphereGeometry(r * 1.004, 48, 6, 0, Math.PI * 2, t0, t1 - t0);
+      m.add(new THREE.Mesh(g, new THREE.MeshStandardMaterial({ metalness: 0, roughness: 0.85 })), { color: token, parent });
+    };
+    const ring = (r0, r1, token, opacity, parent) => {
+      const g = new THREE.RingGeometry(r0, r1, 128, 1);
+      g.rotateX(-Math.PI / 2);
+      const mat = new THREE.MeshStandardMaterial({ metalness: 0, roughness: 0.9, side: THREE.DoubleSide, transparent: true, opacity, depthWrite: false });
+      m.add(new THREE.Mesh(g, mat), { color: token, parent });
+    };
+
+    // Zon: gloeit (geen schaduwzijde) en verlicht de planeten vanuit het midden
+    m.add(new THREE.Mesh(sphere(SUN_R, 64), new THREE.MeshBasicMaterial()), { color: 'zon' });
+    m.add(new THREE.Mesh(sphere(SUN_R * 1.35, 48), new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.34, depthWrite: false, blending: THREE.AdditiveBlending })), { color: 'gloed', print: false });
+    m.add(new THREE.PointLight(0xffffff, 1.15, 0, 0));
+    d.label({ pos: V(0, SUN_R + 9, 0), text: 'Zon' });
+
+    for (const p of PLANETS) {
+      const R = orbitR(p.au), r = bodyR(p.km), a = p.deg * Math.PI / 180;
+      // Baan
+      const pts = [];
+      for (let i = 0; i < 256; i++) { const t = i / 256 * Math.PI * 2; pts.push(V(R * Math.cos(t), 0, R * Math.sin(t))); }
+      m.add(new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(pts), new THREE.LineBasicMaterial({ transparent: true, opacity: 0.8 })), { color: 'baan' });
+      // Planeet
+      const g = m.group();
+      g.position.set(R * Math.cos(a), 0, R * Math.sin(a));
+      m.part(sphere(r), { material: p.token, parent: g, edges: 89 });
+      if (p.name === 'Aarde' || p.name === 'Mars') {          // poolkappen
+        band(r, 0, 0.42, 'ijs', g); band(r, Math.PI - 0.42, Math.PI, 'ijs', g);
+      }
+      if (p.name === 'Jupiter') {                              // wolkenbanden
+        const B = [[0.95, 1.18, 'jup2'], [1.18, 1.32, 'jup1'], [1.32, 1.42, 'jup3'], [1.72, 1.86, 'jup3'], [1.86, 2.02, 'jup1'], [2.02, 2.25, 'jup2']];
+        B.forEach(([t0, t1, tok]) => band(r, t0, t1, tok, g));
+      }
+      if (p.name === 'Saturnus') {                             // ringen, 27° gekanteld
+        const t = m.group(g); t.rotation.z = 26.7 * Math.PI / 180;
+        ring(r * 1.25, r * 1.95, 'ring', 0.9, t); ring(r * 2.02, r * 2.3, 'ring', 0.6, t);
+      }
+      if (p.name === 'Uranus') {                               // dunne ringen; Uranus ligt op zijn kant (98°)
+        const t = m.group(g); t.rotation.z = 98 * Math.PI / 180;
+        ring(r * 1.55, r * 1.75, 'uranusring', 0.55, t);
+      }
+      const ext = p.name === 'Saturnus' ? r * 1.1 : r;
+      d.label({ pos: V(g.position.x, ext + 7, g.position.z), text: p.name });
+    }
+
+    // Sterrenhemel (niet afgedrukt); vaste reeks zodat de voorbeeldbeelden niet verspringen
+    let seed = 7;
+    const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+    const stars = [];
+    for (let i = 0; i < 1400; i++) {
+      const u = rnd() * 2 - 1, t = rnd() * Math.PI * 2, s = Math.sqrt(1 - u * u);
+      stars.push(V(1500 * s * Math.cos(t), 1500 * u, 1500 * s * Math.sin(t)));
+    }
+    m.add(new THREE.Points(new THREE.BufferGeometry().setFromPoints(stars), new THREE.PointsMaterial({ size: 1.6, sizeAttenuation: false })), { color: 'ster', print: false });
+  }
+});
+
+// De zon is hier het hoofdlicht: het algemene licht van de viewer (gemaakt voor onderdelen) gaat
+// grotendeels uit, zodat elke planeet een dag- en een nachtzijde krijgt en de kleuren niet overbelichten.
+viewer.scene.traverse(o => {
+  if (o.isHemisphereLight) o.intensity = 0.28;
+  if (o.isDirectionalLight) o.intensity *= 0.15;
+});
+</script>
+</body>
+</html>
