@@ -12,6 +12,8 @@ on:
         required: true
         options:
           - Nieuwe revisie
+          - Vrijgeven
+          - Concept verwijderen
           - Archiveren
           - Terugzetten uit archief
           - Alleen controleren
@@ -53,6 +55,8 @@ jobs:
           fi
           case "$ACTIE" in
             "Nieuwe revisie")          node tools/register.mjs revise "$TEKENING" --note "${WIJZIGING:-Nieuwe revisie}" ;;
+            "Vrijgeven")               node tools/register.mjs release "$TEKENING" ;;
+            "Concept verwijderen")     node tools/register.mjs discard "$TEKENING" ;;
             "Archiveren")              node tools/register.mjs archive "$TEKENING" ;;
             "Terugzetten uit archief") node tools/register.mjs restore "$TEKENING" ;;
             "Alleen controleren")      ;;

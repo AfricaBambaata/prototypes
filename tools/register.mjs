@@ -3,13 +3,18 @@
 //
 //   node tools/register.mjs check                      validate the register and rewrite the short links
 //   node tools/register.mjs revise MHB-0102 --note "Langere staaf" [--viewer 2]
-//                                                      new revision: copies the latest file to the next letter
+//                                                      new revision as a draft ("in bewerking"): copies the
+//                                                      latest file to the next letter
+//   node tools/register.mjs release MHB-0102           release the draft: it becomes the current revision
+//   node tools/register.mjs discard MHB-0102           delete the draft (file and register entry)
 //   node tools/register.mjs archive MHB-0102           move a drawing to the archive
 //   node tools/register.mjs restore MHB-0102           bring it back from the archive
 //
 // Rules: a released revision file is never edited again; changes go into a new revision.
-// Old revisions stay online and show a "superseded" banner, read from drawings.json.
-import { readFileSync, writeFileSync, existsSync, copyFileSync, mkdirSync } from 'node:fs';
+// A new revision starts as a draft (status "draft"): only the owner sees it in the register, and short
+// links, previews and "superseded" banners keep pointing at the latest released revision until it is
+// released. Old revisions stay online and show a "superseded" banner, read from drawings.json.
+import { readFileSync, writeFileSync, existsSync, copyFileSync, mkdirSync, unlinkSync, rmSync } from 'node:fs';
 import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -19,6 +24,9 @@ const load = () => JSON.parse(readFileSync(REG, 'utf8'));
 const save = reg => writeFileSync(REG, JSON.stringify(reg, null, 2) + '\n');
 const today = () => new Date().toISOString().slice(0, 10);
 const nextRev = r => (r === 'Z' ? null : String.fromCharCode(r.charCodeAt(0) + 1));
+const isDraft = r => r.status === 'draft';
+const released = d => d.revisions.filter(r => !isDraft(r));
+const latestReleased = d => { const list = released(d); return list[list.length - 1] || null; };
 const die = msg => { console.error(msg); process.exit(1); };
 
 function find(reg, number) {
@@ -54,7 +62,7 @@ function previewTags(reg, { title, description, path, image }) {
   ].join('\n');
 }
 const latestTags = (reg, d) => {
-  const L = d.revisions[d.revisions.length - 1];
+  const L = latestReleased(d);
   return previewTags(reg, {
     title: `${d.title} · ${d.number}`,
     description: `${d.description} Altijd de laatste revisie (nu ${L.rev}).`,
@@ -103,14 +111,15 @@ ${tags ? tags + '\n' : ''}<meta http-equiv="refresh" content="0; url=${target}">
 // (e.g. trapleuning.html) points there too, so shared links keep working after a new revision.
 function sync(reg) {
   for (const d of reg.drawings) {
-    const latest = d.revisions[d.revisions.length - 1];
+    d.revisions.forEach(r => setRevisionTags(reg, d, r));
+    const latest = latestReleased(d);
+    if (!latest) continue; // a brand-new drawing that is still a draft has no public links yet
     const dir = join(ROOT, 'drawings', d.number);
     mkdirSync(dir, { recursive: true });
     const title = `${d.title} (${d.number}-${latest.rev})`;
     const tags = latestTags(reg, d);
     writeFileSync(join(dir, 'index.html'), redirectPage(relative(dir, join(ROOT, latest.file)), title, tags));
     if (d.link) writeFileSync(join(ROOT, d.link), redirectPage(`drawings/${d.number}/`, title, tags));
-    d.revisions.forEach(r => setRevisionTags(reg, d, r));
   }
 }
 
@@ -123,6 +132,10 @@ function check(reg) {
     if (!['current', 'archived'].includes(d.status)) problems.push(`${d.number}: status must be "current" or "archived"`);
     if (!d.revisions || !d.revisions.length) { problems.push(`${d.number}: no revisions`); continue; }
     let prev = '';
+    d.revisions.forEach((r, i) => {
+      if (r.status && r.status !== 'draft') problems.push(`${d.number}-${r.rev}: revision status must be "draft" or absent`);
+      if (isDraft(r) && i !== d.revisions.length - 1) problems.push(`${d.number}-${r.rev}: only the newest revision can be a draft`);
+    });
     for (const r of d.revisions) {
       if (!/^[A-Z]$/.test(r.rev) || r.rev <= prev) problems.push(`${d.number}: revisions must be single letters in order (got ${r.rev} after ${prev || 'start'})`);
       prev = r.rev;
@@ -149,6 +162,7 @@ if (cmd === 'revise') {
   if (!number) die('Usage: revise <NUMBER> --note "what changed" [--viewer 2 | x.y.z]');
   const d = find(reg, number);
   const last = d.revisions[d.revisions.length - 1];
+  if (isDraft(last)) die(`${number}-${last.rev} is still in progress. Release it or discard it first.`);
   const rev = nextRev(last.rev);
   if (!rev) die(`${number} is at revision Z`);
   const file = `drawings/${number}/${rev}.html`;
@@ -161,10 +175,36 @@ if (cmd === 'revise') {
     html = html.replace(/viewer\/\d+(?:\.\d+\.\d+)?\//g, `viewer/${viewer}/`);
   }
   writeFileSync(join(ROOT, file), html);
-  d.revisions.push({ rev, date: today(), file, viewer: viewer || last.viewer, note: opt('note') || `Revisie ${rev}` });
+  d.revisions.push({ rev, date: today(), file, viewer: viewer || last.viewer, note: opt('note') || `Revisie ${rev}`, status: 'draft' });
   if (d.status === 'archived') d.status = 'current';
   save(reg); sync(reg);
-  console.log(`${number}-${rev} created: ${file}. Edit that file; ${last.file} stays as it was and now shows as superseded.`);
+  console.log(`${number}-${rev} created as a draft: ${file}. Edit that file, then release it; until then ${last.file} stays the current revision.`);
+} else if (cmd === 'release') {
+  if (!number) die('Usage: release <NUMBER>');
+  const d = find(reg, number);
+  const last = d.revisions[d.revisions.length - 1];
+  if (!isDraft(last)) die(`${number} has no revision in progress.`);
+  delete last.status;
+  last.date = today(); // the date of issue
+  save(reg); sync(reg);
+  console.log(`${number}-${last.rev} released; it is now the current revision.`);
+} else if (cmd === 'discard') {
+  if (!number) die('Usage: discard <NUMBER>');
+  const d = find(reg, number);
+  const last = d.revisions[d.revisions.length - 1];
+  if (!isDraft(last)) die(`${number} has no revision in progress.`);
+  const file = join(ROOT, last.file);
+  if (existsSync(file)) unlinkSync(file);
+  const img = join(ROOT, 'previews', `${number}-${last.rev}.jpg`);
+  if (existsSync(img)) unlinkSync(img);
+  d.revisions.pop();
+  if (!d.revisions.length) {
+    reg.drawings = reg.drawings.filter(x => x !== d); // a new drawing that was never released
+    const dir = join(ROOT, 'drawings', number);
+    if (existsSync(dir)) rmSync(dir, { recursive: true });
+  }
+  save(reg); sync(reg);
+  console.log(`${number}-${last.rev} discarded.`);
 } else if (cmd === 'archive' || cmd === 'restore') {
   if (!number) die(`Usage: ${cmd} <NUMBER>`);
   find(reg, number).status = cmd === 'archive' ? 'archived' : 'current';
@@ -176,5 +216,5 @@ if (cmd === 'revise') {
   if (problems.length) { problems.forEach(p => console.log('  ' + p)); die(`${problems.length} problem(s) in the register`); }
   console.log(`register ok: ${reg.drawings.length} drawings, ${reg.drawings.reduce((n, d) => n + d.revisions.length, 0)} revisions; short links rewritten`);
 } else {
-  die('Commands: check | revise <NUMBER> --note "..." [--viewer x.y.z] | archive <NUMBER> | restore <NUMBER>');
+  die('Commands: check | revise <NUMBER> --note "..." [--viewer x.y.z] | release <NUMBER> | discard <NUMBER> | archive <NUMBER> | restore <NUMBER>');
 }

@@ -49,7 +49,13 @@ The same tool, run on a computer with Node.js:
 node tools/register.mjs revise MHB-0102 --note "Langere klemstaaf"
 ```
 
-Creates `drawings/MHB-0102/B.html` as a copy of the latest revision, with the drawing number and register block updated, and adds it to the register. Then edit the new file. Revision A stays online, and when someone opens it, it shows a "superseded" banner with a link to the current revision. Printouts of it carry "Vervallen" in the title block. Add `--viewer 1.1.0` to move the new revision to a newer viewer.
+Creates `drawings/MHB-0102/B.html` as a copy of the latest revision, with the drawing number and register block updated, and adds it to the register as a **draft** (in bewerking): visitors keep seeing revision A until it is released. Then edit the new file.
+
+```bash
+node tools/register.mjs release MHB-0102
+```
+
+Releases the draft: it becomes the current revision. `discard` deletes a draft instead. On the register page: ⋯ → Vrijgeven / Concept verwijderen. Revision A stays online, and when someone opens it, it shows a "superseded" banner with a link to the current revision. Printouts of it carry "Vervallen" in the title block. Add `--viewer 1.1.0` to move the new revision to a newer viewer.
 
 ```bash
 node tools/register.mjs archive SLV-0101
