@@ -5,11 +5,11 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Sleutel met achtkantgreep</title>
 <!-- link-preview -->
-<meta name="description" content="Messing sleutel: achtkantgreep SW 20 × 20, as Ø8 × 40, ronde aanslag Ø12 × 2 en vierkant 8 × 8 × 40 op één lijn; totaal 102 mm. Revisie A van 2026-11-04.">
+<meta name="description" content="Messing sleutel: achtkantgreep SW 20 × 20, as Ø8 × 40, ronde aanslag Ø16 × 2 en vierkant 8 × 8 × 40 op één lijn; totaal 102 mm. Revisie A van 2026-11-04.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Tekeningenregister">
 <meta property="og:title" content="Sleutel met achtkantgreep · OCT-0101-A">
-<meta property="og:description" content="Messing sleutel: achtkantgreep SW 20 × 20, as Ø8 × 40, ronde aanslag Ø12 × 2 en vierkant 8 × 8 × 40 op één lijn; totaal 102 mm. Revisie A van 2026-11-04.">
+<meta property="og:description" content="Messing sleutel: achtkantgreep SW 20 × 20, as Ø8 × 40, ronde aanslag Ø16 × 2 en vierkant 8 × 8 × 40 op één lijn; totaal 102 mm. Revisie A van 2026-11-04.">
 <meta property="og:url" content="https://africabambaata.github.io/prototypes/drawings/OCT-0101/A.html">
 <meta property="og:image" content="https://africabambaata.github.io/prototypes/previews/OCT-0101-A.jpg">
 <meta property="og:image:type" content="image/jpeg">
@@ -25,11 +25,11 @@
 <script src="../../viewer/1/viewer.js"></script>
 <script>
 // Sleutel met achtkantgreep OCT-0101-A (mm). Eén lijn langs X: achtkant (x 0–20), as Ø8 (x 20–60),
-// aanslag Ø12 × 2 (x 60–62), vierkant 8 × 8 (x 62–102). Platte vlakken van de achtkant boven, onder en opzij.
+// aanslag Ø16 × 2 (x 60–62), vierkant 8 × 8 (x 62–102). Platte vlakken van de achtkant boven, onder en opzij.
 const OCT = { af: 20, len: 20 };          // sleutelwijdte (tussen evenwijdige vlakken) en diepte
 const SHAFT = { d: 8, len: 40 };          // ronde as
 const BAR = { w: 8, len: 40 };            // vierkante staaf
-const PLATE = { d: 12, t: 2 };            // aanslag tussen as en vierkant: ronde schijf Ø12, 2 dik
+const PLATE = { d: 16, t: 2 };            // aanslag tussen as en vierkant: ronde schijf Ø16, 2 dik (houdt de sleutel ook achter het sluitplaatje)
 const RC = OCT.af / 2 / Math.cos(Math.PI / 8);   // 10,82: straal over de hoeken
 const X1 = OCT.len, X2 = X1 + SHAFT.len, XP = X2 + PLATE.t, X3 = XP + BAR.len;   // 20, 60, 62, 102
 const H = OCT.af / 2, rs = SHAFT.d / 2, hb = BAR.w / 2;
@@ -37,7 +37,7 @@ const H = OCT.af / 2, rs = SHAFT.d / 2, hb = BAR.w / 2;
 DrawingViewer.create({
   lang: 'nl',
   title: 'Sleutel met achtkantgreep',
-  subtitle: 'achtkant SW 20 × 20 · as Ø8 × 40 · aanslag Ø12 × 2 · vierkant 8 × 8 × 40 · messing',
+  subtitle: 'achtkant SW 20 × 20 · as Ø8 × 40 · aanslag Ø16 × 2 · vierkant 8 × 8 × 40 · messing',
   number: 'OCT-0101-A',
   register: { url: '../../drawings.json', number: 'OCT-0101', rev: 'A' },
   // Messing, in dezelfde kleuren als de trapleuning (MHB-0200)
@@ -55,7 +55,7 @@ DrawingViewer.create({
     { k: 'Eenheden · Schaal', v: 'mm · 1:1', units: 'mm', scale: true },
     { k: 'Algemene toleranties', v: 'ISO 2768-mK' },
     { k: 'Totale lengte', v: '102 (20 + 40 + 2 + 40)' },
-    { k: 'Aanslag', v: 'ronde schijf Ø12 × 2 tussen as en vierkant' },
+    { k: 'Aanslag', v: 'ronde schijf Ø16 × 2 tussen as en vierkant; houdt de sleutel in het sluitplaatje' },
     { k: 'Projectie', v: 'Eerste hoek', projection: true },
     { k: 'Getekend · Blad', v: '2026-11-04 · 1/1' }
   ],
