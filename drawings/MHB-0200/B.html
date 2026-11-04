@@ -28,9 +28,10 @@
 // Muurvlak is x = 0, x positief = weg van de muur. Buis loopt langs Z, evenwijdig aan de muur.
 const TUBE = { d:40, len:3000, fromEnd:700 };
 const RING = { OD:46, ID:41, width:30 };
-const ROD  = { d:8, len:130, anchor:70, pitch:1.25 };   // rev B: 60 vrij tot de muur + 70 in de muur
+const ROD  = { d:8, len:150, embed:90, thread:70, pitch:1.25 };   // rev B: 60 vrij tot de buis, 90 in de muur, waarvan de diepste 70 schroefdraad
 const rt = TUBE.d/2, R = RING.OD/2, r = RING.ID/2, Wd = RING.width, rd = ROD.d/2;
-const XTIP  = ROD.len - ROD.anchor;          // 60: staafpunt, raakt de buis (vrije ruimte buis–muur)
+const XTIP  = ROD.len - ROD.embed;           // 60: staafpunt, raakt de buis (vrije ruimte buis–muur)
+const XTHR  = -(ROD.embed - ROD.thread);     // -20: schroefdraad begint 20 mm diep in de muur
 const XTUBE = XTIP + rt;                      // 80: hartlijn buis
 const XRING = XTUBE - (r - rt);               // 79.5: ring trekt de buis tegen de staafpunt
 const THR_RING = 3;                           // draad ringkant, blijft binnen de ringwand
@@ -63,7 +64,7 @@ DrawingViewer.create({
   titleBlock: [
     { k: 'Titel', v: 'Trapleuning met muurhouders', title: true },
     { k: 'Tekeningnr.', v: 'MHB-0200-B (samenstelling)' },
-    { k: 'Onderdelen', v: '1× buis Ø40 × 3000 · 2× muurhouder MHB-0102 met staaf M8 × 130 (70 in de muur)' },
+    { k: 'Onderdelen', v: '1× buis Ø40 × 3000 · 2× muurhouder MHB-0102 met staaf M8 × 150 (90 in de muur, waarvan 70 schroefdraad)' },
     { k: 'Muur tot buis · hartlijn', v: '60 vrij · 80' },
     { k: 'Speling buis in ring', v: '0,5 per zijde (Ø40 in Ø41)' },
     { k: 'Materiaal', v: 'Messing' },
@@ -96,10 +97,11 @@ DrawingViewer.create({
       return g;
     }
     function shankGeo(z0){
-      const len = XTIP - THR_RING;
+      // Gladde staaf: van het begin van de schroefdraad in de muur tot net voor de ring
+      const x0 = XTHR, x1 = XTIP - THR_RING, len = x1 - x0;
       const g = new THREE.CylinderGeometry(rd, rd, len, 40);
       g.rotateZ(Math.PI/2);
-      g.translate(len/2, 0, z0);
+      g.translate((x0 + x1)/2, 0, z0);
       return g;
     }
     function holeEdge(S, z0){
@@ -125,7 +127,7 @@ DrawingViewer.create({
       m.part(ringGeo(z0), { edges: 25, parent: asm });
       m.part(shankGeo(z0), { edges: 25, parent: asm });
       m.part(threadGeo(XTIP, THR_RING, true, false, z0), { edges: 60, parent: asm });
-      m.part(threadGeo(0, ROD.anchor, false, true, z0), { edges: 60, parent: asm });
+      m.part(threadGeo(XTHR, ROD.thread, false, true, z0), { edges: 60, parent: asm });
       [R, r].forEach(S => m.edgeLine(holeEdge(S, z0), { parent: asm }));
     });
 
@@ -166,7 +168,7 @@ DrawingViewer.create({
     detail.linear({ a: V(0,92,zf), b: V(XTUBE,92,zf), n: V(0,0,1), text: String(XTUBE),
       ext: [[V(0,rd,zf),V(0,96,zf)],[V(XTUBE,R+3,zf),V(XTUBE,96,zf)]] });
     detail.leader({ p: V(XRING+R*c45, R*c45, zf), e: V(XRING+R*c45+34, R*c45+34, zf), text: 'Muurhouder MHB-0102 (2×)' });
-    detail.leader({ p: V(-ROD.anchor/2, rd, ZH-rd), e: V(-ROD.anchor/2-20, 40, ZH-60), text: `M8 × ${ROD.anchor} chemisch anker` });
+    detail.leader({ p: V(XTHR - ROD.thread/2, rd, ZH-rd), e: V(XTHR - ROD.thread/2 - 20, 40, ZH-60), text: `M8 × ${ROD.thread} chemisch anker, ${ROD.embed} diep` });
     // Vrije ruimte tussen muur en buis (rev B: 60), gestapeld binnen de 80 tot de hartlijn
     detail.linear({ a: V(0,48,zf), b: V(XTIP,48,zf), n: V(0,0,1), text: String(XTIP),
       ext: [[V(XTIP,4,zf),V(XTIP,52,zf)]] });
