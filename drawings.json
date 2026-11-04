@@ -40,6 +40,14 @@
           "file": "drawings/MHB-0102/A.html",
           "viewer": "1",
           "note": "Eerste uitgave"
+        },
+        {
+          "rev": "B",
+          "date": "2026-11-04",
+          "file": "drawings/MHB-0102/B.html",
+          "viewer": "1",
+          "note": "Staaf 90 mm in de muur (70 schroefdraad), 60 vrij tot de buis; messing",
+          "status": "draft"
         }
       ]
     },
