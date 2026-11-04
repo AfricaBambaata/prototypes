@@ -78,16 +78,16 @@
       ]
     },
     {
-      "number": "HEX-0101",
-      "title": "Zeskant met as en vierkant",
-      "description": "Zeskant SW 20 × 20 met een as Ø8 × 40 en een vierkant 8 × 8 × 40 op één lijn; totaal 100 mm.",
+      "number": "OCT-0101",
+      "title": "Achtkant met as en vierkant",
+      "description": "Messing achtkant SW 20 × 20 met een as Ø8 × 40 en een vierkant 8 × 8 × 40 op één lijn; totaal 100 mm.",
       "lang": "nl",
       "status": "current",
       "revisions": [
         {
           "rev": "A",
           "date": "2026-11-04",
-          "file": "drawings/HEX-0101/A.html",
+          "file": "drawings/OCT-0101/A.html",
           "viewer": "1",
           "note": "Eerste uitgave",
           "status": "draft"
