@@ -89,7 +89,23 @@
           "date": "2026-11-04",
           "file": "drawings/OCT-0101/A.html",
           "viewer": "1",
-          "note": "Eerste uitgave",
+          "note": "Eerste uitgave"
+        }
+      ]
+    },
+    {
+      "number": "OCT-0102",
+      "title": "Sleutel met achtkantgreep zonder aanslag",
+      "description": "Variant van OCT-0101 zonder aanslag: messing sleutel met achtkantgreep SW 20 × 20, as Ø8 × 40 en vierkant 8 × 8 × 40 op één lijn; totaal 100 mm.",
+      "lang": "nl",
+      "status": "current",
+      "revisions": [
+        {
+          "rev": "A",
+          "date": "2026-11-04",
+          "file": "drawings/OCT-0102/A.html",
+          "viewer": "1",
+          "note": "Variant zonder aanslag",
           "status": "draft"
         }
       ]
