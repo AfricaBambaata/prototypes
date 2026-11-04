@@ -5,11 +5,11 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Sleutel met achtkantgreep</title>
 <!-- link-preview -->
-<meta name="description" content="Messing sleutel: achtkantgreep SW 20 × 20, as Ø8 × 40 en vierkant 8 × 8 × 40 op één lijn; totaal 100 mm. Revisie A van 2026-11-04.">
+<meta name="description" content="Messing sleutel: achtkantgreep SW 20 × 20, as Ø8 × 40, aanslag 20 × 8 × 3 en vierkant 8 × 8 × 40 op één lijn; totaal 103 mm. Revisie A van 2026-11-04.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Tekeningenregister">
 <meta property="og:title" content="Sleutel met achtkantgreep · OCT-0101-A">
-<meta property="og:description" content="Messing sleutel: achtkantgreep SW 20 × 20, as Ø8 × 40 en vierkant 8 × 8 × 40 op één lijn; totaal 100 mm. Revisie A van 2026-11-04.">
+<meta property="og:description" content="Messing sleutel: achtkantgreep SW 20 × 20, as Ø8 × 40, aanslag 20 × 8 × 3 en vierkant 8 × 8 × 40 op één lijn; totaal 103 mm. Revisie A van 2026-11-04.">
 <meta property="og:url" content="https://africabambaata.github.io/prototypes/drawings/OCT-0101/A.html">
 <meta property="og:image" content="https://africabambaata.github.io/prototypes/previews/OCT-0101-A.jpg">
 <meta property="og:image:type" content="image/jpeg">
@@ -25,18 +25,19 @@
 <script src="../../viewer/1/viewer.js"></script>
 <script>
 // Sleutel met achtkantgreep OCT-0101-A (mm). Eén lijn langs X: achtkant (x 0–20), as Ø8 (x 20–60),
-// vierkant 8 × 8 (x 60–100). Platte vlakken van de achtkant boven, onder en opzij.
+// aanslag 20 × 8 × 3 (x 60–63), vierkant 8 × 8 (x 63–103). Platte vlakken van de achtkant boven, onder en opzij.
 const OCT = { af: 20, len: 20 };          // sleutelwijdte (tussen evenwijdige vlakken) en diepte
 const SHAFT = { d: 8, len: 40 };          // ronde as
 const BAR = { w: 8, len: 40 };            // vierkante staaf
+const PLATE = { w: 20, h: 8, t: 3 };      // aanslag tussen as en vierkant: 20 hoog (Y), 8 breed (Z), 3 dik (X)
 const RC = OCT.af / 2 / Math.cos(Math.PI / 8);   // 10,82: straal over de hoeken
-const X1 = OCT.len, X2 = X1 + SHAFT.len, X3 = X2 + BAR.len;   // 20, 60, 100
+const X1 = OCT.len, X2 = X1 + SHAFT.len, XP = X2 + PLATE.t, X3 = XP + BAR.len;   // 20, 60, 63, 103
 const H = OCT.af / 2, rs = SHAFT.d / 2, hb = BAR.w / 2;
 
 DrawingViewer.create({
   lang: 'nl',
   title: 'Sleutel met achtkantgreep',
-  subtitle: 'achtkant SW 20 × 20 · as Ø8 × 40 · vierkant 8 × 8 × 40 · messing',
+  subtitle: 'achtkant SW 20 × 20 · as Ø8 × 40 · aanslag 20 × 8 × 3 · vierkant 8 × 8 × 40 · messing',
   number: 'OCT-0101-A',
   register: { url: '../../drawings.json', number: 'OCT-0101', rev: 'A' },
   // Messing, in dezelfde kleuren als de trapleuning (MHB-0200)
@@ -53,7 +54,8 @@ DrawingViewer.create({
     { k: 'Materiaal', v: 'Messing' },
     { k: 'Eenheden · Schaal', v: 'mm · 1:1', units: 'mm', scale: true },
     { k: 'Algemene toleranties', v: 'ISO 2768-mK' },
-    { k: 'Totale lengte', v: '100 (20 + 40 + 40)' },
+    { k: 'Totale lengte', v: '103 (20 + 40 + 3 + 40)' },
+    { k: 'Aanslag', v: 'plaatje 20 × 8 × 3 tussen as en vierkant' },
     { k: 'Projectie', v: 'Eerste hoek', projection: true },
     { k: 'Getekend · Blad', v: '2026-11-04 · 1/1' }
   ],
@@ -66,9 +68,13 @@ DrawingViewer.create({
     m.part(alongX(new THREE.CylinderGeometry(RC, RC, OCT.len, 8, 1, false, Math.PI / 8), 0, OCT.len), { edges: 25 });
     // Ronde as Ø8
     m.part(alongX(new THREE.CylinderGeometry(rs, rs, SHAFT.len, 48), X1, SHAFT.len), { edges: 25 });
+    // Aanslag: plat plaatje tussen as en vierkant, zodat de sleutel niet verder doorschuift
+    const plate = new THREE.BoxGeometry(PLATE.t, PLATE.w, PLATE.h);
+    plate.translate(X2 + PLATE.t / 2, 0, 0);
+    m.part(plate, { edges: 25 });
     // Vierkante staaf 8 × 8
     const bar = new THREE.BoxGeometry(BAR.len, BAR.w, BAR.w);
-    bar.translate(X2 + BAR.len / 2, 0, 0);
+    bar.translate(XP + BAR.len / 2, 0, 0);
     m.part(bar, { edges: 25 });
 
     // Raster (10 mm) onder het onderste vlak van de achtkant
@@ -78,12 +84,14 @@ DrawingViewer.create({
 
     const d = m.dims({ arrow: 3 });
     const Y1 = -H - 8, Y2 = -H - 17;                 // maatlijnen onder het stuk
-    // Deellengtes 20 · 40 · 40 en totale lengte 100
+    // Deellengtes 20 · 40 · 3 · 40 en totale lengte 103
     d.linear({ a: V(0, Y1, 0), b: V(X1, Y1, 0), text: String(OCT.len),
       ext: [[V(X1, -H, 0), V(X1, Y1 - 2, 0)]] });
     d.linear({ a: V(X1, Y1, 0), b: V(X2, Y1, 0), text: String(SHAFT.len),
-      ext: [[V(X2, -hb, 0), V(X2, Y1 - 2, 0)]] });
-    d.linear({ a: V(X2, Y1, 0), b: V(X3, Y1, 0), text: String(BAR.len),
+      ext: [[V(X2, -PLATE.w / 2, 0), V(X2, Y1 - 2, 0)]] });
+    d.linear({ a: V(X2, Y1, 0), b: V(XP, Y1, 0), text: String(PLATE.t),
+      ext: [[V(XP, -PLATE.w / 2, 0), V(XP, Y1 - 2, 0)]] });
+    d.linear({ a: V(XP, Y1, 0), b: V(X3, Y1, 0), text: String(BAR.len),
       ext: [[V(X3, -hb, 0), V(X3, Y1 - 2, 0)]] });
     d.linear({ a: V(0, Y2, 0), b: V(X3, Y2, 0), text: String(X3),
       ext: [[V(0, -H, 0), V(0, Y2 - 2, 0)], [V(X3, Y1, 0), V(X3, Y2 - 2, 0)]] });
@@ -93,7 +101,8 @@ DrawingViewer.create({
     // As en vierkant
     const c45 = Math.SQRT1_2;
     d.leader({ p: V(X1 + 14, rs * c45, rs * c45), e: V(X1 + 6, H + 10, 12), text: 'Ø' + SHAFT.d });
-    d.leader({ p: V(X2 + 26, hb, hb), e: V(X2 + 34, H + 10, 16), text: `□ ${BAR.w} × ${BAR.w}` });
+    d.leader({ p: V(XP + 26, hb, hb), e: V(XP + 34, H + 10, 16), text: `□ ${BAR.w} × ${BAR.w}` });
+    d.leader({ p: V(X2 + PLATE.t / 2, PLATE.w / 2, PLATE.h / 2), e: V(X2 + 10, H + 18, 10), text: `aanslag ${PLATE.w} × ${PLATE.h} × ${PLATE.t}` });
   }
 });
 </script>

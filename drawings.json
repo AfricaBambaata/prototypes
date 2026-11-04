@@ -80,7 +80,7 @@
     {
       "number": "OCT-0101",
       "title": "Sleutel met achtkantgreep",
-      "description": "Messing sleutel: achtkantgreep SW 20 × 20, as Ø8 × 40 en vierkant 8 × 8 × 40 op één lijn; totaal 100 mm.",
+      "description": "Messing sleutel: achtkantgreep SW 20 × 20, as Ø8 × 40, aanslag 20 × 8 × 3 en vierkant 8 × 8 × 40 op één lijn; totaal 103 mm.",
       "lang": "nl",
       "status": "current",
       "revisions": [
@@ -90,74 +90,6 @@
           "file": "drawings/OCT-0101/A.html",
           "viewer": "1",
           "note": "Eerste uitgave",
-          "status": "draft"
-        }
-      ]
-    },
-    {
-      "number": "OCT-0105",
-      "title": "Sleutel met brede achtkantgreep",
-      "description": "Variant van sleutel OCT-0101: brede achtkant SW 30 × 20, met as Ø8 × 40 en vierkant 8 × 8 × 40; totaal 100 mm. Messing.",
-      "lang": "nl",
-      "status": "current",
-      "revisions": [
-        {
-          "rev": "A",
-          "date": "2026-11-04",
-          "file": "drawings/OCT-0105/A.html",
-          "viewer": "1",
-          "note": "Variant van de achtkantgreep",
-          "status": "draft"
-        }
-      ]
-    },
-    {
-      "number": "OCT-0106",
-      "title": "Sleutel met smalle achtkantgreep",
-      "description": "Variant van sleutel OCT-0101: smalle achtkant SW 10 × 20, met as Ø8 × 40 en vierkant 8 × 8 × 40; totaal 100 mm. Messing.",
-      "lang": "nl",
-      "status": "current",
-      "revisions": [
-        {
-          "rev": "A",
-          "date": "2026-11-04",
-          "file": "drawings/OCT-0106/A.html",
-          "viewer": "1",
-          "note": "Variant van de achtkantgreep",
-          "status": "draft"
-        }
-      ]
-    },
-    {
-      "number": "OCT-0107",
-      "title": "Sleutel met afgeschuinde achtkantgreep",
-      "description": "Variant van sleutel OCT-0101: achtkant SW 20 × 20, kopse randen 2 × 45° afgeschuind, met as Ø8 × 40 en vierkant 8 × 8 × 40; totaal 100 mm. Messing.",
-      "lang": "nl",
-      "status": "current",
-      "revisions": [
-        {
-          "rev": "A",
-          "date": "2026-11-04",
-          "file": "drawings/OCT-0107/A.html",
-          "viewer": "1",
-          "note": "Variant van de achtkantgreep",
-          "status": "draft"
-        }
-      ]
-    },
-    {
-      "number": "OCT-0108",
-      "title": "Sleutel met langgerekte achtkantgreep",
-      "description": "Variant van sleutel OCT-0101: langgerekte achtkant SW 16 × 32, met as Ø8 × 40 en vierkant 8 × 8 × 40; totaal 112 mm. Messing.",
-      "lang": "nl",
-      "status": "current",
-      "revisions": [
-        {
-          "rev": "A",
-          "date": "2026-11-04",
-          "file": "drawings/OCT-0108/A.html",
-          "viewer": "1",
-          "note": "Variant van de achtkantgreep",
           "status": "draft"
         }
       ]
