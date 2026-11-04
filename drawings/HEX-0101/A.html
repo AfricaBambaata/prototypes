@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Zeskant met as en vierkant</title>
+<!-- link-preview -->
+<meta name="description" content="Zeskant SW 20 × 20 met een as Ø8 × 40 en een vierkant 8 × 8 × 40 op één lijn; totaal 100 mm. Revisie A van 2026-11-04.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Tekeningenregister">
+<meta property="og:title" content="Zeskant met as en vierkant · HEX-0101-A">
+<meta property="og:description" content="Zeskant SW 20 × 20 met een as Ø8 × 40 en een vierkant 8 × 8 × 40 op één lijn; totaal 100 mm. Revisie A van 2026-11-04.">
+<meta property="og:url" content="https://africabambaata.github.io/prototypes/drawings/HEX-0101/A.html">
+<meta property="og:image" content="https://africabambaata.github.io/prototypes/previews/HEX-0101-A.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Zeskant met as en vierkant · HEX-0101-A">
+<meta name="twitter:card" content="summary_large_image">
+<!-- /link-preview -->
+<link rel="stylesheet" href="../../viewer/1/viewer.css">
+</head>
+<body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="../../viewer/1/viewer.js"></script>
+<script>
+// Zeskant met as en vierkant HEX-0101-A (mm). Eén lijn langs X: zeskant (x 0–20), as Ø8 (x 20–60),
+// vierkant 8 × 8 (x 60–100). Platte vlakken van de zeskant boven en onder.
+const HEX = { af: 20, len: 20 };          // sleutelwijdte (tussen evenwijdige vlakken) en diepte
+const SHAFT = { d: 8, len: 40 };          // ronde as
+const BAR = { w: 8, len: 40 };            // vierkante staaf
+const RC = HEX.af / 2 / Math.cos(Math.PI / 6);   // 11,55: straal over de hoeken
+const X1 = HEX.len, X2 = X1 + SHAFT.len, X3 = X2 + BAR.len;   // 20, 60, 100
+const H = HEX.af / 2, rs = SHAFT.d / 2, hb = BAR.w / 2;
+
+DrawingViewer.create({
+  lang: 'nl',
+  title: 'Zeskant met as en vierkant',
+  subtitle: 'SW 20 × 20 · as Ø8 × 40 · vierkant 8 × 8 × 40',
+  number: 'HEX-0101-A',
+  register: { url: '../../drawings.json', number: 'HEX-0101', rev: 'A' },
+  modes: ['solid', 'xray'],
+  camera: { radius: 270, target: [X3 / 2, 0, 0], min: 40, max: 1000 },
+  titleBlock: [
+    { k: 'Titel', v: 'Zeskant met as en vierkant', title: true },
+    { k: 'Tekeningnr.', v: 'HEX-0101-A' },
+    { k: 'Materiaal', v: 'Niet opgegeven' },
+    { k: 'Eenheden · Schaal', v: 'mm · 1:1', units: 'mm', scale: true },
+    { k: 'Algemene toleranties', v: 'ISO 2768-mK' },
+    { k: 'Totale lengte', v: '100 (20 + 40 + 40)' },
+    { k: 'Projectie', v: 'Eerste hoek', projection: true },
+    { k: 'Getekend · Blad', v: '2026-11-04 · 1/1' }
+  ],
+  build(m) {
+    const { THREE, V } = m;
+    const alongX = (g, x0, len) => { g.rotateZ(-Math.PI / 2); g.translate(x0 + len / 2, 0, 0); return g; };
+
+    // Zeskant: cilinder met 6 zijden; na het kantelen liggen twee vlakken boven en onder (y = ±10).
+    m.part(alongX(new THREE.CylinderGeometry(RC, RC, HEX.len, 6), 0, HEX.len), { edges: 25 });
+    // Ronde as Ø8
+    m.part(alongX(new THREE.CylinderGeometry(rs, rs, SHAFT.len, 48), X1, SHAFT.len), { edges: 25 });
+    // Vierkante staaf 8 × 8
+    const bar = new THREE.BoxGeometry(BAR.len, BAR.w, BAR.w);
+    bar.translate(X2 + BAR.len / 2, 0, 0);
+    m.part(bar, { edges: 25 });
+
+    // Raster (10 mm) onder het onderste vlak van de zeskant
+    const grid = new THREE.GridHelper(240, 24, 0xd9dfdb, 0xd9dfdb);
+    grid.position.set(X3 / 2, -H - 0.05, 0);
+    m.add(grid, { color: 'grid', print: false });
+
+    const d = m.dims({ arrow: 3 });
+    const Y1 = -H - 8, Y2 = -H - 17;                 // maatlijnen onder het stuk
+    // Deellengtes 20 · 40 · 40 en totale lengte 100
+    d.linear({ a: V(0, Y1, 0), b: V(X1, Y1, 0), text: String(HEX.len),
+      ext: [[V(X1, -H, 0), V(X1, Y1 - 2, 0)]] });
+    d.linear({ a: V(X1, Y1, 0), b: V(X2, Y1, 0), text: String(SHAFT.len),
+      ext: [[V(X2, -hb, 0), V(X2, Y1 - 2, 0)]] });
+    d.linear({ a: V(X2, Y1, 0), b: V(X3, Y1, 0), text: String(BAR.len),
+      ext: [[V(X3, -hb, 0), V(X3, Y1 - 2, 0)]] });
+    d.linear({ a: V(0, Y2, 0), b: V(X3, Y2, 0), text: String(X3),
+      ext: [[V(0, -H, 0), V(0, Y2 - 2, 0)], [V(X3, Y1, 0), V(X3, Y2 - 2, 0)]] });
+    // Sleutelwijdte 20 tussen de evenwijdige vlakken
+    d.linear({ a: V(-8, -H, 0), b: V(-8, H, 0), text: 'SW ' + HEX.af,
+      ext: [[V(0, -H, 0), V(-10, -H, 0)], [V(0, H, 0), V(-10, H, 0)]] });
+    // As en vierkant
+    const c45 = Math.SQRT1_2;
+    d.leader({ p: V(X1 + 14, rs * c45, rs * c45), e: V(X1 + 6, H + 10, 12), text: 'Ø' + SHAFT.d });
+    d.leader({ p: V(X2 + 26, hb, hb), e: V(X2 + 34, H + 10, 16), text: `□ ${BAR.w} × ${BAR.w}` });
+  }
+});
+</script>
+</body>
+</html>
