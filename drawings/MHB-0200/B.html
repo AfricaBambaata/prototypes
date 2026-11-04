@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Trapleuning met Muurhouders</title>
+<!-- link-preview -->
+<meta name="description" content="Samenstelling: messing buis Ø40 × 3000 onder 30°, gedragen door twee muurhouders MHB-0102. Revisie B van 2026-11-04.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Tekeningenregister">
+<meta property="og:title" content="Trapleuning met muurhouders · MHB-0200-B">
+<meta property="og:description" content="Samenstelling: messing buis Ø40 × 3000 onder 30°, gedragen door twee muurhouders MHB-0102. Revisie B van 2026-11-04.">
+<meta property="og:url" content="https://africabambaata.github.io/prototypes/drawings/MHB-0200/B.html">
+<meta name="twitter:card" content="summary">
+<!-- /link-preview -->
+<link rel="stylesheet" href="../../viewer/1/viewer.css">
+</head>
+<body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="../../viewer/1/viewer.js"></script>
+<script>
+// Trapleuning met muurhouders MHB-0200-B (samenstelling). Maten in mm.
+// Muurvlak is x = 0, x positief = weg van de muur. Buis loopt langs Z, evenwijdig aan de muur.
+const TUBE = { d:40, len:3000, fromEnd:700 };
+const RING = { OD:46, ID:41, width:30 };
+const ROD  = { d:8, len:150, anchor:50, pitch:1.25 };
+const rt = TUBE.d/2, R = RING.OD/2, r = RING.ID/2, Wd = RING.width, rd = ROD.d/2;
+const XTIP  = ROD.len - ROD.anchor;          // 100: staafpunt, raakt de buis
+const XTUBE = XTIP + rt;                      // 120: hartlijn buis
+const XRING = XTUBE - (r - rt);               // 119.5: ring trekt de buis tegen de staafpunt
+const THR_RING = 3;                           // draad ringkant, blijft binnen de ringwand
+const ZH = TUBE.len/2 - TUBE.fromEnd;         // 800: houders op z = ±800
+const SLOPE = 30*Math.PI/180;                 // de hele leuning kantelt 30° in het muurvlak
+const WALL_Z = 1700, WALL_Y = 1000;
+
+DrawingViewer.create({
+  lang: 'nl',
+  title: 'Trapleuning met muurhouders',
+  subtitle: 'Ø40 × 3000 · helling 30° · 2× MHB-0102 · messing',
+  number: 'MHB-0200-B',
+  register: { url: '../../drawings.json', number: 'MHB-0200', rev: 'B' },
+  colors: {
+    light: { accent:'#1f5f8b', 'on-accent':'#ffffff', part:'#b08a3c', tube:'#c9a352', wall:'#dde2de', grid:'#c9d0cb' },
+    dark:  { accent:'#7db6e2', 'on-accent':'#0f1d27', part:'#9c7a33', tube:'#b39046', wall:'#222b27', grid:'#34403a' }
+  },
+  materials: { part: { metalness: 0.45, roughness: 0.38 }, tube: { metalness: 0.45, roughness: 0.32 } },
+  modes: ['solid', 'xray'],
+  views: [
+    { id: 'iso', label: 'Overzicht', tag: 'Overzicht', theta: 1.0, phi: 1.2, radius: 4600, target: [60, 0, 0] },
+    { id: 'front', theta: Math.PI/2, phi: Math.PI/2, radius: 4600, target: [60, 0, 0] },
+    { id: 'top', theta: Math.PI/2, phi: 0.0001, radius: 4600, target: [60, 0, 0] },
+    { id: 'detail', label: 'Detail houder', tag: 'Detail houder', theta: Math.PI/2 + 0.45, phi: 0.72, radius: 560,
+      target: [60, ZH*Math.sin(SLOPE), ZH*Math.cos(SLOPE)] }   // houder op z = +800, gekanteld
+  ],
+  camera: { min: 60, max: 9000 },
+  spinSpeed: 0.3,
+  animMs: 650,
+  titleBlock: [
+    { k: 'Titel', v: 'Trapleuning met muurhouders', title: true },
+    { k: 'Tekeningnr.', v: 'MHB-0200-B (samenstelling)' },
+    { k: 'Onderdelen', v: '1× buis Ø40 × 3000 · 2× muurhouder MHB-0102' },
+    { k: 'Muur tot hartlijn buis', v: '120' },
+    { k: 'Speling buis in ring', v: '0,5 per zijde (Ø40 in Ø41)' },
+    { k: 'Materiaal', v: 'Messing' },
+    { k: 'Helling · Eenheden', v: '30° · mm' },
+    { k: 'Projectie', v: 'Eerste hoek', projection: true },
+    { k: 'Getekend · Blad', v: '2026-11-03 · 1/1' }
+  ],
+  build(m) {
+    const { THREE, V } = m;
+
+    function threadGeo(xStart, len, chamStart, chamEnd, z0){
+      const p = ROD.pitch, core = rd*0.83, c = 0.6;
+      const pts = [new THREE.Vector2(0,0)];
+      if (chamStart) pts.push(new THREE.Vector2(rd*0.75,0), new THREE.Vector2(rd,c)); else pts.push(new THREE.Vector2(rd,0));
+      let y = chamStart ? c : 0;
+      const yMax = len - (chamEnd ? c : 0);
+      while (y + p <= yMax){ pts.push(new THREE.Vector2(core, y+p/2), new THREE.Vector2(rd, y+p)); y += p; }
+      if (chamEnd) pts.push(new THREE.Vector2(rd, len-c), new THREE.Vector2(rd*0.75, len)); else pts.push(new THREE.Vector2(rd, len));
+      pts.push(new THREE.Vector2(0, len));
+      const g = new THREE.LatheGeometry(pts, 40);
+      g.rotateZ(Math.PI/2);           // +Y wordt -X
+      g.translate(xStart, 0, z0);
+      return g;
+    }
+    function ringGeo(z0){
+      const s = new THREE.Shape(); s.absarc(0,0,R,0,Math.PI*2,false);
+      const h = new THREE.Path(); h.absarc(0,0,r,0,Math.PI*2,true); s.holes.push(h);
+      const g = new THREE.ExtrudeGeometry(s,{depth:Wd,bevelEnabled:false,curveSegments:96});
+      g.translate(XRING, 0, z0 - Wd/2);
+      return g;
+    }
+    function shankGeo(z0){
+      const len = XTIP - THR_RING;
+      const g = new THREE.CylinderGeometry(rd, rd, len, 40);
+      g.rotateZ(Math.PI/2);
+      g.translate(len/2, 0, z0);
+      return g;
+    }
+    function holeEdge(S, z0){
+      const pts=[]; for(let i=0;i<=96;i++){ const a=i/96*Math.PI*2, y=rd*Math.cos(a), z=rd*Math.sin(a); pts.push(V(XRING-Math.sqrt(S*S-y*y), y, z0+z)); }
+      return pts;
+    }
+    function tubeGeo(){
+      const g = new THREE.CylinderGeometry(rt, rt, TUBE.len, 72, 1, false);
+      g.rotateX(Math.PI/2);
+      g.translate(XTUBE, 0, 0);
+      return g;
+    }
+
+    // De hele leuning (buis, houders, maten langs de buis) staat in één groep die 30° kantelt in het muurvlak.
+    // Kantelen rond de X-as houdt de staven loodrecht op de muur en radiaal op de buis.
+    const asm = m.group();
+    asm.rotation.x = -SLOPE;
+    asm.updateMatrixWorld(true);
+    const toW = v => v.clone().applyMatrix4(asm.matrixWorld);
+
+    m.part(tubeGeo(), { material: 'tube', edges: 25, parent: asm });
+    [-ZH, ZH].forEach(z0 => {
+      m.part(ringGeo(z0), { edges: 25, parent: asm });
+      m.part(shankGeo(z0), { edges: 25, parent: asm });
+      m.part(threadGeo(XTIP, THR_RING, true, false, z0), { edges: 60, parent: asm });
+      m.part(threadGeo(0, ROD.anchor, false, true, z0), { edges: 60, parent: asm });
+      [R, r].forEach(S => m.edgeLine(holeEdge(S, z0), { parent: asm }));
+    });
+
+    // Muur: licht vlak met raster van 100 mm. De ankers zitten erachter.
+    const wallGeo = new THREE.PlaneGeometry(WALL_Z*2, WALL_Y*2); wallGeo.rotateY(Math.PI/2);
+    const wall = new THREE.Mesh(wallGeo, new THREE.MeshBasicMaterial({ color:0xdde2de, transparent:true, opacity:0.55, depthWrite:false, side:THREE.DoubleSide }));
+    wall.renderOrder = 2;
+    m.add(wall, { color: 'wall' });
+    const gridPts = [];
+    for (let z=-WALL_Z; z<=WALL_Z; z+=100) gridPts.push(V(0.3,-WALL_Y,z), V(0.3,WALL_Y,z));
+    for (let y=-WALL_Y; y<=WALL_Y; y+=100) gridPts.push(V(0.3,y,-WALL_Z), V(0.3,y,WALL_Z));
+    m.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(gridPts), new THREE.LineBasicMaterial()), { color: 'grid', print: false });
+
+    // ---------- Maatvoering ----------
+    // Drie lagen: overzicht langs de buis (vanaf 700 zoomafstand), detail rond een houder (tot 1300),
+    // en maten op de muur in wereldassen.
+    const all = m.dims({ parent: asm, arrow: 40, minRadius: 700 });
+    const detail = m.dims({ parent: asm, arrow: 5, maxRadius: 1300 });
+    const world = m.dims({ arrow: 40, minRadius: 700 });
+    const c45 = Math.SQRT1_2;
+    const D = V(1,-1,0).normalize();                 // maatlijnen schuin voor en onder de buis
+    const N = V(1,1,0).normalize();
+    const onTube = (z, dist) => V(XTUBE,0,z).addScaledVector(D, dist);
+    const zf = ZH - Wd/2;                            // onderste vlak van de bovenste houder (z = +800)
+
+    all.linear({ a: onTube(-1500,170), b: onTube(-ZH,170), n: N, text: '700',
+      ext: [[onTube(-1500,26),onTube(-1500,182)],[onTube(-ZH,30),onTube(-ZH,182)]] });
+    all.linear({ a: onTube(-ZH,170), b: onTube(ZH,170), n: N, text: '(1600)', ext: [[onTube(ZH,30),onTube(ZH,182)]] });
+    all.linear({ a: onTube(ZH,170), b: onTube(1500,170), n: N, text: '700', ext: [[onTube(1500,26),onTube(1500,182)]] });
+    all.linear({ a: onTube(-1500,300), b: onTube(1500,300), n: N, text: '3000',
+      ext: [[onTube(-1500,182),onTube(-1500,312)],[onTube(1500,182),onTube(1500,312)]] });
+    all.leader({ p: V(XTUBE, rt, -350), e: V(XTUBE, rt+200, -350), n: V(1,0,0), arrow: 30, text: 'Ø40 × 3000' });
+    // Hartlijn van de buis (streep-stip).
+    const cl = [];
+    for (let z=-1560; z<1560; z+=60){ cl.push(V(XTUBE,0,z), V(XTUBE,0,Math.min(z+36,1560))); cl.push(V(XTUBE,0,z+44), V(XTUBE,0,z+50)); }
+    all.segments(cl);
+
+    detail.linear({ a: V(0,70,zf), b: V(XTUBE,70,zf), n: V(0,0,1), text: '120',
+      ext: [[V(0,rd,zf),V(0,74,zf)],[V(XTUBE,R+3,zf),V(XTUBE,74,zf)]] });
+    detail.leader({ p: V(XRING+R*c45, R*c45, zf), e: V(XRING+R*c45+34, R*c45+34, zf), text: 'Muurhouder MHB-0102 (2×)' });
+    detail.leader({ p: V(-25, rd, ZH-rd), e: V(-45, 40, ZH-60), text: 'M8 × 50 chemisch anker' });
+    detail.leader({ p: V(XTUBE+rt*c45, rt*c45, ZH-110), e: V(XTUBE+rt*c45+30, rt*c45+30, ZH-110), text: 'Ø40' });
+
+    // Maten op de muur (wereldassen): hartafstand van de ankers, horizontaal en in hoogte, plus de helling.
+    const A1 = toW(V(0,0,-ZH)), A2 = toW(V(0,0,ZH)), E0 = toW(V(XTUBE,0,-TUBE.len/2));
+    const dH = Math.round(A2.z - A1.z), dV = Math.round(A2.y - A1.y);
+    const yTop = A2.y + 170, zLeft = A1.z - 170;
+    world.linear({ a: V(1,yTop,A1.z), b: V(1,yTop,A2.z), n: V(1,0,0), text: dH + ' horizontaal',
+      ext: [[V(1,A1.y+20,A1.z),V(1,yTop+12,A1.z)],[V(1,A2.y+20,A2.z),V(1,yTop+12,A2.z)]] });
+    world.linear({ a: V(1,A1.y,zLeft), b: V(1,A2.y,zLeft), n: V(1,0,0), text: dV + ' hoogte',
+      ext: [[V(1,A1.y,A1.z-20),V(1,A1.y,zLeft-12)],[V(1,A2.y,A2.z-20),V(1,A2.y,zLeft-12)]] });
+    world.label({ pos: E0.clone().add(V(0, 640*Math.sin(SLOPE/2), 640*Math.cos(SLOPE/2))), text: '30°' });
+    world.note({ pos: V(0, WALL_Y+40, 0), text: 'Muurvlak' });
+    const arc = [];
+    for (let i=0;i<=24;i++){ const t=i/24*SLOPE; arc.push(E0.clone().add(V(0, 560*Math.sin(t), 560*Math.cos(t)))); }
+    world.line(arc);
+    world.line([E0.clone(), E0.clone().add(V(0,0,700))]);
+  }
+});
+</script>
+</body>
+</html>
