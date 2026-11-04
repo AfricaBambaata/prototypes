@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Sleutel met facetgreep</title>
+<!-- link-preview -->
+<meta name="description" content="Variant A van sleutel OCT-0101: versmallende achtkantgreep (SW 22 → 12) met geslepen kop en conische hals; as Ø8 × 40 en vierkant 8 × 8 × 40. Messing. Revisie A van 2026-11-04.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Tekeningenregister">
+<meta property="og:title" content="Sleutel met facetgreep · OCT-0102-A">
+<meta property="og:description" content="Variant A van sleutel OCT-0101: versmallende achtkantgreep (SW 22 → 12) met geslepen kop en conische hals; as Ø8 × 40 en vierkant 8 × 8 × 40. Messing. Revisie A van 2026-11-04.">
+<meta property="og:url" content="https://africabambaata.github.io/prototypes/drawings/OCT-0102/A.html">
+<meta property="og:image" content="https://africabambaata.github.io/prototypes/previews/OCT-0102-A.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Sleutel met facetgreep · OCT-0102-A">
+<meta name="twitter:card" content="summary_large_image">
+<!-- /link-preview -->
+<link rel="stylesheet" href="../../viewer/1/viewer.css">
+</head>
+<body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="../../viewer/1/viewer.js"></script>
+<script>
+// Sleutel met facetgreep OCT-0102-A (mm). Variant van sleutel OCT-0101, in de geest van Wiwen Nilsson:
+// strakke geometrie, facetten en afschuiningen, geen versiering. As en vierkant zijn bij alle
+// varianten gelijk (as Ø8 × 40, vierkant 8 × 8 × 40); alleen de greep verschilt.
+// Alles op één lijn langs X: greep vanaf x = 0, dan de as, dan het vierkant.
+const SHAFT = { d: 8, len: 40 };
+const BAR = { w: 8, len: 40 };
+const rs = SHAFT.d / 2, hb = BAR.w / 2;
+const oct = sw => sw / 2 / Math.cos(Math.PI / 8);   // achtkant: straal over de hoeken bij sleutelwijdte sw
+const CAP = 3, BODY = 30, NECK = 6;                  // kop, greep, hals
+const SW0 = 22, SW1 = 12;                             // sleutelwijdte bij de kop en bij de hals
+const G = CAP + BODY + NECK;                          // 39: begin van de as
+const LOW = SW0 / 2, HIGH = SW0 / 2;
+const X2 = G + SHAFT.len, X3 = X2 + BAR.len;          // einde as, einde vierkant (= totale lengte)
+
+DrawingViewer.create({
+  lang: 'nl',
+  title: 'Sleutel met facetgreep',
+  subtitle: 'variant A · achtkant SW 22 → 12 · as Ø8 × 40 · vierkant 8 × 8 × 40 · messing',
+  number: 'OCT-0102-A',
+  register: { url: '../../drawings.json', number: 'OCT-0102', rev: 'A' },
+  colors: {
+    light: { accent: '#1f5f8b', 'on-accent': '#ffffff', part: '#b08a3c' },
+    dark:  { accent: '#7db6e2', 'on-accent': '#0f1d27', part: '#9c7a33' }
+  },
+  materials: { part: { metalness: 0.45, roughness: 0.38 } },
+  modes: ['solid', 'xray'],
+  camera: { radius: 300, target: [X3 / 2 - 6, 0, 0], min: 40, max: 1200 },
+  titleBlock: [
+    { k: 'Titel', v: 'Sleutel met facetgreep', title: true },
+    { k: 'Tekeningnr.', v: 'OCT-0102-A' },
+    { k: 'Materiaal', v: 'Messing' },
+    { k: 'Eenheden · Schaal', v: 'mm · 1:1', units: 'mm', scale: true },
+    { k: 'Algemene toleranties', v: 'ISO 2768-mK' },
+    { k: 'Greep', v: 'achtkant SW 22 versmallend tot SW 12 over 30, kop 3 afgeschuind, conische hals Ø12 → Ø8' },
+    { k: 'Werkend deel', v: 'as Ø8 × 40 · vierkant 8 × 8 × 40 (als OCT-0101)' },
+    { k: 'Projectie', v: 'Eerste hoek', projection: true },
+    { k: 'Getekend · Blad', v: '2026-11-04 · 1/1' }
+  ],
+  build(m) {
+    const { THREE, V } = m;
+    // Omwentelingsvorm langs X van x0 tot x0 + len; r0 is de straal aan de kant van x0.
+    const alongX = (r0, r1, x0, len, sides, start = 0) => {
+      const g = new THREE.CylinderGeometry(r1, r0, len, sides, 1, false, start);
+      g.rotateZ(-Math.PI / 2);
+      g.translate(x0 + len / 2, 0, 0);
+      return g;
+    };
+    const OCT = Math.PI / 8;   // achtkant met vlakken boven, onder en opzij
+
+    // Greep: geslepen kop (afschuining 3 × 45°), versmallende achtkant, ronde conische hals
+    m.part(alongX(oct(SW0 - 2 * CAP), oct(SW0), 0, CAP, 8, OCT), { edges: 20 });
+    m.part(alongX(oct(SW0), oct(SW1), CAP, BODY, 8, OCT), { edges: 20 });
+    m.part(alongX(SW1 / 2, rs, CAP + BODY, NECK, 48), { edges: 25 });
+
+    // As Ø8 en vierkant 8 × 8 (gelijk bij alle varianten)
+    m.part(alongX(rs, rs, G, SHAFT.len, 48), { edges: 25 });
+    const bar = new THREE.BoxGeometry(BAR.len, BAR.w, BAR.w);
+    bar.translate(X2 + BAR.len / 2, 0, 0);
+    m.part(bar, { edges: 25 });
+
+    const grid = new THREE.GridHelper(300, 30, 0xd9dfdb, 0xd9dfdb);
+    grid.position.set(X3 / 2, -LOW - 0.05, 0);
+    m.add(grid, { color: 'grid', print: false });
+
+    const d = m.dims({ arrow: 3 });
+    const Y1 = -LOW - 8, Y2 = -LOW - 17;
+    d.linear({ a: V(0, Y1, 0), b: V(G, Y1, 0), text: String(G),
+      ext: [[V(G, -rs, 0), V(G, Y1 - 2, 0)]] });
+    d.linear({ a: V(G, Y1, 0), b: V(X2, Y1, 0), text: String(SHAFT.len),
+      ext: [[V(X2, -hb, 0), V(X2, Y1 - 2, 0)]] });
+    d.linear({ a: V(X2, Y1, 0), b: V(X3, Y1, 0), text: String(BAR.len),
+      ext: [[V(X3, -hb, 0), V(X3, Y1 - 2, 0)]] });
+    d.linear({ a: V(0, Y2, 0), b: V(X3, Y2, 0), text: String(X3),
+      ext: [[V(0, -LOW, 0), V(0, Y2 - 2, 0)], [V(X3, Y1, 0), V(X3, Y2 - 2, 0)]] });
+    const c45 = Math.SQRT1_2;
+    d.leader({ p: V(G + 14, rs * c45, rs * c45), e: V(G + 6, HIGH + 10, 12), text: 'Ø' + SHAFT.d });
+    d.leader({ p: V(X2 + 26, hb, hb), e: V(X2 + 34, HIGH + 10, 16), text: `□ ${BAR.w} × ${BAR.w}` });
+    d.linear({ a: V(-8, -SW0 / 2, 0), b: V(-8, SW0 / 2, 0), text: 'SW ' + SW0,
+      ext: [[V(CAP, -SW0 / 2, 0), V(-10, -SW0 / 2, 0)], [V(CAP, SW0 / 2, 0), V(-10, SW0 / 2, 0)]] });
+    d.leader({ p: V(CAP + BODY, SW1 / 2, 0), e: V(CAP + BODY - 6, HIGH + 10, 0), text: 'SW ' + SW1 });
+  }
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Sleutel met vlakke greep</title>
+<!-- link-preview -->
+<meta name="description" content="Variant B van sleutel OCT-0101: vlakke greep 46 × 30 × 6 met afgeschuinde hoeken en randen en een venster Ø10; as Ø8 × 40 en vierkant 8 × 8 × 40. Messing. Revisie A van 2026-11-04.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Tekeningenregister">
+<meta property="og:title" content="Sleutel met vlakke greep · OCT-0103-A">
+<meta property="og:description" content="Variant B van sleutel OCT-0101: vlakke greep 46 × 30 × 6 met afgeschuinde hoeken en randen en een venster Ø10; as Ø8 × 40 en vierkant 8 × 8 × 40. Messing. Revisie A van 2026-11-04.">
+<meta property="og:url" content="https://africabambaata.github.io/prototypes/drawings/OCT-0103/A.html">
+<meta property="og:image" content="https://africabambaata.github.io/prototypes/previews/OCT-0103-A.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Sleutel met vlakke greep · OCT-0103-A">
+<meta name="twitter:card" content="summary_large_image">
+<!-- /link-preview -->
+<link rel="stylesheet" href="../../viewer/1/viewer.css">
+</head>
+<body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="../../viewer/1/viewer.js"></script>
+<script>
+// Sleutel met vlakke greep OCT-0103-A (mm). Variant van sleutel OCT-0101, in de geest van Wiwen Nilsson:
+// strakke geometrie, facetten en afschuiningen, geen versiering. As en vierkant zijn bij alle
+// varianten gelijk (as Ø8 × 40, vierkant 8 × 8 × 40); alleen de greep verschilt.
+// Alles op één lijn langs X: greep vanaf x = 0, dan de as, dan het vierkant.
+const SHAFT = { d: 8, len: 40 };
+const BAR = { w: 8, len: 40 };
+const rs = SHAFT.d / 2, hb = BAR.w / 2;
+const oct = sw => sw / 2 / Math.cos(Math.PI / 8);   // achtkant: straal over de hoeken bij sleutelwijdte sw
+const PL = 46, PW = 30, PT = 6, CUT = 8, BEV = 1;   // plaat: lengte, breedte, dikte, hoek, randafschuining
+const HOLE = 10, HOLE_X = 13;                         // venster om de sleutel op te hangen
+const NECK = 6;
+const G = PL + NECK;                                  // 52: begin van de as
+const LOW = PW / 2, HIGH = PW / 2;
+const X2 = G + SHAFT.len, X3 = X2 + BAR.len;          // einde as, einde vierkant (= totale lengte)
+
+DrawingViewer.create({
+  lang: 'nl',
+  title: 'Sleutel met vlakke greep',
+  subtitle: 'variant B · plaat 46 × 30 × 6 met venster Ø10 · as Ø8 × 40 · vierkant 8 × 8 × 40 · messing',
+  number: 'OCT-0103-A',
+  register: { url: '../../drawings.json', number: 'OCT-0103', rev: 'A' },
+  colors: {
+    light: { accent: '#1f5f8b', 'on-accent': '#ffffff', part: '#b08a3c' },
+    dark:  { accent: '#7db6e2', 'on-accent': '#0f1d27', part: '#9c7a33' }
+  },
+  materials: { part: { metalness: 0.45, roughness: 0.38 } },
+  modes: ['solid', 'xray'],
+  camera: { radius: 330, target: [X3 / 2 - 6, 0, 0], min: 40, max: 1200 },
+  titleBlock: [
+    { k: 'Titel', v: 'Sleutel met vlakke greep', title: true },
+    { k: 'Tekeningnr.', v: 'OCT-0103-A' },
+    { k: 'Materiaal', v: 'Messing' },
+    { k: 'Eenheden · Schaal', v: 'mm · 1:1', units: 'mm', scale: true },
+    { k: 'Algemene toleranties', v: 'ISO 2768-mK' },
+    { k: 'Greep', v: 'vlakke plaat 46 × 30 × 6, hoeken 8 afgeschuind, randen 1 × 45°, venster Ø10, conische hals Ø12 → Ø8' },
+    { k: 'Werkend deel', v: 'as Ø8 × 40 · vierkant 8 × 8 × 40 (als OCT-0101)' },
+    { k: 'Projectie', v: 'Eerste hoek', projection: true },
+    { k: 'Getekend · Blad', v: '2026-11-04 · 1/1' }
+  ],
+  build(m) {
+    const { THREE, V } = m;
+    // Omwentelingsvorm langs X van x0 tot x0 + len; r0 is de straal aan de kant van x0.
+    const alongX = (r0, r1, x0, len, sides, start = 0) => {
+      const g = new THREE.CylinderGeometry(r1, r0, len, sides, 1, false, start);
+      g.rotateZ(-Math.PI / 2);
+      g.translate(x0 + len / 2, 0, 0);
+      return g;
+    };
+    const OCT = Math.PI / 8;   // achtkant met vlakken boven, onder en opzij
+
+    // Greep: vlakke plaat in het vlak van de as, met afgeschuinde hoeken en randen en een rond venster
+    const s = new THREE.Shape();
+    const L = PL - 2 * BEV, W = PW / 2 - BEV, C = CUT - BEV, x0 = BEV;
+    s.moveTo(x0 + C, -W); s.lineTo(x0 + L - C, -W); s.lineTo(x0 + L, -W + C); s.lineTo(x0 + L, W - C);
+    s.lineTo(x0 + L - C, W); s.lineTo(x0 + C, W); s.lineTo(x0, W - C); s.lineTo(x0, -W + C); s.closePath();
+    const hole = new THREE.Path(); hole.absarc(HOLE_X, 0, HOLE / 2 + BEV, 0, Math.PI * 2, true); s.holes.push(hole);
+    const plate = new THREE.ExtrudeGeometry(s, { depth: PT - 2 * BEV, bevelEnabled: true, bevelThickness: BEV, bevelSize: BEV, bevelSegments: 1, curveSegments: 48 });
+    plate.translate(0, 0, -(PT - 2 * BEV) / 2);
+    m.part(plate, { edges: 20 });
+    m.part(alongX(6, rs, PL, NECK, 48), { edges: 25 });
+
+    // As Ø8 en vierkant 8 × 8 (gelijk bij alle varianten)
+    m.part(alongX(rs, rs, G, SHAFT.len, 48), { edges: 25 });
+    const bar = new THREE.BoxGeometry(BAR.len, BAR.w, BAR.w);
+    bar.translate(X2 + BAR.len / 2, 0, 0);
+    m.part(bar, { edges: 25 });
+
+    const grid = new THREE.GridHelper(300, 30, 0xd9dfdb, 0xd9dfdb);
+    grid.position.set(X3 / 2, -LOW - 0.05, 0);
+    m.add(grid, { color: 'grid', print: false });
+
+    const d = m.dims({ arrow: 3 });
+    const Y1 = -LOW - 8, Y2 = -LOW - 17;
+    d.linear({ a: V(0, Y1, 0), b: V(G, Y1, 0), text: String(G),
+      ext: [[V(G, -rs, 0), V(G, Y1 - 2, 0)]] });
+    d.linear({ a: V(G, Y1, 0), b: V(X2, Y1, 0), text: String(SHAFT.len),
+      ext: [[V(X2, -hb, 0), V(X2, Y1 - 2, 0)]] });
+    d.linear({ a: V(X2, Y1, 0), b: V(X3, Y1, 0), text: String(BAR.len),
+      ext: [[V(X3, -hb, 0), V(X3, Y1 - 2, 0)]] });
+    d.linear({ a: V(0, Y2, 0), b: V(X3, Y2, 0), text: String(X3),
+      ext: [[V(0, -LOW, 0), V(0, Y2 - 2, 0)], [V(X3, Y1, 0), V(X3, Y2 - 2, 0)]] });
+    const c45 = Math.SQRT1_2;
+    d.leader({ p: V(G + 14, rs * c45, rs * c45), e: V(G + 6, HIGH + 10, 12), text: 'Ø' + SHAFT.d });
+    d.leader({ p: V(X2 + 26, hb, hb), e: V(X2 + 34, HIGH + 10, 16), text: `□ ${BAR.w} × ${BAR.w}` });
+    d.linear({ a: V(-8, -PW / 2, 0), b: V(-8, PW / 2, 0), text: String(PW),
+      ext: [[V(0, -PW / 2 + CUT, 0), V(-10, -PW / 2, 0)], [V(0, PW / 2 - CUT, 0), V(-10, PW / 2, 0)]] });
+    d.leader({ p: V(HOLE_X + HOLE / 2 * Math.SQRT1_2, HOLE / 2 * Math.SQRT1_2, PT / 2), e: V(HOLE_X + 14, HIGH + 8, PT / 2), text: 'Ø' + HOLE });
+    d.linear({ a: V(PL + 4, -4, -PT / 2), b: V(PL + 4, -4, PT / 2), n: V(1, 0, 0), text: String(PT),
+      ext: [[V(PL, -4, -PT / 2), V(PL + 6, -4, -PT / 2)], [V(PL, -4, PT / 2), V(PL + 6, -4, PT / 2)]] });
+  }
+});
+</script>
+</body>
+</html>
