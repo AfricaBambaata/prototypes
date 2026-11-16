@@ -162,6 +162,23 @@
           "note": "Perforatie voor 1/4″-pegboardhaken: gaten Ø7,14 (9/32″) op steek 25,4 (1″), 44 × 30 = 1320 gaten"
         }
       ]
+    },
+    {
+      "number": "SCH-0101",
+      "title": "Schijf met ronde rand",
+      "description": "Schijf Ø185 × 40 met een volledig ronde rand R20 en onderaan een uitsparing Ø125, 20 diep.",
+      "lang": "nl",
+      "status": "current",
+      "revisions": [
+        {
+          "rev": "A",
+          "date": "2026-11-16",
+          "file": "drawings/SCH-0101/A.html",
+          "viewer": "1",
+          "note": "Eerste uitgave",
+          "status": "draft"
+        }
+      ]
     }
   ]
 }

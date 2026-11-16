@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Schijf met ronde rand</title>
+<!-- link-preview -->
+<meta name="description" content="Schijf Ø185 × 40 met een volledig ronde rand R20 en onderaan een uitsparing Ø125, 20 diep. Revisie A van 2026-11-16.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Tekeningenregister">
+<meta property="og:title" content="Schijf met ronde rand · SCH-0101-A">
+<meta property="og:description" content="Schijf Ø185 × 40 met een volledig ronde rand R20 en onderaan een uitsparing Ø125, 20 diep. Revisie A van 2026-11-16.">
+<meta property="og:url" content="https://africabambaata.github.io/prototypes/drawings/SCH-0101/A.html">
+<meta property="og:image" content="https://africabambaata.github.io/prototypes/previews/SCH-0101-A.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Schijf met ronde rand · SCH-0101-A">
+<meta name="twitter:card" content="summary_large_image">
+<!-- /link-preview -->
+<link rel="stylesheet" href="../../viewer/1/viewer.css">
+</head>
+<body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="../../viewer/1/viewer.js"></script>
+<script>
+// Schijf SCH-0101-A (mm). As langs Y, onderkant op y = -20, bovenkant op y = +20.
+// Buiten Ø185 × 40 met een volledig ronde rand R20 (halve cirkel over de hele dikte), dus vlakke boven- en
+// onderkant Ø145. Onderaan een uitsparing Ø125, 20 diep (plafond van de uitsparing op y = 0).
+const S = { D: 185, T: 40, R: 20, pocketD: 125, pocketDepth: 20 };
+const RO = S.D / 2, t = S.T / 2, RF = RO - S.R, RP = S.pocketD / 2, YP = -t + S.pocketDepth;
+
+// Doorsnede (r, y), tegen de klok in rond het materiaal: plafond uitsparing, wand, vlakke ring onderaan,
+// ronde rand, bovenvlak. Hoekpunten dubbel zodat elk vlak zijn eigen normaal krijgt.
+function profile() {
+  const p = [[0, YP], [RP, YP], [RP, YP], [RP, -t], [RP, -t], [RF, -t]];
+  const N = 24;
+  for (let k = 0; k <= N; k++) { const a = -Math.PI / 2 + Math.PI * k / N; p.push([RF + S.R * Math.cos(a), S.R * Math.sin(a)]); }
+  p.push([0, t]);
+  return p;
+}
+
+DrawingViewer.create({
+  lang: 'nl',
+  title: 'Schijf met ronde rand',
+  subtitle: `Ø${S.D} × ${S.T} · rand R${S.R} · uitsparing Ø${S.pocketD} × ${S.pocketDepth}`,
+  number: 'SCH-0101-A',
+  register: { url: '../../drawings.json', number: 'SCH-0101', rev: 'A' },
+  modes: ['solid', 'section', 'xray'],
+  views: [
+    { id: 'iso', theta: Math.PI / 4, phi: Math.acos(Math.sqrt(1 / 3)) },
+    { id: 'front', theta: 0, phi: Math.PI / 2 },
+    { id: 'top', theta: 0, phi: 0.0001 },
+    { id: 'right', theta: Math.PI / 2, phi: Math.PI / 2 },
+    { id: 'under', label: 'Onderkant', tag: 'Isometrisch van onderen', theta: Math.PI / 4, phi: Math.PI - Math.acos(Math.sqrt(1 / 3)) }
+  ],
+  camera: { radius: 460, target: [0, 0, 0], min: 60, max: 1400 },
+  titleBlock: [
+    { k: 'Titel', v: 'Schijf met ronde rand', title: true },
+    { k: 'Tekeningnr.', v: 'SCH-0101-A' },
+    { k: 'Afmetingen', v: `Ø${S.D} × ${S.T}` },
+    { k: 'Rand', v: `Volledig rond R${S.R} over de hele dikte; vlakke boven- en onderkant Ø${2 * RF}` },
+    { k: 'Uitsparing', v: `Onderzijde Ø${S.pocketD}, ${S.pocketDepth} diep, vlakke bodem` },
+    { k: 'Materiaal', v: 'Niet opgegeven' },
+    { k: 'Eenheden · Schaal', v: 'mm · 1:2', units: 'mm', scale: true },
+    { k: 'Projectie', v: 'Eerste hoek', projection: true },
+    { k: 'Getekend · Blad', v: '2026-11-16 · 1/1' }
+  ],
+  build(m) {
+    const { THREE, V } = m;
+    m.part(new THREE.LatheGeometry(profile().map(([r, y]) => new THREE.Vector2(r, y)), 128), { edges: 25 });
+
+    // Halve doorsnede op z = 0 (de voorste helft weg), in het vlak van de maten: doorsnede gearceerd onder 45°.
+    const poly = [];                                   // omtrek van de volledige doorsnede [x, y], x van -RO tot RO
+    const half = profile().slice(1, -1);               // zonder de punten op de as
+    half.forEach(([r, y]) => poly.push([r, y]));
+    poly.push([-RF, t]);
+    half.slice().reverse().forEach(([r, y]) => poly.push([-r, y]));
+    m.section({ plane: new THREE.Plane(V(0, 0, -1), 0), hatch: hatchPoly(V, poly, 3) });
+
+    const c45 = Math.SQRT1_2;
+    const d = m.dims({ arrow: 4 });
+    d.linear({ a: V(-RO, t + 34, 0), b: V(RO, t + 34, 0), text: `Ø${S.D}`,
+      ext: [[V(-RO, 2, 0), V(-RO, t + 38, 0)], [V(RO, 2, 0), V(RO, t + 38, 0)]] });
+    d.linear({ a: V(-RF, t + 16, 0), b: V(RF, t + 16, 0), text: `Ø${2 * RF}`,
+      ext: [[V(-RF, t, 0), V(-RF, t + 20, 0)], [V(RF, t, 0), V(RF, t + 20, 0)]] });
+    d.linear({ a: V(RO + 20, -t, 0), b: V(RO + 20, t, 0), text: String(S.T),
+      ext: [[V(RF, -t, 0), V(RO + 24, -t, 0)], [V(RF, t, 0), V(RO + 24, t, 0)]] });
+    d.leader({ p: V(RF + S.R * c45, S.R * c45, 0), e: V(RF + S.R * c45 + 26, S.R * c45 + 34, 0), text: `R${S.R}` });
+    d.linear({ a: V(-RP, -t - 22, 0), b: V(RP, -t - 22, 0), text: `Ø${S.pocketD}`,
+      ext: [[V(-RP, -t, 0), V(-RP, -t - 26, 0)], [V(RP, -t, 0), V(RP, -t - 26, 0)]] });
+    d.linear({ a: V(-RO - 20, -t, 0), b: V(-RO - 20, YP, 0), text: String(S.pocketDepth),
+      ext: [[V(-RF, -t, 0), V(-RO - 24, -t, 0)], [V(-RP, YP, 0), V(-RO - 24, YP, 0)]] });
+    // Hartlijn
+    d.segments([V(0, -t - 12, 0), V(0, -t - 2, 0), V(0, -t + 2, 0), V(0, -t + 4, 0), V(0, t - 4, 0), V(0, t - 2, 0), V(0, t + 2, 0), V(0, t + 12, 0)]);
+  }
+});
+
+// Omtrek plus arcering onder 45° van een veelhoek [x, y] in het vlak z = 0 (even-oneven regel).
+function hatchPoly(V, poly, step) {
+  const pts = [], P = (u, y) => V(u, y, 0.01);
+  for (let i = 0; i < poly.length; i++) {
+    const [z0, y0] = poly[i], [z1, y1] = poly[(i + 1) % poly.length];
+    if (z0 !== z1 || y0 !== y1) pts.push(P(z0, y0), P(z1, y1));
+  }
+  const cs = poly.map(([z, y]) => z - y), cMin = Math.min(...cs), cMax = Math.max(...cs);
+  for (let c = cMin + step / 2; c < cMax; c += step) {      // lijn z - y = c, geparametreerd door y
+    const ys = [];
+    for (let i = 0; i < poly.length; i++) {
+      const [z0, y0] = poly[i], [z1, y1] = poly[(i + 1) % poly.length];
+      const f0 = z0 - y0 - c, f1 = z1 - y1 - c;
+      if ((f0 < 0) !== (f1 < 0)) { const s = f0 / (f0 - f1); ys.push(y0 + s * (y1 - y0)); }
+    }
+    ys.sort((p, q) => p - q);
+    for (let k = 0; k + 1 < ys.length; k += 2) pts.push(P(ys[k] + c, ys[k]), P(ys[k + 1] + c, ys[k + 1]));
+  }
+  return pts;
+}
+</script>
+</body>
+</html>
