@@ -153,6 +153,14 @@
           "file": "drawings/PLT-0101/B.html",
           "viewer": "1",
           "note": "Gaten Ø10 op steek 50 in plaats van 25 (23 × 16 = 368 gaten, zelfde randafstanden); dikte 4 mm"
+        },
+        {
+          "rev": "C",
+          "date": "2026-11-16",
+          "file": "drawings/PLT-0101/C.html",
+          "viewer": "1",
+          "note": "Perforatie voor 1/4″-pegboardhaken: gaten Ø7,14 (9/32″) op steek 25,4 (1″), 44 × 30 = 1320 gaten",
+          "status": "draft"
         }
       ]
     }
