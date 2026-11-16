@@ -28,14 +28,14 @@
 // Trap overgenomen uit het grondplan van de trappenmaker (schaal 1:13,3), licht getekend; de leuning is het onderwerp.
 // Plan in mm: X langs de lange muur (0 = korte muur), Y van de lange muur naar binnen (0 … 941,68).
 // Wereld: x = X, z = Y, y = hoogte (0 = vloer beneden, 2708 = vloer boven).
-const D = {"NOS": [[[2311.1, 1.1], [2311.1, 941.1]], [[2135.2, 1.1], [2135.2, 941.1]], [[1957.1, 1.1], [1957.1, 941.1]], [[1780.1, 1.1], [1780.1, 941.1]], [[1598.0, 1.1], [1611.6, 941.1]], [[1404.0, 1.1], [1463.0, 941.1]], [[1199.8, 1.1], [1332.0, 941.1]], [[979.7, 0.6], [1224.8, 941.1]], [[749.9, 0.6], [1137.4, 941.1]], [[508.3, 1.7], [1068.2, 941.7]], [[215.0, 3.4], [1020.0, 941.7]], [[0.6, 190.0], [989.9, 941.1]], [[0.0, 506.6], [959.8, 941.7]]], "RAIL": [[2311.1, 0, 1111], [2311.1, 70, 1111], [1211.1, 70, 2359], [411.1, 70, 3087], [70.0, 70, 3288], [70, 537.9, 3598], [70, 797.9, 3598], [0, 797.9, 3598]], "PINS": [[1791.1, 70, 1701], [1061.1, 70, 2496], [511.0999999999999, 70, 2996], [181.0999999999999, 70, 3223], [70, 248.9000000000001, 3407]], "OFF": 70, "BENDS": [90.0, 6.3, 11.8, 73.7, 33.5, 90.0], "PITCH": [0.0, 48.6, 42.3, 30.5, 33.5, 0.0, 0.0], "LEN": [70, 1664, 1082, 396, 561, 260, 70]};
+const D = {"NOS": [[[2311.1, 1.1], [2311.1, 941.1]], [[2135.2, 1.1], [2135.2, 941.1]], [[1957.1, 1.1], [1957.1, 941.1]], [[1780.1, 1.1], [1780.1, 941.1]], [[1598.0, 1.1], [1611.6, 941.1]], [[1404.0, 1.1], [1463.0, 941.1]], [[1199.8, 1.1], [1332.0, 941.1]], [[979.7, 0.6], [1224.8, 941.1]], [[749.9, 0.6], [1137.4, 941.1]], [[508.3, 1.7], [1068.2, 941.7]], [[215.0, 3.4], [1020.0, 941.7]], [[0.6, 190.0], [989.9, 941.1]], [[0.0, 506.6], [959.8, 941.7]]], "RAIL": [[2611.1, 0, 1111], [2611.1, 70, 1111], [2311.1, 70, 1111], [1211.1, 70, 2359], [411.1, 70, 3087], [70.0, 70, 3288], [70, 537.9, 3598], [70, 837.9, 3598], [0, 837.9, 3598]], "PINS": [[1791.1, 70, 1701], [1061.1, 70, 2496], [511.0999999999999, 70, 2996], [181.0999999999999, 70, 3223], [70, 248.9000000000001, 3407]], "OFF": 70, "BENDS": [90.0, 48.6, 6.3, 11.8, 73.7, 33.5, 90.0], "PITCH": [0.0, 0.0, 48.6, 42.3, 30.5, 33.5, 0.0, 0.0], "LEN": [70, 300, 1664, 1082, 396, 561, 300, 70]};
 const W = 941.68, LEN = 2303.22, RISE = 2708 / 13, TREAD = 34, RISER = 12, OVER = 50, STRINGER = 33;
 const FLOOR2 = 2708, WALL_TOP = 3900;
 
 const viewer = DrawingViewer.create({
   lang: 'nl',
   title: 'Trapleuning smeedijzer · trap 2–3',
-  subtitle: 'Ø20 · 900 boven de trapneus · blinde pinnen met chemisch anker · trap 13 × 208,3 kwartdraai',
+  subtitle: 'Ø20 · 900 boven de trapneus · 300 doorloop · blinde pinnen met chemisch anker · trap 13 × 208,3 kwartdraai',
   number: 'MHB-0300-A',
   register: { url: '../../drawings.json', number: 'MHB-0300', rev: 'A' },
   colors: {
@@ -58,9 +58,9 @@ const viewer = DrawingViewer.create({
   titleBlock: [
     { k: 'Titel', v: 'Trapleuning smeedijzer · trap 2–3', title: true },
     { k: 'Tekeningnr.', v: 'MHB-0300-A' },
-    { k: 'Leuning', v: 'smeedijzer Ø20, langs lange en korte muur; bovenkant 900 boven de trapneuslijn (±13)' },
-    { k: 'Plooistaat', v: 'helling 48,6° · knik 6,3° · 42,3° · knik 11,8° · 30,5° · hoek in plan 90° (3D 73,7°) · 33,5° · knik 33,5° · horizontaal' },
-    { k: 'Lengtes (as)', v: '70 · 1664 · 1082 · 396 · 561 · 260 · 70 (totaal ≈ 4100, waarvan 2 × 70 haaks naar de muur)' },
+    { k: 'Leuning', v: 'smeedijzer Ø20, langs lange en korte muur; bovenkant 900 boven de trapneuslijn (±13); loopt 300 horizontaal door voor de eerste en na de laatste trede' },
+    { k: 'Plooistaat', v: 'horizontaal 300 · knik 48,6° · 48,6° · knik 6,3° · 42,3° · knik 11,8° · 30,5° · hoek in plan 90° (3D 73,7°) · 33,5° · knik 33,5° · horizontaal 300' },
+    { k: 'Lengtes (as)', v: '70 · 300 · 1664 · 1082 · 396 · 561 · 300 · 70 (totaal ≈ 4440; 2 × 300 doorloop, 2 × 70 haaks naar de muur)' },
     { k: 'Bevestiging', v: '5 blinde pinnen Ø12 (40 omlaag, haaks naar de muur, 90 diep in chemisch anker) + beide uiteinden haaks 90 diep in de muur' },
     { k: 'Afstand muur', v: '60 vrij tussen muur en leuning (as op 70)' },
     { k: 'Trap', v: 'Keepboom_G · 13 × 208,3 · aantrede 176 · beuk 34 · trapgat 2303 × 942' },
@@ -157,7 +157,7 @@ const viewer = DrawingViewer.create({
 
     // ---------- leuning Ø20 (smeedijzer), plooien met afgeronde bochten
     const R = D.RAIL.map(([x, y, h]) => P(x, y, h));
-    const radius = [0, 40, 250, 250, 70, 160, 40, 0];
+    const radius = [0, 40, 150, 250, 250, 70, 160, 40, 0];
     const path = new THREE.CurvePath();
     let prev = R[0];
     for (let i = 1; i < R.length - 1; i++) {
@@ -214,13 +214,20 @@ const viewer = DrawingViewer.create({
     });
     const mid = (i, t = 0.5) => R[i].clone().lerp(R[i + 1], t);
     const pitchTxt = v => String(v).replace('.', ',') + '°';
-    all.leader({ p: mid(1, 0.45), e: mid(1, 0.45).add(V(250, 380, 300)), text: 'helling ' + pitchTxt(D.PITCH[1]) });
-    all.leader({ p: mid(2, 0.5), e: mid(2, 0.5).add(V(150, 420, 300)), text: 'helling ' + pitchTxt(D.PITCH[2]) });
-    all.leader({ p: R[2], e: R[2].clone().add(V(-200, -520, 250)), text: 'knik ' + pitchTxt(D.BENDS[1]) });
-    all.leader({ p: R[3], e: R[3].clone().add(V(-150, -560, 260)), text: 'knik ' + pitchTxt(D.BENDS[2]) });
-    all.leader({ p: R[4], e: R[4].clone().add(V(350, 420, 320)), text: 'hoek 90° in plan' });
-    all.leader({ p: R[5], e: R[5].clone().add(V(320, 260, 260)), text: 'knik ' + pitchTxt(D.BENDS[4]) + ' → horizontaal' });
-    all.leader({ p: mid(0, 0.5), e: mid(0, 0.5).add(V(250, -500, 300)), text: 'Ø20 smeedijzer' });
+    all.leader({ p: mid(2, 0.45), e: mid(2, 0.45).add(V(250, 380, 300)), text: 'helling ' + pitchTxt(D.PITCH[2]) });
+    all.leader({ p: mid(3, 0.5), e: mid(3, 0.5).add(V(150, 420, 300)), text: 'helling ' + pitchTxt(D.PITCH[3]) });
+    all.leader({ p: R[3], e: R[3].clone().add(V(-200, -520, 250)), text: 'knik ' + pitchTxt(D.BENDS[2]) });
+    all.leader({ p: R[4], e: R[4].clone().add(V(-150, -560, 260)), text: 'knik ' + pitchTxt(D.BENDS[3]) });
+    all.leader({ p: R[5], e: R[5].clone().add(V(350, 420, 320)), text: 'hoek 90° in plan' });
+    all.leader({ p: R[6], e: R[6].clone().add(V(320, 260, 260)), text: 'knik ' + pitchTxt(D.BENDS[5]) + ' → horizontaal' });
+    all.leader({ p: R[2], e: R[2].clone().add(V(300, 320, 280)), text: 'knik ' + pitchTxt(D.BENDS[1]) + ' → horizontaal' });
+    // doorloop 300 voor en na de trap
+    const [rx0, , rh0] = D.RAIL[2], [, ry1, rh1] = D.RAIL[7], [, ry0] = D.RAIL[6];
+    all.linear({ a: P(rx0, D.OFF, rh0 + 120), b: P(rx0 + 300, D.OFF, rh0 + 120), n: V(0, 0, 1), text: '300',
+      ext: [[P(rx0, D.OFF, rh0 + 20), P(rx0, D.OFF, rh0 + 140)], [P(rx0 + 300, D.OFF, rh0 + 20), P(rx0 + 300, D.OFF, rh0 + 140)]] });
+    all.linear({ a: P(D.OFF, ry0, rh1 + 120), b: P(D.OFF, ry1, rh1 + 120), n: V(1, 0, 0), text: '300',
+      ext: [[P(D.OFF, ry0, rh1 + 20), P(D.OFF, ry0, rh1 + 140)], [P(D.OFF, ry1, rh1 + 20), P(D.OFF, ry1, rh1 + 140)]] });
+    all.leader({ p: mid(2, 0.25), e: mid(2, 0.25).add(V(250, -500, 300)), text: 'Ø20 smeedijzer' });
     all.note({ pos: P(LEN * 0.55, -60, WALL_TOP + 120), text: 'Lange muur' });
     all.note({ pos: P(-60, W * 0.55, WALL_TOP + 120), text: 'Korte muur' });
     all.note({ pos: P(470, W + 350, FLOOR2 + 40), text: 'Overloop' });
