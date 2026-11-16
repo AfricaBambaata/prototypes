@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Geperforeerde plaat</title>
+<!-- link-preview -->
+<meta name="description" content="Plaat 1289 × 941 × 3 met hoeken R50 en gaten Ø10 op een vierkant raster, uit Plaat_perforaties_OpenSoon.dxf. Dikte aangenomen. Revisie B van 2026-11-16.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Tekeningenregister">
+<meta property="og:title" content="Geperforeerde plaat · PLT-0101-B">
+<meta property="og:description" content="Plaat 1289 × 941 × 3 met hoeken R50 en gaten Ø10 op een vierkant raster, uit Plaat_perforaties_OpenSoon.dxf. Dikte aangenomen. Revisie B van 2026-11-16.">
+<meta property="og:url" content="https://africabambaata.github.io/prototypes/drawings/PLT-0101/B.html">
+<meta property="og:image" content="https://africabambaata.github.io/prototypes/previews/PLT-0101-B.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Geperforeerde plaat · PLT-0101-B">
+<meta name="twitter:card" content="summary_large_image">
+<!-- /link-preview -->
+<link rel="stylesheet" href="../../viewer/1/viewer.css">
+</head>
+<body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="../../viewer/1/viewer.js"></script>
+<script>
+// Geperforeerde plaat PLT-0101-B (mm), overgenomen uit Plaat_perforaties_OpenSoon.dxf.
+// DXF: buitencontour 1289 × 941 met hoekstraal R50 en 1395 gaten Ø10 (45 × 31) op een vierkant raster
+// met steek 25, symmetrisch in de plaat (randafstand 94,5 links/rechts, 95,5 onder/boven tot het gatmidden).
+// Revisie B: steek 50, dus om het andere gat van de DXF: 23 × 16 = 368 gaten, zelfde gatenveld en randafstanden.
+// De DXF is 2D: de dikte staat er niet in en is hier aangenomen.
+// Plaat in het XY-vlak (vooraanzicht = gatenpatroon), dikte langs Z, oorsprong in het midden.
+const P = { W: 1289, H: 941, R: 50, T: 3, d: 10, pitch: 50, nx: 23, ny: 16 };
+const A = P.W / 2, B = P.H / 2, t = P.T / 2, r = P.d / 2, h = P.pitch / 2;
+const FX = P.nx * h, FY = P.ny * h;                          // half-maten van het geperforeerde veld (cellen van 25 × 25)
+const cx = i => (i - (P.nx - 1) / 2) * P.pitch;              // gatmiddens
+const cy = j => (j - (P.ny - 1) / 2) * P.pitch;
+const X0 = cx(0), Y0 = cy(0);                                // gat linksonder
+const nHoles = P.nx * P.ny;
+const fmt = v => String(v).replace('.', ',');
+
+DrawingViewer.create({
+  lang: 'nl',
+  title: 'Geperforeerde plaat',
+  subtitle: `${P.W} × ${P.H} × ${P.T} · ${nHoles} × Ø${P.d} · steek ${P.pitch}`,
+  number: 'PLT-0101-B',
+  register: { url: '../../drawings.json', number: 'PLT-0101', rev: 'B' },
+  modes: ['solid', 'section', 'xray'],
+  views: [
+    { id: 'iso', theta: 0.5, phi: 1.05 },
+    { id: 'front', theta: 0, phi: Math.PI / 2 },
+    { id: 'top', theta: 0, phi: 0.0001 },
+    { id: 'right', theta: Math.PI / 2, phi: Math.PI / 2 },
+    { id: 'detail', label: 'Detail', tag: 'Detail hoek linksonder', theta: 0, phi: Math.PI / 2, radius: 450, target: [-580, -420, 0] }
+  ],
+  camera: { radius: 2500, target: [0, 0, 0], min: 25, max: 5000 },
+  titleBlock: [
+    { k: 'Titel', v: 'Geperforeerde plaat', title: true },
+    { k: 'Tekeningnr.', v: 'PLT-0101-B' },
+    { k: 'Afmetingen', v: `${P.W} × ${P.H} × ${P.T} · hoeken R${P.R}` },
+    { k: 'Perforatie', v: `${nHoles} × Ø${P.d} (${P.nx} × ${P.ny}) · vierkant raster, steek ${P.pitch} · ±${fmt((Math.PI * r * r / (P.pitch * P.pitch) * 100).toFixed(1))} % open` },
+    { k: 'Dikte', v: `${P.T} mm aangenomen: niet opgegeven in de DXF` },
+    { k: 'Materiaal', v: 'Niet opgegeven' },
+    { k: 'Eenheden · Schaal', v: 'mm · 1:10', units: 'mm', scale: true },
+    { k: 'Bron', v: 'Plaat_perforaties_OpenSoon.dxf' },
+    { k: 'Projectie', v: 'Eerste hoek', projection: true },
+    { k: 'Getekend · Blad', v: '2026-11-16 · 1/1' }
+  ],
+  build(m) {
+    const { THREE, V } = m;
+    m.part(plate(THREE), { edges: 25 });
+
+    // Halve doorsnede op x = 0, door een kolom gaten: de stegen tussen de gaten gearceerd.
+    const hatch = [];
+    const ys = [-B];
+    for (let j = 0; j < P.ny; j++) ys.push(cy(j) - r, cy(j) + r);
+    ys.push(B);
+    for (let k = 0; k < ys.length; k += 2) hatch.push(...m.hatchYZ(0, ys[k], ys[k + 1], -t, t, 1.2));
+    m.section({ plane: new THREE.Plane(V(-1, 0, 0), 0), hatch });
+
+    const z = t + 0.2, c45 = Math.SQRT1_2;
+    // Overzicht: buitenmaten, hart-hart van het gatenveld en de hoekstraal.
+    const all = m.dims({ arrow: 22, minRadius: 900 });
+    all.linear({ a: V(-A, -B - 90, z), b: V(A, -B - 90, z), text: String(P.W),
+      ext: [[V(-A, -B + P.R, z), V(-A, -B - 105, z)], [V(A, -B + P.R, z), V(A, -B - 105, z)]] });
+    all.linear({ a: V(-A - 90, -B, z), b: V(-A - 90, B, z), text: String(P.H),
+      ext: [[V(-A + P.R, -B, z), V(-A - 105, -B, z)], [V(-A + P.R, B, z), V(-A - 105, B, z)]] });
+    all.linear({ a: V(X0, B + 70, z), b: V(-X0, B + 70, z), text: `${-2 * X0} (${P.nx - 1} × ${P.pitch})`,
+      ext: [[V(X0, -Y0 + r, z), V(X0, B + 85, z)], [V(-X0, -Y0 + r, z), V(-X0, B + 85, z)]] });
+    all.linear({ a: V(A + 70, Y0, z), b: V(A + 70, -Y0, z), text: `${-2 * Y0} (${P.ny - 1} × ${P.pitch})`,
+      ext: [[V(-X0 + r, Y0, z), V(A + 85, Y0, z)], [V(-X0 + r, -Y0, z), V(A + 85, -Y0, z)]] });
+    const ca = V(A - P.R, B - P.R, z);
+    all.leader({ p: ca.clone().add(V(P.R * c45, P.R * c45, 0)), e: ca.clone().add(V(P.R * c45 + 150, P.R * c45 + 40, 0)), arrow: 18, text: `R${P.R} (4×)` });
+    all.note({ pos: V(0, -B - 190, z), text: `${nHoles} × Ø${P.d} · steek ${P.pitch}` });
+
+    // Detail (ingezoomd, hoek linksonder): randafstanden, steek, gatdiameter en dikte.
+    const det = m.dims({ arrow: 3, maxRadius: 900 });
+    const yd = -B - 22, xd = -A - 22;
+    det.linear({ a: V(-A, yd, z), b: V(X0, yd, z), text: fmt(X0 + A),
+      ext: [[V(-A, -B + P.R, z), V(-A, yd - 4, z)], [V(X0, Y0 - r, z), V(X0, yd - 4, z)]] });
+    det.linear({ a: V(X0, yd, z), b: V(X0 + P.pitch, yd, z), text: String(P.pitch),
+      ext: [[V(X0 + P.pitch, Y0 - r, z), V(X0 + P.pitch, yd - 4, z)]] });
+    det.linear({ a: V(xd, -B, z), b: V(xd, Y0, z), text: fmt(Y0 + B),
+      ext: [[V(-A + P.R, -B, z), V(xd - 4, -B, z)], [V(X0 - r, Y0, z), V(xd - 4, Y0, z)]] });
+    det.linear({ a: V(xd, Y0, z), b: V(xd, Y0 + P.pitch, z), text: String(P.pitch),
+      ext: [[V(X0 - r, Y0 + P.pitch, z), V(xd - 4, Y0 + P.pitch, z)]] });
+    const hx = X0 + 2 * P.pitch;
+    det.leader({ p: V(hx + r * c45, Y0 - r * c45, z), e: V(hx + 30, Y0 - 45, z), text: `Ø${P.d} (${nHoles}×)` });
+    const yt = Y0 + 4 * P.pitch + h;                         // tussen twee gatenrijen, op de linkerrand
+    det.linear({ a: V(-A - 12, yt, -t), b: V(-A - 12, yt, t), n: V(0, 1, 0), text: String(P.T),
+      ext: [[V(-A, yt, -t), V(-A - 15, yt, -t)], [V(-A, yt, t), V(-A - 15, yt, t)]] });
+    // Hartlijnen door de eerste rij en kolom gaten.
+    det.segments([V(X0, Y0 - 9, z), V(X0, Y0 + 9, z), V(X0 - 9, Y0, z), V(X0 + 9, Y0, z),
+      V(X0 + P.pitch, Y0 - 9, z), V(X0 + P.pitch, Y0 + 9, z), V(X0 - 9, Y0 + P.pitch, z), V(X0 + 9, Y0 + P.pitch, z)]);
+  }
+});
+
+// De plaat als één BufferGeometry, zonder driehoeksberekening met 1395 gaten in één vorm (te traag):
+// - het gatenveld bestaat uit cellen van 25 × 25, elk een vierkant met een rond gat (24 segmenten). Het vierkant
+//   heeft punten op dezelfde hoeken als de cirkel, dus elk stukje tussen gat en rand is een vlakke vierhoek;
+// - de rand rond het veld (82 à 83 mm) sluit punt voor punt aan op de cellen (geen T-knopen, dus geen losse
+//   randlijnen), met een waaier naar elke afgeronde hoek;
+// - daarbij de buitenwand en de gatwanden.
+function plate(THREE) {
+  const SEG = 24, ARC = 12;
+  const pos = [], nor = [];
+  const snap = v => Math.round(v * 1e9) / 1e9;
+  const put = (x, y, zz, nx, ny, nz) => { pos.push(x, y, zz); nor.push(nx, ny, nz); };
+  // Vlakke driehoek (a, b, c tegen de klok in van boven gezien) op boven- en ondervlak.
+  const faceTri = (a, b, c) => {
+    put(a[0], a[1], t, 0, 0, 1); put(b[0], b[1], t, 0, 0, 1); put(c[0], c[1], t, 0, 0, 1);
+    put(a[0], a[1], -t, 0, 0, -1); put(c[0], c[1], -t, 0, 0, -1); put(b[0], b[1], -t, 0, 0, -1);
+  };
+  const faceQuad = (a, b, c, d) => { faceTri(a, b, c); faceTri(a, c, d); };
+
+  const dir = [], sq = [];
+  for (let k = 0; k <= SEG; k++) {
+    const a = k / SEG * Math.PI * 2, c = Math.cos(a), s = Math.sin(a), q = Math.max(Math.abs(c), Math.abs(s));
+    dir.push([c, s]); sq.push([snap(c / q), snap(s / q)]);
+  }
+  for (let i = 0; i < P.nx; i++) for (let j = 0; j < P.ny; j++) {
+    const x = cx(i), y = cy(j);
+    for (let k = 0; k < SEG; k++) {
+      const i0 = [x + r * dir[k][0], y + r * dir[k][1]], i1 = [x + r * dir[k + 1][0], y + r * dir[k + 1][1]];
+      const o0 = [x + h * sq[k][0], y + h * sq[k][1]], o1 = [x + h * sq[k + 1][0], y + h * sq[k + 1][1]];
+      faceQuad(i0, o0, o1, i1);
+      // Gatwand, normaal naar het gatmidden
+      const [c0, s0] = dir[k], [c1, s1] = dir[k + 1];
+      put(i0[0], i0[1], -t, -c0, -s0, 0); put(i0[0], i0[1], t, -c0, -s0, 0); put(i1[0], i1[1], t, -c1, -s1, 0);
+      put(i0[0], i0[1], -t, -c0, -s0, 0); put(i1[0], i1[1], t, -c1, -s1, 0); put(i1[0], i1[1], -t, -c1, -s1, 0);
+    }
+  }
+
+  // Punten van het veld langs de rand: dezelfde waarden als in de cellen.
+  const uniq = vals => [...new Map(vals.map(v => [v.toFixed(6), v])).values()].sort((p, q) => p - q);
+  const side = [];
+  for (let k = 0; k <= SEG; k++) if (Math.abs(sq[k][1] + 1) < 1e-9) side.push(sq[k][0]);  // onderkant van een cel
+  const XS = uniq([].concat(...Array.from({ length: P.nx }, (_, i) => side.map(o => cx(i) + h * o))));
+  const YS = uniq([].concat(...Array.from({ length: P.ny }, (_, j) => side.map(o => cy(j) + h * o))));
+
+  // Afgeronde hoek: keten van buitenpunten van de projectie op de onder-/bovenrand tot die op de zijrand,
+  // tegen de klok in rond de plaat, plus de waaier vanuit de veldhoek.
+  const corner = (sx, sy) => {
+    const ch = [[sx * FX, sy * B], [sx * (A - P.R), sy * B]];
+    const a0 = sy < 0 ? -Math.PI / 2 : Math.PI / 2, a1 = sx > 0 ? 0 : Math.PI;
+    const d = Math.atan2(Math.sin(a1 - a0), Math.cos(a1 - a0));
+    for (let k = 1; k < ARC; k++) {
+      const a = a0 + d * k / ARC;
+      ch.push([sx * (A - P.R) + P.R * Math.cos(a), sy * (B - P.R) + P.R * Math.sin(a)]);
+    }
+    ch.push([sx * A, sy * (B - P.R)], [sx * A, sy * FY]);
+    const p = [sx * FX, sy * FY], f = ch[0], l = ch[ch.length - 1];
+    if ((f[0] - p[0]) * (l[1] - p[1]) - (f[1] - p[1]) * (l[0] - p[0]) < 0) ch.reverse();
+    for (let k = 0; k + 1 < ch.length; k++) faceTri(p, ch[k], ch[k + 1]);
+    return ch;
+  };
+  for (let m = 0; m + 1 < XS.length; m++) {
+    const x0 = XS[m], x1 = XS[m + 1];
+    faceQuad([x0, -B], [x1, -B], [x1, -FY], [x0, -FY]);
+    faceQuad([x1, B], [x0, B], [x0, FY], [x1, FY]);
+  }
+  for (let m = 0; m + 1 < YS.length; m++) {
+    const y0 = YS[m], y1 = YS[m + 1];
+    faceQuad([A, y0], [A, y1], [FX, y1], [FX, y0]);
+    faceQuad([-A, y1], [-A, y0], [-FX, y0], [-FX, y1]);
+  }
+  const BR = corner(1, -1), TR = corner(1, 1), TL = corner(-1, 1), BL = corner(-1, -1);
+
+  // Buitencontour tegen de klok in, met precies dezelfde punten als het bovenvlak, en de buitenwand.
+  const loop = [
+    ...XS.map(x => [x, -B]), ...BR.slice(1, -1),
+    ...YS.map(y => [A, y]), ...TR.slice(1, -1),
+    ...XS.slice().reverse().map(x => [x, B]), ...TL.slice(1, -1),
+    ...YS.slice().reverse().map(y => [-A, y]), ...BL.slice(1, -1)
+  ];
+  for (let k = 0; k < loop.length; k++) {
+    const a = loop[k], b = loop[(k + 1) % loop.length];
+    const dx = b[0] - a[0], dy = b[1] - a[1], L = Math.hypot(dx, dy), nx = dy / L, ny = -dx / L;
+    put(a[0], a[1], -t, nx, ny, 0); put(b[0], b[1], -t, nx, ny, 0); put(b[0], b[1], t, nx, ny, 0);
+    put(a[0], a[1], -t, nx, ny, 0); put(b[0], b[1], t, nx, ny, 0); put(a[0], a[1], t, nx, ny, 0);
+  }
+
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+  g.setAttribute('normal', new THREE.Float32BufferAttribute(nor, 3));
+  return g;
+}
+</script>
+</body>
+</html>
