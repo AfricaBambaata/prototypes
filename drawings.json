@@ -132,6 +132,23 @@
           "note": "Eerste uitgave"
         }
       ]
+    },
+    {
+      "number": "PLT-0101",
+      "title": "Geperforeerde plaat",
+      "description": "Plaat 1289 × 941 × 3 met hoeken R50 en 1395 gaten Ø10 (45 × 31) op een vierkant raster met steek 25, uit Plaat_perforaties_OpenSoon.dxf. Dikte aangenomen.",
+      "lang": "nl",
+      "status": "current",
+      "revisions": [
+        {
+          "rev": "A",
+          "date": "2026-11-16",
+          "file": "drawings/PLT-0101/A.html",
+          "viewer": "1",
+          "note": "Eerste uitgave",
+          "status": "draft"
+        }
+      ]
     }
   ]
 }
