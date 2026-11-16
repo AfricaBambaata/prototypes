@@ -20,7 +20,8 @@ const A = W / 2, tanT = Math.tan(tilt * Math.PI / 180);
 
 // Plaatassen: x breedte (midden 0), y langs de plaat (voorste onderrand 0), z dikte (voorkant 0, achterkant -T).
 // Bovenaanzicht (x, -z) met de afgeschuinde achterhoeken, langs y geëxtrudeerd.
-const plan = [[-A, 0], [A, 0], [A, T - endT], [A - bevelLen, T], [-A + bevelLen, T], [-A, T - endT]];
+// (punten als [x, afstand vanaf de voorkant]; aan het uiteinde blijft endT over, de schuine kant loopt tot de volle dikte)
+const plan = [[-A, 0], [A, 0], [A, endT], [A - bevelLen, T], [-A + bevelLen, T], [-A, endT]];
 let body = new CrossSection([plan], 'NonZero').extrude(L + 40).translate([0, 0, -20]).rotate([-90, 0, 0]);
 body = body.trimByPlane([0, -1, 0], -L);                                  // bovenkant haaks op y = L
 const n = [0, 1, -tanT], ln = Math.hypot(...n);
