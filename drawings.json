@@ -136,7 +136,7 @@
     {
       "number": "PLT-0101",
       "title": "Geperforeerde plaat",
-      "description": "Plaat 1289 × 941 × 3 met hoeken R50 en gaten Ø10 op een vierkant raster, uit Plaat_perforaties_OpenSoon.dxf. Dikte aangenomen.",
+      "description": "Plaat 1289 × 941 met hoeken R50 en gaten Ø10 op een vierkant raster, uit Plaat_perforaties_OpenSoon.dxf.",
       "lang": "nl",
       "status": "current",
       "revisions": [
@@ -152,7 +152,7 @@
           "date": "2026-11-16",
           "file": "drawings/PLT-0101/B.html",
           "viewer": "1",
-          "note": "Gaten Ø10 op steek 50 in plaats van 25: 23 × 16 = 368 gaten, zelfde randafstanden",
+          "note": "Gaten Ø10 op steek 50 in plaats van 25 (23 × 16 = 368 gaten, zelfde randafstanden); dikte 4 mm",
           "status": "draft"
         }
       ]

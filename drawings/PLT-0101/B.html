@@ -5,11 +5,11 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Geperforeerde plaat</title>
 <!-- link-preview -->
-<meta name="description" content="Plaat 1289 × 941 × 3 met hoeken R50 en gaten Ø10 op een vierkant raster, uit Plaat_perforaties_OpenSoon.dxf. Dikte aangenomen. Revisie B van 2026-11-16.">
+<meta name="description" content="Plaat 1289 × 941 met hoeken R50 en gaten Ø10 op een vierkant raster, uit Plaat_perforaties_OpenSoon.dxf. Revisie B van 2026-11-16.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Tekeningenregister">
 <meta property="og:title" content="Geperforeerde plaat · PLT-0101-B">
-<meta property="og:description" content="Plaat 1289 × 941 × 3 met hoeken R50 en gaten Ø10 op een vierkant raster, uit Plaat_perforaties_OpenSoon.dxf. Dikte aangenomen. Revisie B van 2026-11-16.">
+<meta property="og:description" content="Plaat 1289 × 941 met hoeken R50 en gaten Ø10 op een vierkant raster, uit Plaat_perforaties_OpenSoon.dxf. Revisie B van 2026-11-16.">
 <meta property="og:url" content="https://africabambaata.github.io/prototypes/drawings/PLT-0101/B.html">
 <meta property="og:image" content="https://africabambaata.github.io/prototypes/previews/PLT-0101-B.jpg">
 <meta property="og:image:type" content="image/jpeg">
@@ -28,9 +28,9 @@
 // DXF: buitencontour 1289 × 941 met hoekstraal R50 en 1395 gaten Ø10 (45 × 31) op een vierkant raster
 // met steek 25, symmetrisch in de plaat (randafstand 94,5 links/rechts, 95,5 onder/boven tot het gatmidden).
 // Revisie B: steek 50, dus om het andere gat van de DXF: 23 × 16 = 368 gaten, zelfde gatenveld en randafstanden.
-// De DXF is 2D: de dikte staat er niet in en is hier aangenomen.
+// De DXF is 2D: de dikte staat er niet in. Revisie A nam 3 mm aan; vanaf revisie B 4 mm (opgegeven door de eigenaar).
 // Plaat in het XY-vlak (vooraanzicht = gatenpatroon), dikte langs Z, oorsprong in het midden.
-const P = { W: 1289, H: 941, R: 50, T: 3, d: 10, pitch: 50, nx: 23, ny: 16 };
+const P = { W: 1289, H: 941, R: 50, T: 4, d: 10, pitch: 50, nx: 23, ny: 16 };
 const A = P.W / 2, B = P.H / 2, t = P.T / 2, r = P.d / 2, h = P.pitch / 2;
 const FX = P.nx * h, FY = P.ny * h;                          // half-maten van het geperforeerde veld (cellen van 25 × 25)
 const cx = i => (i - (P.nx - 1) / 2) * P.pitch;              // gatmiddens
@@ -59,7 +59,7 @@ DrawingViewer.create({
     { k: 'Tekeningnr.', v: 'PLT-0101-B' },
     { k: 'Afmetingen', v: `${P.W} × ${P.H} × ${P.T} · hoeken R${P.R}` },
     { k: 'Perforatie', v: `${nHoles} × Ø${P.d} (${P.nx} × ${P.ny}) · vierkant raster, steek ${P.pitch} · ±${fmt((Math.PI * r * r / (P.pitch * P.pitch) * 100).toFixed(1))} % open` },
-    { k: 'Dikte', v: `${P.T} mm aangenomen: niet opgegeven in de DXF` },
+    { k: 'Dikte', v: `${P.T} mm` },
     { k: 'Materiaal', v: 'Niet opgegeven' },
     { k: 'Eenheden · Schaal', v: 'mm · 1:10', units: 'mm', scale: true },
     { k: 'Bron', v: 'Plaat_perforaties_OpenSoon.dxf' },
