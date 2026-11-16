@@ -182,7 +182,7 @@
     {
       "number": "TVM-0101",
       "title": "Houten blok onder tv",
-      "description": "Houten plaat 1441 × 45, 420 hoog onder 100°, met 30 groeven vooraan en achteraan een uitsparing 610 × 200 als klankopening voor de luidspreker. Naar OOS33_TV-MEUBEL_TT1.pdf.",
+      "description": "Houten plaat 1441 × 420 × 45 met 30 groeven vooraan en achteraan een uitsparing 610 × 200 als klankopening voor de luidspreker; staat in het meubel 10° achterover. Naar OOS33_TV-MEUBEL_TT1.pdf.",
       "lang": "nl",
       "status": "current",
       "revisions": [
@@ -199,6 +199,14 @@
           "file": "drawings/TVM-0101/B.html",
           "viewer": "1",
           "note": "Afschuining achteraan aan beide uiteinden correct: 20° over 107 tot een eindkant van 6 (in A stond die verkeerd: eindkant 39)"
+        },
+        {
+          "rev": "C",
+          "date": "2026-11-16",
+          "file": "drawings/TVM-0101/C.html",
+          "viewer": "1",
+          "note": "Rechtop getekend (geen helling) met een haakse onderkant; plaat 420 lang",
+          "status": "draft"
         }
       ]
     }
