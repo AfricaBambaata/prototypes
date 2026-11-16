@@ -27,10 +27,10 @@ const n = [0, 1, -tanT], ln = Math.hypot(...n);
 body = body.trimByPlane(n.map(v => v / ln), 0);                           // onderkant vlak op de vloer bij 90° + tilt
 
 const cut = [];
-const g0 = (L - (gN * gW + (gN - 1) * gLand)) / 2;
+// Bovenste groef langs de bovenrand; daaronder om de gLand een volgende.
 for (let i = 0; i < gN; i++) {
   // 0,002 dieper dan opgegeven, zodat groefbodem en uitsparing niet exact samenvallen (geen vlies van dikte 0)
-  cut.push(Manifold.cube([W + 100, gW, gDepth + 10]).translate([-A - 50, g0 + i * (gW + gLand), -gDepth - 0.002]));
+  cut.push(Manifold.cube([W + 100, gW, gDepth + 10]).translate([-A - 50, L - gW - i * (gW + gLand), -gDepth - 0.002]));
 }
 const pocket = CrossSection.square([rW - 2 * rR, rH - 2 * rR], true).offset(rR, 'Round', 2, 48).translate([0, rY0 + rH / 2]);
 cut.push(pocket.extrude(rDepth + 10).translate([0, 0, -T - 10]));
