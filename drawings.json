@@ -208,6 +208,23 @@
           "note": "Rechtop getekend (geen helling) met een haakse onderkant; plaat 420 lang"
         }
       ]
+    },
+    {
+      "number": "MHB-0300",
+      "title": "Trapleuning smeedijzer · trap 2–3",
+      "description": "Smeedijzeren muurleuning Ø20 langs de lange en de korte muur van trap 2–3 (kwartdraai, 13 × 208,3), met plooistaat en blinde pinnen in chemisch anker. Trap licht getekend naar het grondplan.",
+      "lang": "nl",
+      "status": "current",
+      "revisions": [
+        {
+          "rev": "A",
+          "date": "2026-11-16",
+          "file": "drawings/MHB-0300/A.html",
+          "viewer": "1",
+          "note": "Eerste uitgave",
+          "status": "draft"
+        }
+      ]
     }
   ]
 }

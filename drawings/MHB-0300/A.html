@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Trapleuning smeedijzer trap 2–3</title>
+<!-- link-preview -->
+<meta name="description" content="Smeedijzeren muurleuning Ø20 langs de lange en de korte muur van trap 2–3 (kwartdraai, 13 × 208,3), met plooistaat en blinde pinnen in chemisch anker. Trap licht getekend naar het grondplan. Revisie A van 2026-11-16.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Tekeningenregister">
+<meta property="og:title" content="Trapleuning smeedijzer · trap 2–3 · MHB-0300-A">
+<meta property="og:description" content="Smeedijzeren muurleuning Ø20 langs de lange en de korte muur van trap 2–3 (kwartdraai, 13 × 208,3), met plooistaat en blinde pinnen in chemisch anker. Trap licht getekend naar het grondplan. Revisie A van 2026-11-16.">
+<meta property="og:url" content="https://africabambaata.github.io/prototypes/drawings/MHB-0300/A.html">
+<meta property="og:image" content="https://africabambaata.github.io/prototypes/previews/MHB-0300-A.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Trapleuning smeedijzer · trap 2–3 · MHB-0300-A">
+<meta name="twitter:card" content="summary_large_image">
+<!-- /link-preview -->
+<link rel="stylesheet" href="../../viewer/1/viewer.css">
+</head>
+<body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="../../viewer/1/viewer.js"></script>
+<script>
+// MHB-0300-A: smeedijzeren muurleuning Ø20 voor trap 2–3 (Keepboom_G, kwartdraai, 13 × 208,3).
+// Trap overgenomen uit het grondplan van de trappenmaker (schaal 1:13,3), licht getekend; de leuning is het onderwerp.
+// Plan in mm: X langs de lange muur (0 = korte muur), Y van de lange muur naar binnen (0 … 941,68).
+// Wereld: x = X, z = Y, y = hoogte (0 = vloer beneden, 2708 = vloer boven).
+const D = {"NOS": [[[2311.1, 1.1], [2311.1, 941.1]], [[2135.2, 1.1], [2135.2, 941.1]], [[1957.1, 1.1], [1957.1, 941.1]], [[1780.1, 1.1], [1780.1, 941.1]], [[1598.0, 1.1], [1611.6, 941.1]], [[1404.0, 1.1], [1463.0, 941.1]], [[1199.8, 1.1], [1332.0, 941.1]], [[979.7, 0.6], [1224.8, 941.1]], [[749.9, 0.6], [1137.4, 941.1]], [[508.3, 1.7], [1068.2, 941.7]], [[215.0, 3.4], [1020.0, 941.7]], [[0.6, 190.0], [989.9, 941.1]], [[0.0, 506.6], [959.8, 941.7]]], "RAIL": [[2311.1, 0, 1111], [2311.1, 70, 1111], [1211.1, 70, 2359], [411.1, 70, 3087], [70.0, 70, 3288], [70, 537.9, 3598], [70, 797.9, 3598], [0, 797.9, 3598]], "PINS": [[1791.1, 70, 1701], [1061.1, 70, 2496], [511.0999999999999, 70, 2996], [181.0999999999999, 70, 3223], [70, 248.9000000000001, 3407]], "OFF": 70, "BENDS": [90.0, 6.3, 11.8, 73.7, 33.5, 90.0], "PITCH": [0.0, 48.6, 42.3, 30.5, 33.5, 0.0, 0.0], "LEN": [70, 1664, 1082, 396, 561, 260, 70]};
+const W = 941.68, LEN = 2303.22, RISE = 2708 / 13, TREAD = 34, RISER = 12, OVER = 50, STRINGER = 33;
+const FLOOR2 = 2708, WALL_TOP = 3900;
+
+const viewer = DrawingViewer.create({
+  lang: 'nl',
+  title: 'Trapleuning smeedijzer · trap 2–3',
+  subtitle: 'Ø20 · 900 boven de trapneus · blinde pinnen met chemisch anker · trap 13 × 208,3 kwartdraai',
+  number: 'MHB-0300-A',
+  register: { url: '../../drawings.json', number: 'MHB-0300', rev: 'A' },
+  colors: {
+    light: { accent: '#1f5f8b', 'on-accent': '#ffffff', part: '#2f3236', beuk: '#e8d6b0', trapLijn: '#b49e78', muur: '#d9dde3', vloer: '#e7e9ec', anker: '#9aa3ad' },
+    dark:  { accent: '#7db6e2', 'on-accent': '#0f1d27', part: '#9aa1aa', beuk: '#8e7b58', trapLijn: '#6e6250', muur: '#3a414b', vloer: '#2c3138', anker: '#6b737c' }
+  },
+  materials: { part: { metalness: 0.55, roughness: 0.45 }, beuk: { metalness: 0, roughness: 0.8 }, anker: { metalness: 0, roughness: 0.9 } },
+  modes: ['solid', 'xray'],
+  views: [
+    { id: 'iso', label: 'Overzicht', tag: 'Overzicht', theta: 0.62, phi: 1.1, radius: 10400, target: [1150, 2050, 470] },
+    { id: 'front', label: 'Lange muur', tag: 'Zicht op de lange muur', theta: 0, phi: Math.PI / 2, radius: 9800, target: [1150, 2000, 0] },
+    { id: 'right', label: 'Korte muur', tag: 'Zicht op de korte muur', theta: Math.PI / 2, phi: Math.PI / 2, radius: 9000, target: [0, 2300, 470] },
+    { id: 'top', label: 'Boven', tag: 'Bovenaanzicht', theta: 0, phi: 0.0001, radius: 7600, target: [1150, 0, 600] },
+    { id: 'corner', label: 'Detail hoek', tag: 'Detail hoek en pinnen', theta: 0.8, phi: 1.25, radius: 2200, target: [180, 3250, 160] }
+  ],
+  camera: { min: 300, max: 16000 },
+  print: { front: 'front' },
+  spinSpeed: 0.2,
+  animMs: 650,
+  titleBlock: [
+    { k: 'Titel', v: 'Trapleuning smeedijzer · trap 2–3', title: true },
+    { k: 'Tekeningnr.', v: 'MHB-0300-A' },
+    { k: 'Leuning', v: 'smeedijzer Ø20, langs lange en korte muur; bovenkant 900 boven de trapneuslijn (±13)' },
+    { k: 'Plooistaat', v: 'helling 48,6° · knik 6,3° · 42,3° · knik 11,8° · 30,5° · hoek in plan 90° (3D 73,7°) · 33,5° · knik 33,5° · horizontaal' },
+    { k: 'Lengtes (as)', v: '70 · 1664 · 1082 · 396 · 561 · 260 · 70 (totaal ≈ 4100, waarvan 2 × 70 haaks naar de muur)' },
+    { k: 'Bevestiging', v: '5 blinde pinnen Ø12 (40 omlaag, haaks naar de muur, 90 diep in chemisch anker) + beide uiteinden haaks 90 diep in de muur' },
+    { k: 'Afstand muur', v: '60 vrij tussen muur en leuning (as op 70)' },
+    { k: 'Trap', v: 'Keepboom_G · 13 × 208,3 · aantrede 176 · beuk 34 · trapgat 2303 × 942' },
+    { k: 'Eenheden · Schaal', v: 'mm · 1:20', units: 'mm', scale: true },
+    { k: 'Projectie', v: 'Eerste hoek', projection: true },
+    { k: 'Getekend · Blad', v: '2026-11-16 · 1/1' }
+  ],
+  build(m) {
+    const { THREE, V } = m;
+    // ---------- hulpfuncties
+    const P = (x, y, h) => V(x, h, y);                         // plan (X, Y) + hoogte -> wereld
+    const prism = (poly, y0, y1) => {                          // veelhoek in plan, verticaal geëxtrudeerd
+      const sh = new THREE.Shape(poly.map(([x, y]) => new THREE.Vector2(x, -y)));
+      const g = new THREE.ExtrudeGeometry(sh, { depth: y1 - y0, bevelEnabled: false });
+      g.rotateX(-Math.PI / 2); g.translate(0, y0, 0); return g;
+    };
+    const clip = (poly, a, n, off) => {                        // houd n·(p − a) ≥ off
+      const out = [], f = p => n[0] * (p[0] - a[0]) + n[1] * (p[1] - a[1]) - off;
+      for (let i = 0; i < poly.length; i++) {
+        const p = poly[i], q = poly[(i + 1) % poly.length], fp = f(p), fq = f(q);
+        if (fp >= 0) out.push(p);
+        if ((fp >= 0) !== (fq >= 0)) { const t = fp / (fp - fq); out.push([p[0] + t * (q[0] - p[0]), p[1] + t * (q[1] - p[1])]); }
+      }
+      return out;
+    };
+    const light = (tok, op) => new THREE.MeshStandardMaterial({ metalness: 0, roughness: 0.9, transparent: true, opacity: op, depthWrite: false, side: THREE.DoubleSide });
+
+    // ---------- trap (licht)
+    const RECT = [[0, 0], [D.NOS[0][0][0] + 2, 0], [D.NOS[0][0][0] + 2, W], [0, W]];
+    // normaal van elke neuslijn, wijzend naar de hogere treden
+    const nos = D.NOS.map(([a, b]) => { const dx = b[0] - a[0], dy = b[1] - a[1], l = Math.hypot(dx, dy); return { a, n: [dy / l, -dx / l] }; });
+    nos.forEach((o, i) => {
+      const ref = i < 12 ? D.NOS[i + 1][0] : [0, W];
+      if (o.n[0] * (ref[0] - o.a[0]) + o.n[1] * (ref[1] - o.a[1]) < 0) o.n = [-o.n[0], -o.n[1]];
+    });
+    // Trap licht en doorschijnend: eigen materiaal en lichte lijnen (de leuning blijft het onderwerp).
+    const treads = m.group();
+    const beukMat = new THREE.MeshStandardMaterial({ metalness: 0, roughness: 0.85, transparent: true, opacity: 0.5 });
+    const lijnMat = new THREE.LineBasicMaterial({ transparent: true, opacity: 0.8 });
+    m.add(new THREE.Mesh(new THREE.BufferGeometry(), beukMat), { color: 'beuk', parent: treads });
+    m.add(new THREE.LineSegments(new THREE.BufferGeometry(), lijnMat), { color: 'trapLijn', parent: treads });
+    const stairPart = g => {
+      const mesh = m.part(g, { material: 'beuk', parent: treads, edges: 180 }); mesh.material = beukMat;
+      treads.add(new THREE.LineSegments(new THREE.EdgesGeometry(g, 30), lijnMat));
+    };
+    for (let k = 1; k <= 12; k++) {
+      let poly = clip(RECT, nos[k - 1].a, nos[k - 1].n, 0);                       // achter neus k
+      poly = clip(poly, nos[k].a, [-nos[k].n[0], -nos[k].n[1]], -(OVER + RISER));  // tot achter de stootbord k+1
+      if (poly.length > 2) stairPart(prism(poly, k * RISE - TREAD, k * RISE));
+      // stootbord onder neus k
+      let r = clip(RECT, nos[k - 1].a, nos[k - 1].n, OVER);
+      r = clip(r, nos[k - 1].a, [-nos[k - 1].n[0], -nos[k - 1].n[1]], -(OVER + RISER));
+      if (r.length > 2) stairPart(prism(r, (k - 1) * RISE, k * RISE - TREAD));
+    }
+    // overloop: trede 13 op vloerhoogte en de vloer boven, uitgang langs de binnenkant (940 breed)
+    const land = clip(RECT, nos[12].a, nos[12].n, 0);
+    stairPart(prism(land, FLOOR2 - TREAD, FLOOR2));
+    m.add(new THREE.Mesh(prism([[0, W], [940, W], [940, W + 700], [0, W + 700]], FLOOR2 - 397, FLOOR2), light('vloer', 0.5)), { color: 'vloer' });
+    let r13 = clip(RECT, nos[12].a, nos[12].n, OVER);
+    r13 = clip(r13, nos[12].a, [-nos[12].n[0], -nos[12].n[1]], -(OVER + RISER));
+    if (r13.length > 2) stairPart(prism(r13, 12 * RISE, FLOOR2 - TREAD));
+
+    // bomen (33) langs de muren: bovenrand 60 boven de neuslijn tegen de muur
+    const wallH = (pts) => pts.map(([s, h]) => [s, h + 60]);
+    const board = (path, toWorld) => {
+      const top = wallH(path), bot = top.slice().reverse().map(([s, h]) => [s, Math.max(0, h - 330)]);
+      const sh = new THREE.Shape([...top, ...bot].map(([s, h]) => new THREE.Vector2(s, h)));
+      const g = new THREE.ExtrudeGeometry(sh, { depth: STRINGER, bevelEnabled: false });
+      toWorld(g); stairPart(g);
+    };
+    const atY = (k, y) => { const [a, b] = D.NOS[k]; return a[0] + (y - a[1]) * (b[0] - a[0]) / (b[1] - a[1]); };
+    const atX = (k, x) => { const [a, b] = D.NOS[k]; return a[1] + (x - a[0]) * (b[1] - a[1]) / (b[0] - a[0]); };
+    // lange muur (Y = 0): neuzen 1–11 raken deze muur
+    const longPts = [[D.NOS[0][0][0] + 40, 0]];
+    for (let k = 0; k < 11; k++) longPts.push([atY(k, 0), (k + 1) * RISE]);
+    longPts.push([0, 11 * RISE + (atY(10, 0) / (atY(10, 0) + atX(11, 0))) * RISE]);
+    board(longPts.slice().reverse(), g => { g.translate(0, 0, 0); });
+    // korte muur (X = 0): neuzen 12 en 13
+    const cornerH = longPts[longPts.length - 1][1];
+    const shortPts = [[0, cornerH], [atX(11, 0), 12 * RISE], [atX(12, 0), 13 * RISE], [W, 13 * RISE]];
+    board(shortPts, g => { g.rotateY(-Math.PI / 2); g.translate(STRINGER, 0, 0); });
+    // binnenmuur (Y = W): van de uitgang tot trede 1
+    const innerPts = [];
+    for (let k = 12; k >= 0; k--) innerPts.push([atY(k, W), (k + 1) * RISE]);
+    innerPts.push([D.NOS[0][0][0] + 40, 0]);
+    board(innerPts, g => { g.translate(0, 0, W - STRINGER); });
+
+    // muren (doorzichtig) en vloer beneden
+    const wall = (poly, y0, y1, op) => m.add(new THREE.Mesh(prism(poly, y0, y1), light('muur', op)), { color: 'muur' });
+    wall([[-120, -120], [LEN + 700, -120], [LEN + 700, 0], [-120, 0]], 0, WALL_TOP, 0.22);   // lange muur
+    wall([[-120, 0], [0, 0], [0, W + 700], [-120, W + 700]], 0, WALL_TOP, 0.22);             // korte muur
+    wall([[960, W], [LEN + 700, W], [LEN + 700, W + 120], [960, W + 120]], 0, FLOOR2, 0.1);    // binnenmuur
+    m.add(new THREE.Mesh(prism([[LEN - 40, 0], [LEN + 700, 0], [LEN + 700, W], [LEN - 40, W]], -20, 0), light('vloer', 0.6)), { color: 'vloer' });
+
+    // ---------- leuning Ø20 (smeedijzer), plooien met afgeronde bochten
+    const R = D.RAIL.map(([x, y, h]) => P(x, y, h));
+    const radius = [0, 40, 250, 250, 70, 160, 40, 0];
+    const path = new THREE.CurvePath();
+    let prev = R[0];
+    for (let i = 1; i < R.length - 1; i++) {
+      const a = R[i - 1], b = R[i], c = R[i + 1], r = radius[i];
+      const u1 = b.clone().sub(a).normalize(), u2 = c.clone().sub(b).normalize();
+      const p1 = b.clone().addScaledVector(u1, -r), p2 = b.clone().addScaledVector(u2, r);
+      path.add(new THREE.LineCurve3(prev, p1));
+      path.add(new THREE.QuadraticBezierCurve3(p1, b, p2));
+      prev = p2;
+    }
+    path.add(new THREE.LineCurve3(prev, R[R.length - 1]));
+    m.part(new THREE.TubeGeometry(path, 900, 10, 20, false), { edges: 89 });
+    // uiteinden 90 diep in de muur
+    const embed = (p, dir) => {
+      const g = new THREE.CylinderGeometry(10, 10, 90, 20);
+      g.rotateZ(Math.PI / 2 * Math.abs(dir[0])); g.rotateX(Math.PI / 2 * Math.abs(dir[2]));
+      g.translate(p.x + dir[0] * 45, p.y, p.z + dir[2] * 45); m.part(g, { edges: 89 });
+      const a = new THREE.CylinderGeometry(14, 14, 90, 20);
+      a.rotateZ(Math.PI / 2 * Math.abs(dir[0])); a.rotateX(Math.PI / 2 * Math.abs(dir[2]));
+      a.translate(p.x + dir[0] * 45, p.y, p.z + dir[2] * 45);
+      m.add(new THREE.Mesh(a, light('anker', 0.35)), { color: 'anker' });
+    };
+    embed(R[0], [0, 0, -1]);
+    embed(R[R.length - 1], [-1, 0, 0]);
+
+    // ---------- blinde pinnen Ø12: 40 omlaag onder de leuning, haaks naar de muur, 90 diep in chemisch anker
+    D.PINS.forEach(([x, y, h]) => {
+      const onLong = y === D.OFF;                                // lange muur: naar −Y, korte muur: naar −X
+      const top = P(x, y, h), knee = P(x, y, h - 40);
+      const v = new THREE.CylinderGeometry(6, 6, 40, 16); v.translate(top.x, h - 20, top.z); m.part(v, { edges: 89 });
+      const wallP = onLong ? P(x, -90, h - 40) : P(-90, y, h - 40);
+      const len = knee.distanceTo(wallP);
+      const hz = new THREE.CylinderGeometry(6, 6, len, 16);
+      if (onLong) hz.rotateX(Math.PI / 2); else hz.rotateZ(Math.PI / 2);
+      hz.translate((knee.x + wallP.x) / 2, h - 40, (knee.z + wallP.z) / 2); m.part(hz, { edges: 89 });
+      const an = new THREE.CylinderGeometry(9, 9, 90, 16);
+      if (onLong) an.rotateX(Math.PI / 2); else an.rotateZ(Math.PI / 2);
+      an.translate(onLong ? knee.x : -45, h - 40, onLong ? -45 : knee.z);
+      m.add(new THREE.Mesh(an, light('anker', 0.35)), { color: 'anker' });
+    });
+
+    // ---------- maten en labels
+    const all = m.dims({ arrow: 40, minRadius: 2600 });
+    const det = m.dims({ arrow: 10, maxRadius: 3200 });
+    // leuninghoogte 900 boven de trapneus (bovenkant leuning) op enkele treden
+    [[3, 'top'], [9, 'top'], [12, 'left']].forEach(([k, side]) => {
+      const [a, b] = D.NOS[k - 1];
+      let x, y;
+      if (side === 'top') { y = D.OFF; x = a[0] + (y - a[1]) * (b[0] - a[0]) / (b[1] - a[1]); }
+      else { x = D.OFF; y = a[1] + (x - a[0]) * (b[1] - a[1]) / (b[0] - a[0]); }
+      const h = k * RISE;
+      all.linear({ a: P(x, y + 25, h), b: P(x, y + 25, h + 900), n: side === 'top' ? V(0, 0, 1) : V(1, 0, 0), text: '900',
+        ext: [[P(x, y - 10, h), P(x, y + 40, h)]] });
+    });
+    const mid = (i, t = 0.5) => R[i].clone().lerp(R[i + 1], t);
+    const pitchTxt = v => String(v).replace('.', ',') + '°';
+    all.leader({ p: mid(1, 0.45), e: mid(1, 0.45).add(V(250, 380, 300)), text: 'helling ' + pitchTxt(D.PITCH[1]) });
+    all.leader({ p: mid(2, 0.5), e: mid(2, 0.5).add(V(150, 420, 300)), text: 'helling ' + pitchTxt(D.PITCH[2]) });
+    all.leader({ p: R[2], e: R[2].clone().add(V(-200, -520, 250)), text: 'knik ' + pitchTxt(D.BENDS[1]) });
+    all.leader({ p: R[3], e: R[3].clone().add(V(-150, -560, 260)), text: 'knik ' + pitchTxt(D.BENDS[2]) });
+    all.leader({ p: R[4], e: R[4].clone().add(V(350, 420, 320)), text: 'hoek 90° in plan' });
+    all.leader({ p: R[5], e: R[5].clone().add(V(320, 260, 260)), text: 'knik ' + pitchTxt(D.BENDS[4]) + ' → horizontaal' });
+    all.leader({ p: mid(0, 0.5), e: mid(0, 0.5).add(V(250, -500, 300)), text: 'Ø20 smeedijzer' });
+    all.note({ pos: P(LEN * 0.55, -60, WALL_TOP + 120), text: 'Lange muur' });
+    all.note({ pos: P(-60, W * 0.55, WALL_TOP + 120), text: 'Korte muur' });
+    all.note({ pos: P(470, W + 350, FLOOR2 + 40), text: 'Overloop' });
+    all.label({ pos: P(LEN - 80, W * 0.62, 260), text: 'trede 1' });
+    // detail: muurafstand, pin
+    const pin = D.PINS[3], pinP = P(pin[0], pin[1], pin[2]);
+    det.linear({ a: P(pin[0] + 120, 0, pin[2] + 60), b: P(pin[0] + 120, 60, pin[2] + 60), n: V(0, 1, 0), text: '60 vrij',
+      ext: [[P(pin[0] + 120, 60, pin[2]), P(pin[0] + 120, 60, pin[2] + 70)]] });
+    det.leader({ p: P(pin[0], pin[1], pin[2] - 30), e: P(pin[0] + 150, pin[1] + 160, pin[2] - 230), text: 'pin Ø12 · 40 omlaag' });
+    det.leader({ p: P(pin[0], -45, pin[2] - 40), e: P(pin[0] - 120, 140, pin[2] - 360), text: '90 diep · chemisch anker' });
+    const top = R[R.length - 1];
+    det.leader({ p: P(-45, D.RAIL[D.RAIL.length - 1][1], 3598), e: P(150, D.RAIL[D.RAIL.length - 1][1] + 180, 3598 + 220), text: 'uiteinde haaks in de muur' });
+  }
+});
+
+// Trap en muren licht houden: de leuning is het onderwerp.
+viewer.scene.traverse(o => { if (o.isHemisphereLight) o.intensity = 0.95; });
+</script>
+</body>
+</html>
